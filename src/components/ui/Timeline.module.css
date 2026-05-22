@@ -1,0 +1,201 @@
+.container {
+  position: absolute;
+  top: 210px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  
+  background: rgba(255, 255, 255, 0.9);
+  padding: 16px 24px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 540px; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: all 0.3s ease;
+}
+
+/* Play Button with Disabled State for Live Mode */
+.playBtn {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 44px; /* Accessible touch target size */
+  height: 44px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.playBtn:hover:not(:disabled) { 
+  background: #e2e8f0; 
+  transform: scale(1.05);
+}
+.playBtn:active:not(:disabled) { 
+  transform: scale(0.95);
+}
+.playBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Track Layout */
+.trackWrapper {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0 24px 0;
+}
+
+/* --- THE CUSTOM SLIDER --- */
+/* --- THE CUSTOM SLIDER --- */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  
+  /* Apply the gradient directly to the input background */
+  background: linear-gradient(to right, #3b82f6 var(--progress), #e2e8f0 var(--progress));
+  
+  outline: none;
+  z-index: 2;
+  cursor: grab;
+  margin: 0;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.slider:active { cursor: grabbing; }
+.slider:disabled { cursor: default; }
+
+/* Change fill color to green when Live Mode is active */
+.isLive .slider {
+  background: linear-gradient(to right, #10b981 var(--progress), #e2e8f0 var(--progress));
+}
+
+/* Custom Thumb (The Handle) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: border-color 0.3s ease, transform 0.1s;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: border-color 0.3s ease, transform 0.1s;
+}
+
+.isLive .slider::-webkit-slider-thumb { border-color: #10b981; }
+.isLive .slider::-moz-range-thumb { border-color: #10b981; }
+
+.slider:active::-webkit-slider-thumb { transform: scale(1.2); }
+.slider:active::-moz-range-thumb { transform: scale(1.2); }
+
+/* --- VISUAL TICKS & LABELS --- */
+
+/* --- VISUAL TICKS & LABELS --- */
+.ticksContainer {
+  position: absolute;
+  top: 13px; /* Aligns exactly with the center of the slider track */
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.tickGroup {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%); /* Centers the group exactly on its calculated left % */
+}
+
+.tick {
+  width: 2px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Helps white ticks pop on light backgrounds */
+}
+
+.label {
+  margin-top: 14px; /* Pushes the text neatly below the slider */
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* --- NOW / LIVE MARKER --- */
+.nowMarker {
+  position: absolute;
+  top: -30px; /* Lifted slightly to avoid crowding the thumb */
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+  background: none;
+  border: none;
+  padding: 4px; /* Larger invisible hit area for accessibility */
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nowMarker:hover { transform: translateX(-50%) translateY(-2px); }
+.nowMarker:active { transform: translateX(-50%) translateY(1px); }
+
+.nowLabel {
+  background-color: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+  transition: background-color 0.3s;
+}
+
+.nowLine {
+  width: 2px;
+  height: 16px;
+  background-color: #ef4444;
+  border-radius: 1px;
+  transition: background-color 0.3s;
+}
+
+/* LIVE ACTIVE STATE */
+.liveActive .nowLabel {
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+.liveActive .nowLine { background-color: #10b981; }
+
+@keyframes pulse {
+  to { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+}

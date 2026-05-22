@@ -1,0 +1,36 @@
+/* Container positioned right below the week picker for better UX */
+.container {
+  position: absolute;
+  top: 20px; /* Placed under the calendar (which is at top: 20px) */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  
+  background: rgba(255, 243, 205, 0.95);
+  border-left: 5px solid #ffc107;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  
+  font-family: sans-serif;
+  color: #664d03;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 80%;
+  min-width: 300px;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Ensure the icon doesn't shrink if the text gets long */
+.icon {
+  flex-shrink: 0;
+}
+
+/* Typography */
+.text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
