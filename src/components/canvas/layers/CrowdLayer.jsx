@@ -4,36 +4,36 @@ import * as THREE from 'three'
 import useAppStore from '../../../store/useAppStore'
 import { visitors } from '../../../data/mockVisitorData'
 
-export default function CrowdLayer() {
+export default function CrowdLayer({ targetFloor = 1 }) {
   const timeOfDay = useAppStore((state) => state.timeOfDay)
   const selectedDate = useAppStore((state) => state.selectedDate)
+  const activeFloor = useAppStore((state) => state.activeFloor)
   
-  // 1. Filter visitors: Who is actually in the museum on this specific day of the week?
-  const visitorsToday = useMemo(() => {
+  const activeVisitors = useMemo(() => {
     const dayOfWeek = selectedDate.getDay()
-    return visitors.filter(v => v.daysVisiting.includes(dayOfWeek))
-  }, [selectedDate])
+    return visitors.filter(v => v.daysVisiting.includes(dayOfWeek) && v.floor === targetFloor)
+  }, [selectedDate, targetFloor])
 
   const meshRef = useRef()
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
-  // 2. The Render Loop: Complex Waypoint Interpolation
   useFrame(() => {
     if (!meshRef.current) return
+    if (activeFloor !== targetFloor) {
+      meshRef.current.count = 0
+      return
+    }
 
-    visitorsToday.forEach((visitor, i) => {
+    activeVisitors.forEach((visitor, i) => {
       const path = visitor.path
       const enterTime = path[0].time
       const exitTime = path[path.length - 1].time
 
-      // If they haven't arrived yet, or have already left, hide them completely
       if (timeOfDay < enterTime || timeOfDay > exitTime) {
         dummy.scale.set(0, 0, 0)
       } else {
-        // They are currently in the museum. Let's make them visible.
         dummy.scale.set(1, 1, 1)
         
-        // Find exactly which segment of the path they are currently on
         let startIndex = 0
         for (let j = 0; j < path.length - 1; j++) {
           if (timeOfDay >= path[j].time && timeOfDay <= path[j+1].time) {
@@ -45,34 +45,39 @@ export default function CrowdLayer() {
         const startNode = path[startIndex]
         const endNode = path[startIndex + 1]
 
-        // Calculate progress percentage strictly within this current segment
         const segmentDuration = endNode.time - startNode.time
-        const progressInSegment = (timeOfDay - startNode.time) / segmentDuration
+        const progress = segmentDuration === 0 ? 1 : (timeOfDay - startNode.time) / segmentDuration
 
-        // Lerp between the start and end of this specific segment
-        dummy.position.x = THREE.MathUtils.lerp(startNode.x, endNode.x, progressInSegment)
-        dummy.position.z = THREE.MathUtils.lerp(startNode.z, endNode.z, progressInSegment)
+        // Add a subtle easing so they slow down slightly as they approach exhibits
+        const easedProgress = THREE.MathUtils.smootherstep(progress, 0, 1)
+
+        dummy.position.x = THREE.MathUtils.lerp(startNode.x, endNode.x, easedProgress)
+        dummy.position.z = THREE.MathUtils.lerp(startNode.z, endNode.z, easedProgress)
         
-        // Spheres look best when resting exactly on the floor (radius = 0.2)
-        dummy.position.y = 0.2 
+        // Floor height is 0.4. Capsule total height is ~0.8. 
+        // Placing Y at 0.8 rests them perfectly flat on the ground.
+        dummy.position.y = 0.7
       }
 
       dummy.updateMatrix()
       meshRef.current.setMatrixAt(i, dummy.matrix)
     })
     
-    // Crucial: Clear unused instances if the count drops (e.g. Wednesday has fewer visitors than Tuesday)
-    // and tell Three.js to redraw the active ones.
-    meshRef.current.count = visitorsToday.length
+    meshRef.current.count = activeVisitors.length
     meshRef.current.instanceMatrix.needsUpdate = true
   })
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, visitors.length]}>
-      {/* Updated from cylinder to sphere */}
-      <sphereGeometry args={[0.2, 16, 16]} />
-      {/* Giving them a nice vibrant blue color that matches the timeline */}
-      <meshStandardMaterial color="#3b82f6" roughness={0.4} />
+    <instancedMesh ref={meshRef} args={[null, null, visitors.length]} castShadow receiveShadow>
+      <sphereGeometry args={[0.2, 24, 24]} />
+  
+      <meshStandardMaterial 
+        color="#f97316" 
+        roughness={0.4} 
+        metalness={0.1}
+        emissive="#f97316"
+        emissiveIntensity={0.2} /* Slight inner glow */
+      />
     </instancedMesh>
   )
 }

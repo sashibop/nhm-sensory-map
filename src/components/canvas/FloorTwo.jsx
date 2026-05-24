@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { useMemo } from 'react'
+import CrowdLayer from './layers/CrowdLayer';
 
 export default function MuseumFloorPlan() {
   const materials = useMemo(() => ({
@@ -9,11 +10,11 @@ export default function MuseumFloorPlan() {
     floorStair: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 0.9 }),
     wallExt: new THREE.MeshStandardMaterial({ color: '#334155', roughness: 1.0 }), 
     wallInt: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.9 }),
-    stair: new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.7 }),
+    stair: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.7 }),
     elevatorCar: new THREE.MeshStandardMaterial({ color: '#e2e8f0', metalness: 0.4, roughness: 0.2 }),
     column: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 0.8 }),
     ramp: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.9 }),
-    tactileWarning: new THREE.MeshStandardMaterial({ color: '#eab308', roughness: 1.0, bumpScale: 0.05 }), // High contrast yellow
+    tactileWarning: new THREE.MeshStandardMaterial({ color: '#3b82f6', roughness: 1.0, bumpScale: 0.05 }), 
     handrail: new THREE.MeshStandardMaterial({ color: '#94a3b8', metalness: 0.6, roughness: 0.4 }),
     benchWood: new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.8 }),
     benchMetal: new THREE.MeshStandardMaterial({ color: '#475569', metalness: 0.8 }),
@@ -125,7 +126,7 @@ export default function MuseumFloorPlan() {
     <group position={[x, floorH, z]} rotation={[0, rot, 0]}>
       <mesh position={[0, 0.25, 0]} castShadow>
         <boxGeometry args={[1.8, 0.05, 0.5]} />
-        <primitive object={materials.benchWood} attach="material" />
+        <primitive object={materials.benchMetal} attach="material" />
       </mesh>
       <mesh position={[-0.7, 0.125, 0]} castShadow>
         <boxGeometry args={[0.05, 0.25, 0.4]} />
@@ -159,6 +160,10 @@ export default function MuseumFloorPlan() {
 
   return (
     <group>
+
+      <CrowdLayer targetFloor={2} />
+
+
       {/* ========================================================= */}
       {/* 1. WALKABLE SURFACES & FOUNDATION                           */}
       {/* ========================================================= */}
@@ -229,6 +234,20 @@ export default function MuseumFloorPlan() {
 
       <ColumnGrid2x2 centerX={-18.25} centerZ={11.5} spacingX={4.5} spacingZ={4.5} />
       <ColumnGrid2x2 centerX={18.25} centerZ={11.5} spacingX={4.5} spacingZ={4.5} />
+
+      <Stairs x={-23} z={-29} width={3} steps={1} stepDepth={4.5} totalHeight={0.5} rot={Math.PI} />
+
+      <Stairs x={2.85} z={-5.8} width={2} steps={1} stepDepth={3.5} totalHeight={0.5} rot={Math.PI} />
+      <Stairs x={-2.85} z={-5.8} width={2} steps={1} stepDepth={3.5} totalHeight={0.5} rot={Math.PI} />
+
+
+       <group position={[0, 0, -4]}>
+        <Wall x={-2.83} z={-2.83} w={3.4} d={intT} rot={Math.PI/4} />
+        <Wall x={-4} z={0} w={3.4} d={intT} rot={Math.PI/2} />
+        <Wall x={2.83} z={-2.83} w={3.4} d={intT} rot={-Math.PI/4} />
+        <Wall x={4} z={0} w={3.4} d={intT} rot={Math.PI/2} />
+        <Wall x={0} z={-4} w={3.4} d={intT} rot={Math.PI} />
+      </group>
 
       {/* The Apse (Room 76) */}
       <mesh position={[0, floorH + (h/2), -14]} castShadow receiveShadow>

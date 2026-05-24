@@ -25,28 +25,46 @@ export default function Timeline() {
     return () => clearInterval(interval)
   }, [])
 
-  // Live-Sync Engine
+  // --- UNIFIED ANIMATION & LIVE-SYNC LOOP ---
   useEffect(() => {
-    if (isLiveMode) setTimeOfDay(realTimeFloat)
-  }, [realTimeFloat, isLiveMode, setTimeOfDay])
 
-  // Animation Loop
-  useEffect(() => {
+    const PLAYBACK_SPEED = 0.5;
+
     const animate = (time) => {
-      if (previousTimeRef.current !== undefined) {
+      if (isLiveMode) {
+        // 1. LIVE MODE: Calculate real-world time down to the exact millisecond
+        const now = new Date()
+        const exactRealTime = 
+          now.getHours() + 
+          (now.getMinutes() / 60) + 
+          (now.getSeconds() / 3600) + 
+          (now.getMilliseconds() / 3600000)
+        
+        setTimeOfDay(exactRealTime)
+      } else if (isPlaying && previousTimeRef.current !== undefined) {
+        // 2. PLAYBACK MODE: Advance time based on frame delta
         const deltaSeconds = (time - previousTimeRef.current) / 1000
-        advanceTime(deltaSeconds)
+        advanceTime(deltaSeconds * PLAYBACK_SPEED)
       }
+      
       previousTimeRef.current = time
-      if (isPlaying) requestRef.current = requestAnimationFrame(animate)
+      
+      // Keep looping if we are playing OR if we are in live mode
+      if (isPlaying || isLiveMode) {
+        requestRef.current = requestAnimationFrame(animate)
+      }
     }
-    if (isPlaying) requestRef.current = requestAnimationFrame(animate)
-    else {
+
+    // Start the loop
+    if (isPlaying || isLiveMode) {
+      requestRef.current = requestAnimationFrame(animate)
+    } else {
       previousTimeRef.current = undefined
       cancelAnimationFrame(requestRef.current)
     }
+
     return () => cancelAnimationFrame(requestRef.current)
-  }, [isPlaying, advanceTime])
+  }, [isPlaying, isLiveMode, advanceTime, setTimeOfDay])
 
   // UI Calculations
   const hours = Array.from({ length: 10 }, (_, i) => i + 9)
@@ -119,7 +137,7 @@ export default function Timeline() {
                 style={{ left: `calc(${pct}% + ${10 - pct * 0.2}px)` }}
               >
                 <div className={styles.tick} />
-                {h % 3 === 0 && <div className={styles.label}>{h}:00</div>}
+                {h % 1 === 0 && <div className={styles.label}>{h}:00</div>}
               </div>
             )
           })}

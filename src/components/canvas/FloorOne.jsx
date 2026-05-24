@@ -1,6 +1,67 @@
 import * as THREE from 'three'
 import { useMemo } from 'react'
-import { useFrame } from '@react-three/fiber' // <--- ADD THIS
+import { useFrame } from '@react-three/fiber' 
+import CrowdLayer from './layers/CrowdLayer'
+import { Html } from '@react-three/drei'
+
+// --- DEBUG TOOL: WAYPOINT VISUALIZER ---
+const DebugNodes = () => {
+  // We keep a local copy of the nodes here so you can easily tweak the x/z numbers
+  // right here in the visualizer, then copy-paste them back to mockVisitorData.js when perfect.
+  const nodes = {
+    Entrance:    { x: 0, z: 20 },
+    Lobby:       { x: 0, z: 12 },
+    LobbyLeft:   { x: -14, z: 12 },
+    LobbyRight:  { x: 14, z: 12 },
+    LeftWingMid: { x: -23, z: 7 },
+    LeftDeep:    { x: -23, z: -18 },
+    RightWingMid:{ x: 23, z: 7 },
+    RightDeep:   { x: 23, z: -18 },
+    Octagon:     { x: 0, z: 0 },
+    Restroom:    { x: 8, z: 15 },
+    LeftLift:    { x: -6.7, z: 6 },
+    LeftDown:    { x: -23, z: 15 },  
+    RightDown:   { x: 23, z: 16 },  
+    RightMidDoor:{ x: 23, z: -6 },  
+    RightMidRoom:{ x: 25, z: 0 },  
+
+  };
+
+  return (
+    <group>
+      {Object.entries(nodes).map(([name, pos]) => (
+        <group key={name} position={[pos.x, 1.0, pos.z]}>
+          {/* 1. The Red Marker (Wireframe so it looks like a tech/debug tool) */}
+          <mesh>
+            <sphereGeometry args={[0.4, 12, 12]} />
+            <meshBasicMaterial color="#ef4444" wireframe={true} />
+          </mesh>
+          
+          {/* 2. The Floating UI Label */}
+          <Html center position={[0, 0.8, 0]} zIndexRange={[100, 0]}>
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.85)',
+              color: '#ef4444', // Red text
+              padding: '4px 8px',
+              borderRadius: '6px',
+              fontFamily: 'monospace',
+              fontSize: '11px',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none', // Prevents the label from blocking your camera controls
+              border: '1px solid #ef4444'
+            }}>
+              {name} <br/>
+              <span style={{ color: 'white', fontWeight: 'normal' }}>
+                [{pos.x}, {pos.z}]
+              </span>
+            </div>
+          </Html>
+        </group>
+      ))}
+    </group>
+  )
+}
 
 export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
   
@@ -13,11 +74,11 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       floorStair: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 0.9 }),
       wallExt: new THREE.MeshStandardMaterial({ color: '#334155', roughness: 1.0 }), 
       wallInt: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.9 }),
-      stair: new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.7 }),
+      stair: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.7 }),
       elevatorCar: new THREE.MeshStandardMaterial({ color: '#e2e8f0', metalness: 0.4, roughness: 0.2 }),
       column: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 0.8 }),
       ramp: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.9 }),
-      tactileWarning: new THREE.MeshStandardMaterial({ color: '#eab308', roughness: 1.0, bumpScale: 0.05 }), 
+      tactileWarning: new THREE.MeshStandardMaterial({ color: '#3b82f6', roughness: 1.0, bumpScale: 0.05 }), 
       handrail: new THREE.MeshStandardMaterial({ color: '#94a3b8', metalness: 0.6, roughness: 0.4 }),
       benchWood: new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.8 }),
       benchMetal: new THREE.MeshStandardMaterial({ color: '#475569', metalness: 0.8 }),
@@ -182,7 +243,7 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
     <group position={[x, floorH, z]} rotation={[0, rot, 0]}>
       <mesh position={[0, 0.25, 0]} castShadow>
         <boxGeometry args={[1.8, 0.05, 0.5]} />
-        <primitive object={materials.benchWood} attach="material" />
+        <primitive object={materials.benchMetal} attach="material" />
       </mesh>
       <mesh position={[-0.7, 0.125, 0]} castShadow>
         <boxGeometry args={[0.05, 0.25, 0.4]} />
@@ -216,6 +277,10 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
 
   return (
     <group>
+
+      <CrowdLayer targetFloor={1} />
+      {/* <DebugNodes /> */}
+
       {/* ========================================================= */}
       {/* 1. WALKABLE SURFACES & FOUNDATION                           */}
       {/* ========================================================= */}
@@ -236,14 +301,15 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       
       {/* Main Entrance Integration */}
       <Stairs x={0} z={18.2} width={8} steps={6} stepDepth={0.35} rot={Math.PI} />
-      <AccessibleRamp x={-3.7} z={19} width={2.5} length={9 * 0.35} />
+      <AccessibleRamp x={-3.7} z={19} width={2.5} length={3.5} />
       
       {/* Rear Wing Exits */}
       <Stairs x={-9.5} z={-9} width={10} steps={6} stepDepth={0.3} rot={Math.PI/2} />
       <Stairs x={9.5} z={-9} width={10} steps={6} stepDepth={0.3} rot={-Math.PI/2} />
 
-      <Stairs x={3.5} z={5} width={3} steps={15} stepDepth={0.3} totalHeight={1.5} rot={Math.PI} />
-      <Stairs x={-3.5} z={5} width={3} steps={15} stepDepth={0.3} totalHeight={1.5} rot={Math.PI} />
+      {/* To Floor Two */}
+      <Stairs x={2.85} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
+      <Stairs x={-2.85} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
 
       <Stairs x={-23} z={-26} width={3} steps={15} stepDepth={0.3} totalHeight={1.5} rot={Math.PI} />
 
@@ -255,7 +321,7 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       <RestAreaBench x={19.5} z={-10} rot={Math.PI/2} />
       <RestAreaBench x={19.5} z={-18} rot={Math.PI/2} />
       <RestAreaBench x={19.5} z={-26} rot={Math.PI/2} />
-      <RestAreaBench x={0.5} z={-7} rot={Math.PI} />
+      <RestAreaBench x={0.5} z={-11} rot={Math.PI} />
       <RestAreaBench x={-22} z={-29} rot={Math.PI} />
       <RestAreaBench x={-26.3} z={12} rot={Math.PI/2} />
 
@@ -285,8 +351,7 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
 
       {/* Front Lobby Rooms */}
       <WallWithGap x={-23} z={6} length={10} gapPos={5} gapWidth={dwDbl} rot={0} />
-      <WallWithGap x={-10} z={12} length={11.5} gapPos={5.4} gapWidth={dwStd} rot={Math.PI/2} />
-      <WallWithGap x={-18.1} z={12} length={11.5} gapPos={5.4} gapWidth={dwStd} rot={Math.PI/2} />
+      <WallWithGap x={-10} z={12} length={11.5} gapPos={5.7} gapWidth={dwStd+2} rot={Math.PI/2} />
 
 
       <WallWithGap x={23} z={6} length={10} gapPos={5} gapWidth={dwDbl} rot={0} />
@@ -310,14 +375,12 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       <ColumnGrid2x2 centerX={18.25} centerZ={11.5} spacingX={4.5} spacingZ={4.5} />
 
       {/* The Central Octagon (Room 75) - Cardinal axes left completely empty */}
-      <group position={[0, floorH, -4]}>
+      <group position={[0, 0, -4]}>
         <Wall x={-2.83} z={-2.83} w={3.4} d={intT} rot={Math.PI/4} />
         <Wall x={-4} z={0} w={3.4} d={intT} rot={Math.PI/2} />
         <Wall x={2.83} z={-2.83} w={3.4} d={intT} rot={-Math.PI/4} />
         <Wall x={4} z={0} w={3.4} d={intT} rot={Math.PI/2} />
-        <Wall x={-2.83} z={2.83} w={3.4} d={intT} rot={-Math.PI/4} />
         <Wall x={0} z={-4} w={3.4} d={intT} rot={Math.PI} />
-        <Wall x={2.83} z={2.83} w={3.4} d={intT} rot={Math.PI/4} />
       </group>
 
       {/* The Apse (Room 76) */}
