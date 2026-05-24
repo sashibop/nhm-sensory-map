@@ -5,9 +5,12 @@ const useAppStore = create((set, get) => ({
   selectedDate: new Date(),
   timeOfDay: 9.0, 
   isPlaying: false,
-  isLiveMode: false, // New state for live tracking
+  isLiveMode: false, 
+  activeFloor: 1, // NEW: Defaults to Ground Floor
 
   // --- ACTIONS ---
+  setActiveFloor: (floorNumber) => set({ activeFloor: floorNumber }),
+
   setLiveMode: (status) => set({ 
     isLiveMode: status, 
     isPlaying: false // Turning on Live Mode stops playback
