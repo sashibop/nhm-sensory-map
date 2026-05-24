@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import useAppStore from '../../store/useAppStore'
 import styles from './Announcements.module.css'
 
@@ -5,7 +6,29 @@ export default function Announcements() {
   const selectedDate = useAppStore((state) => state.selectedDate)
   const dayOfWeek = selectedDate.getDay()
 
-  // ... (keep your dailyAnnouncements dictionary here) ...
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false)
+
+  // Auto-collapse after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCollapsed(true)
+      setHasAutoCollapsed(true)
+    }, 3000)
+
+    // Cleanup timer if component unmounts
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Hover handlers (only active after the initial 10s collapse)
+  const handleMouseEnter = () => {
+    if (hasAutoCollapsed) setIsCollapsed(false)
+  }
+
+  const handleMouseLeave = () => {
+    if (hasAutoCollapsed) setIsCollapsed(true)
+  }
+
   const dailyAnnouncements = {
     0: "Sunday Matinee: Archival readings in the Main Hall at 11:00.",
     1: "Notice: The main wing is closed on Mondays for archival cataloging.",
@@ -19,11 +42,20 @@ export default function Announcements() {
   const currentAnnouncement = dailyAnnouncements[dayOfWeek] || "Welcome to the library."
 
   return (
-    <div className={styles.container}>
-      <svg className={styles.icon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span className={styles.text}>{currentAnnouncement}</span>
+    <div 
+      className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className={styles.iconWrapper}>
+        <svg className={styles.icon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      
+      <div className={styles.content}>
+        <span className={styles.text}>{currentAnnouncement}</span>
+      </div>
     </div>
   )
 }
