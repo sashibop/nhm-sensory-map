@@ -1,0 +1,16 @@
+/* Add this to your global CSS file */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  
+  height: 100dvh; 
+  
+  overflow: hidden; 
+}
+
+/* Ensure padding/borders don't mathematically push elements outside the bounds */
+*, *::before, *::after {
+  box-sizing: border-box;
+}

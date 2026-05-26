@@ -1,0 +1,406 @@
+/* ========================================= */
+/* --- THE TRIGGER BUTTON (In WeekPicker) -- */
+/* ========================================= */
+
+.container {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translate(calc(100% + 16px), -50%);
+  z-index: 60;
+}
+
+/* ========================================= */
+/* --- THE TRIGGER BUTTON (Vertical Pill) -- */
+/* ========================================= */
+
+.triggerBtn {
+  width: 50px;
+  height: 75px; /* Matches your Announcement chiclet perfectly */
+  padding: 10px 4px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes text up and chevron down */
+  align-items: center;
+  
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.triggerBtn:hover, .triggerBtn.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* Text Formatting */
+.btnTextWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.btnMonth {
+  font-family: sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.btnYear {
+  font-family: sans-serif;
+  font-weight: 00;
+  font-size: 0.6rem;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+/* Subtle Chevron */
+.chevron {
+  width: 14px;
+  height: 14px;
+  opacity: 0.4; /* Much more subtle */
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.triggerBtn:hover .chevron, .triggerBtn.active .chevron {
+  opacity: 1;
+  transform: translateY(2px);
+}
+
+/* ========================================= */
+/* --- THE FULLSCREEN MODAL (Portal) ---     */
+/* ========================================= */
+
+/* Wraps the teleported content */
+.portalWrapper {
+  position: relative;
+  z-index: 9999; /* Ensures it sits above EVERYTHING else on your site */
+}
+
+/* The dark, blurry backdrop */
+.overlay {
+  position: fixed;
+  inset: 0; 
+  background: rgba(15, 23, 42, 0.75); /* Deep slate with 75% opacity */
+  backdrop-filter: blur(8px); 
+  animation: fadeIn 0.3s ease;
+}
+
+/* The Centered Calendar */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); 
+  
+  /* Size constraints */
+  width: 90vw;
+  max-width: 800px;
+  max-height: 90vh; 
+  overflow-y: auto; 
+  
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: 32px;
+  font-family: sans-serif;
+  
+  animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* --- MODAL HEADER --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.monthTitle {
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: #1e293b;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #ef4444;
+}
+
+/* --- THE CALENDAR GRID --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.weekdayHeader {
+  text-align: center;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 8px;
+}
+
+.blankCell {
+  /* Just an empty placeholder block */
+  min-height: 80px;
+}
+
+/* --- INDIVIDUAL DAY CELLS --- */
+.dayCell {
+  position: relative;
+  min-height: 80px; 
+  background: rgba(241, 245, 249, 0.4);
+  border: 2px solid transparent; 
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.dayCell:not(.past):hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.dayNumber {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ========================================= */
+/* --- DAY CELL STATES ---                   */
+/* ========================================= */
+
+/* 1. PAST DATES (Unclickable but readable) */
+.dayCell.past {
+  opacity: 0.5; /* Slightly faded so they look inactive, but still readable */
+  cursor: not-allowed;
+  background: transparent;
+}
+/* REMOVED the .dayNumber text-decoration: line-through */
+
+/* 2. TODAY'S DATE */
+.dayCell.today {
+  border-color: #3b82f6; 
+  background: rgba(59, 130, 246, 0.05);
+}
+.dayCell.today .dayNumber {
+  color: #2563eb;
+}
+
+/* 3. SELECTED DATE */
+.dayCell.selected {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+}
+.dayCell.selected .dayNumber {
+  color: white;
+}
+
+/* 4. DAYS WITH EVENTS */
+.hasEvent {
+  border-color: #fde047;
+  background: rgba(254, 240, 138, 0.2);
+}
+
+.eventLabel {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  margin-top: auto; 
+  color: #b45309; 
+  font-weight: 700;
+  width: 100%;
+}
+
+.dayCell.selected .eventLabel {
+  color: #fef08a; 
+}
+
+/* ========================================= */
+/* --- MOBILE RESPONSIVENESS ---             */
+/* ========================================= */
+@media (max-width: 850px), (max-height: 500px) {
+
+  /* Trigger Button in Flex Row */
+  .container {
+    position: relative;
+    grid-column: 3; /* Lock to the right */
+    grid-row: 1;
+    transform: none;
+    top: auto;
+    right: auto;
+  }
+  
+  .triggerBtn {
+    width: 100%;
+    height: 60px;
+    padding: 8px 4px;
+  }
+  
+  .btnMonth { font-size: 0.75rem; }
+  .btnYear { font-size: 0.55rem; }
+  .chevron { width: 12px; height: 12px; }
+  
+  /* --- SHRINK THE FULLSCREEN MODAL --- */
+  .modal {
+    padding: 12px; /* Shrunk from 32px */
+    width: 92vw;
+    border-radius: 12px;
+  }
+  
+  .header {
+    margin-bottom: 12px; /* Shrunk from 24px */
+  }
+
+  .monthTitle {
+    font-size: 1.3rem; /* Shrunk from 1.8rem */
+  }
+
+  .closeBtn {
+    font-size: 1.8rem;
+    padding: 0 4px;
+  }
+
+  .monthNav {
+    gap: 8px;
+  }
+
+  .navBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+
+  /* --- SHRINK THE GRID CELLS --- */
+  .grid { gap: 0px; }
+  
+  .weekdayHeader {
+    font-size: 0.55rem;
+    padding-bottom: 4px;
+    margin-bottom: 2px;
+  }
+
+  /* This is the key: Force the blocks to be much shorter */
+  .dayCell, .blankCell { 
+    min-height: 40px; /* Shrunk from 80px */
+  }
+  
+  .dayCell { 
+    padding: 2px 4px; 
+    border-radius: 6px; 
+  }
+  
+  .dayNumber { 
+    font-size: 0.7rem; /* Shrunk from 1.2rem */
+  }
+  
+  .eventLabel {
+    font-size: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .disclaimer {
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 0.7rem;
+  }
+}
+
+/* --- MONTH NAVIGATION --- */
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navBtn {
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #475569;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.navBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* --- THE DISCLAIMER --- */
+.disclaimer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disclaimerIcon {
+  background: #e2e8f0;
+  color: #475569;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: bold;
+}

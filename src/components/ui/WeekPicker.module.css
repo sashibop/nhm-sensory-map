@@ -1,10 +1,18 @@
-/* Container styles */
-.container {
+/* --- NEW MASTER WRAPPER --- */
+.wrapper {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  display: flex;
+  align-items: center;
+  z-index: 50; /* Ensures the whole block is above the 3D canvas */
+}
+
+/* --- UPDATED CONTAINER --- */
+.container {
+  position: relative; /* Removed absolute positioning, top, and left */
+  
   background: rgba(255, 255, 255, 0.9);
   padding: 10px 20px;
   border-radius: 12px;
@@ -56,4 +64,45 @@
 
 .dayButton.selected .date {
   font-weight: bold;
+}
+
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 850px), (max-height: 500px) {
+  .wrapper {
+    width: 100%;
+    /* THE FIX: Use Grid to lock the layout in place */
+    display: grid;
+    grid-template-columns: 44px 1fr 44px; 
+    gap: 6px;
+    align-items: center;
+  }
+
+  .container {
+    grid-column: 2; /* Lock to the center column */
+    grid-row: 1;
+    
+    padding: 6px 4px;
+    gap: 2px;
+    justify-content: space-around; 
+    border-radius: 10px;
+    display: flex; /* Keep the inner days as flex */
+  }
+
+  .dayButton {
+    padding: 6px 2px; 
+    min-width: 32px; 
+    border-radius: 6px;
+  }
+
+  .weekday { font-size: 0.65rem; }
+  .date { font-size: 1rem; margin-top: 1px; }
+}
+
+@media (max-width: 400px) {
+  .wrapper { gap: 4px; }
+  .container { padding: 4px 2px; }
+  .dayButton { min-width: 28px; }
+  .weekday { font-size: 0.55rem; }
+  .date { font-size: 0.85rem; }
 }

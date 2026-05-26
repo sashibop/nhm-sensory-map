@@ -9,25 +9,20 @@ export default function Announcements() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false)
 
-  // Auto-collapse after 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsCollapsed(true)
       setHasAutoCollapsed(true)
     }, 3000)
-
-    // Cleanup timer if component unmounts
     return () => clearTimeout(timer)
   }, [])
 
-  // Hover handlers (only active after the initial 10s collapse)
-  const handleMouseEnter = () => {
-    if (hasAutoCollapsed) setIsCollapsed(false)
-  }
+  // Desktop Hover Handlers
+  const handleMouseEnter = () => { if (hasAutoCollapsed) setIsCollapsed(false) }
+  const handleMouseLeave = () => { if (hasAutoCollapsed) setIsCollapsed(true) }
 
-  const handleMouseLeave = () => {
-    if (hasAutoCollapsed) setIsCollapsed(true)
-  }
+  // NEW: Mobile Tap Handler
+  const handleToggle = () => { if (hasAutoCollapsed) setIsCollapsed(!isCollapsed) }
 
   const dailyAnnouncements = {
     0: "Sunday Matinee: Archival readings in the Main Hall at 11:00.",
@@ -46,6 +41,7 @@ export default function Announcements() {
       className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleToggle} /* <-- ADDED TOUCH SUPPORT HERE */
     >
       <div className={styles.iconWrapper}>
         <svg className={styles.icon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

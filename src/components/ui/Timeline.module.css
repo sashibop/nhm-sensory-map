@@ -115,8 +115,6 @@
 .slider:active::-moz-range-thumb { transform: scale(1.2); }
 
 /* --- VISUAL TICKS & LABELS --- */
-
-/* --- VISUAL TICKS & LABELS --- */
 .ticksContainer {
   position: absolute;
   top: 13px; /* Aligns exactly with the center of the slider track */
@@ -198,4 +196,56 @@
 
 @keyframes pulse {
   to { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+}
+
+/* --- MOBILE RESPONSIVENESS (Shrink everything) --- */
+@media (max-width: 850px), (max-height: 500px) {
+    /* Shrink the main housing */
+  .container {
+    top: 105px;
+    width: 90vw;
+    padding: 8px 10px;
+    gap: 12px;
+    border-radius: 10px;
+  }
+
+  /* Shrink the Play/Pause Button */
+  .playBtn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .playBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Scale down the hour text (9:00, 10:00, etc) */
+  .label {
+    font-size: 0.65rem;
+    margin-top: 4px;
+  }
+
+  /* Scale down the LIVE/NOW marker */
+  .nowLabel {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+}
+
+/* For extremely small devices (older iPhones) */
+@media (max-width: 400px) {
+  .container {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+
+  .label {
+    font-size: 0.55rem;
+  }
+
+  /* Hide every other hour marker on tiny screens to prevent text collision */
+  .tickGroup:nth-child(even) .label {
+    display: none;
+  }
 }

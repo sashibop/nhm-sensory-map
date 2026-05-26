@@ -55,3 +55,55 @@
 .switch.active .thumb {
   transform: translateX(20px);
 }
+
+/* ========================================= */
+/* --- MOBILE & LANDSCAPE RESPONSIVENESS --- */
+/* ========================================= */
+
+@media (max-width: 850px), (max-height: 500px) {
+  .container {
+    bottom: 20px; /* Match the floor selector elevation */
+    right: 12px;
+    padding: 10px 12px;
+    gap: 10px;
+    min-width: 160px; /* Thinner container */
+    border-radius: 12px;
+  }
+
+  .row {
+    font-size: 0.8rem;
+  }
+
+  /* Shrink the Switch */
+  .switch {
+    width: 36px;
+    height: 20px;
+  }
+
+  /* Shrink the Thumb */
+  .thumb {
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Adjust the animation slide distance for the smaller track */
+  .switch.active .thumb {
+    transform: translateX(16px); 
+  }
+}
+
+/* For extremely small phones */
+@media (max-width: 400px) {
+  .container {
+    bottom: 12px;
+    right: 8px;
+    padding: 8px 10px;
+    min-width: 140px;
+  }
+  
+  .row {
+    font-size: 0.75rem;
+  }
+}

@@ -12,7 +12,6 @@ export default function App() {
       
       {/* 2D UI Layers */}
       <WeekPicker />
-      <Announcements />
       
       {/* New UI Controls */}
       <FloorSelector />
