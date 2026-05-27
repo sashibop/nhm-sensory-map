@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber' 
 import CrowdLayer from './layers/CrowdLayer'
+import NoiseLayer from './layers/NoiseLayer'
+import useAppStore from '../../store/useAppStore'
 import { Html } from '@react-three/drei'
 
 // --- DEBUG TOOL: WAYPOINT VISUALIZER ---
@@ -63,7 +65,9 @@ const DebugNodes = () => {
   )
 }
 
-export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
+export default function FloorOne({ isActive, focusRef }) { 
+  
+  const layers = useAppStore((state) => state.layers);
   
   // --- PRE-CALCULATE COLORS FOR HIGH PERFORMANCE ---
   const { materials, origColors, dullColors } = useMemo(() => {
@@ -82,6 +86,7 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       handrail: new THREE.MeshStandardMaterial({ color: '#94a3b8', metalness: 0.6, roughness: 0.4 }),
       benchWood: new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.8 }),
       benchMetal: new THREE.MeshStandardMaterial({ color: '#475569', metalness: 0.8 }),
+      exhibit: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.3, metalness: 0.6 }),
     }
 
     const orig = {}
@@ -181,14 +186,14 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
     </group>
   )
 
-  const Stairs = ({ x, z, width, steps = 6, stepDepth = 0.35, totalHeight = floorH, rot = 0 }) => {
+  const Stairs = ({ x, y, z, width, steps = 6, stepDepth = 0.35, totalHeight = floorH, rot = 0 }) => {
     const stepH = totalHeight / steps;
     const totalDepth = steps * stepDepth;
     const angle = Math.atan(totalHeight / totalDepth);
     const hyp = Math.hypot(totalDepth, totalHeight);
 
     return (
-      <group position={[x, 0, z]} rotation={[0, rot, 0]}>
+      <group position={[x, y, z]} rotation={[0, rot, 0]}>
         {/* Steps */}
         {Array.from({ length: steps }).map((_, i) => (
           <mesh key={i} position={[0, (i * stepH) + (stepH / 2), (i * stepDepth) - (totalDepth/2)]} receiveShadow castShadow>
@@ -226,10 +231,10 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       <WallWithGap x={0} z={1.5} length={3} gapPos={1.5} gapWidth={dwStd} />
       
       {/* Elevator Cabin Indicator */}
-      <mesh position={[0, floorH, 0.2]} castShadow>
+      {/* <mesh position={[0, floorH, 0.2]} castShadow>
         <boxGeometry args={[2.4, 0.1, 2.4]} />
         <primitive object={materials.elevatorCar} attach="material" />
-      </mesh>
+      </mesh> */}
       
       {/* Tactile indicator for elevator controls / boarding area */}
       <mesh position={[0, floorH+0.1, 2.2]} rotation={[-Math.PI/2, 0, 0]}>
@@ -278,7 +283,8 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
   return (
     <group>
 
-      <CrowdLayer targetFloor={1} />
+      {layers.crowd && <CrowdLayer targetFloor={1} />}
+      {layers.noise && <NoiseLayer targetFloor={1} />}
       {/* <DebugNodes /> */}
 
       {/* ========================================================= */}
@@ -300,30 +306,30 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
       {/* ========================================================= */}
       
       {/* Main Entrance Integration */}
-      <Stairs x={0} z={18.2} width={8} steps={6} stepDepth={0.35} rot={Math.PI} />
+      <Stairs x={0} y={0} z={18.2} width={8} steps={6} stepDepth={0.35} rot={Math.PI} />
       <AccessibleRamp x={-3.7} z={19} width={2.5} length={3.5} />
       
       {/* Rear Wing Exits */}
-      <Stairs x={-9.5} z={-9} width={10} steps={6} stepDepth={0.3} rot={Math.PI/2} />
-      <Stairs x={9.5} z={-9} width={10} steps={6} stepDepth={0.3} rot={-Math.PI/2} />
+      <Stairs x={-9.5} y={0} z={-9} width={10} steps={6} stepDepth={0.3} rot={Math.PI/2} />
+      <Stairs x={9.5} y={0} z={-9} width={10} steps={6} stepDepth={0.3} rot={-Math.PI/2} />
 
       {/* To Floor Two */}
-      <Stairs x={2.85} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
-      <Stairs x={-2.85} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
+      <Stairs x={2.85} y={floorH} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
+      <Stairs x={-2.85} y={floorH} z={-3.9} width={2} steps={15} stepDepth={0.27} totalHeight={1.5} rot={Math.PI} />
 
-      <Stairs x={-23} z={-26} width={3} steps={15} stepDepth={0.3} totalHeight={1.5} rot={Math.PI} />
+      <Stairs x={-23} y={floorH} z={-26} width={3} steps={15} stepDepth={0.3} totalHeight={1.5} rot={Math.PI} />
 
       {/* Rest / Relief Areas spaced appropriately in long corridors */}
       <RestAreaBench x={-8} z={16} rot={0} />
       <RestAreaBench x={12} z={16} rot={Math.PI/2} />
-      <RestAreaBench x={19.5} z={3} rot={Math.PI/2} />
-      <RestAreaBench x={19.5} z={-2} rot={Math.PI/2} />
+      <RestAreaBench x={26.5} z={3} rot={Math.PI/2} />
+      <RestAreaBench x={26.5} z={-2} rot={Math.PI/2} />
       <RestAreaBench x={19.5} z={-10} rot={Math.PI/2} />
       <RestAreaBench x={19.5} z={-18} rot={Math.PI/2} />
       <RestAreaBench x={19.5} z={-26} rot={Math.PI/2} />
       <RestAreaBench x={0.5} z={-11} rot={Math.PI} />
       <RestAreaBench x={-22} z={-29} rot={Math.PI} />
-      <RestAreaBench x={-26.3} z={12} rot={Math.PI/2} />
+      <RestAreaBench x={-26.3} z={9} rot={Math.PI/2} />
 
 
       {/* ========================================================= */}
@@ -410,6 +416,92 @@ export default function FloorOne({ isActive, focusRef }) { // <--- ADD PROPS
           </mesh>
         ))}
       </group>
+
+      {/* 6. STATIC EXHIBITS (Physical Geometry)*/}
+      {/* The Aviary (Right Deep Wing) */}
+      <mesh position={[25, floorH + 0.5, -27]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.5, 1.5, 1.0, 32]} />
+        <primitive object={materials.exhibit} attach="material" />
+      </mesh>
+
+      {/* The Waterfall Feature (Left Deep Wing) */}
+      <mesh position={[-23, floorH + 0.6, -18]} castShadow receiveShadow>
+        <boxGeometry args={[2, 1.2, 2]} />
+        <primitive object={materials.exhibit} attach="material" />
+      </mesh>
+
+      
+      {/* "Potassium & Hubris" (The Duct-Taped Banana) */}
+      <group position={[0, floorH, 5]}>
+        
+        {/* The pristine, pretentious gallery partition wall */}
+        <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+          <boxGeometry args={[3, 3, 0.4]} />
+          <meshStandardMaterial color="#fff" roughness={0.1} />
+        </mesh>
+
+        {/* --- THE ENTIRE BANANA GROUP --- */}
+        {/* Shifted slightly left (-0.15) and grouped so the tilt affects the tips too */}
+        <group position={[-0.30, 1.65, 0.22]} rotation={[0, 0, -Math.PI / 4]}>
+          
+          {/* Main Banana Body (Sliced Donut) */}
+          <mesh castShadow>
+            <torusGeometry args={[0.4, 0.08, 16, 32, Math.PI / 2.5]} />
+            <meshStandardMaterial color="#eab308" roughness={0.4} /> {/* Bright Yellow */}
+          </mesh>
+
+          {/* Distal Tip (The bottom brown point) */}
+          {/* Placed at the start of the torus arc and rotated to point down */}
+          <mesh position={[0.4, -0.06, 0]} rotation={[0, 0, Math.PI]} castShadow>
+            <coneGeometry args={[0.08, 0.15, 16]} />
+            <meshStandardMaterial color="#eab308" roughness={0.6} /> {/* Bruised Dark Yellow */}
+          </mesh>
+
+          {/* Stem Base (The top woody attachment) */}
+          {/* Calculated to sit exactly at the 72-degree end of the torus arc */}
+          <mesh position={[0.08, 0.40, 0]} rotation={[0, 0, 1.2]} castShadow>
+            <cylinderGeometry args={[0.03, 0.08, 0.20, 8]} />
+            <meshStandardMaterial color="#ca8a04" roughness={0.8} /> {/* Olive Green/Brown */}
+          </mesh>
+
+          <mesh position={[0.01, 0.42, -0.03]} rotation={[0, 0, 1.2]} castShadow>
+            <cylinderGeometry args={[0.05, 0.05, 0.15, 3]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.8} /> 
+          </mesh>
+        </group>
+
+        {/* The Duct Tape */}
+        {/* Tape sits at Z=0.3, perfectly pinning the banana (Z=0.22) to the wall */}
+        <mesh position={[0.0, 1.65, 0.3]} rotation={[0, 0, -Math.PI / 6]} castShadow>
+          <boxGeometry args={[0.8, 0.15, 0.02]} />
+          <meshStandardMaterial color="#94a3b8" metalness={0.2} roughness={0.7} /> {/* Silver Tape */}
+        </mesh>
+        
+        {/* The tiny, overly-serious museum plaque */}
+        <mesh position={[0.8, 0.8, 0.21]}>
+          <boxGeometry args={[0.3, 0.2, 0.02]} />
+          <meshStandardMaterial color="#1e293b" />
+        </mesh>
+
+      </group>
+      
+
+      {/* Kinetic Sculpture (Right Mid Room) */}
+      <mesh position={[20.5, floorH + 0.5, 0]} rotation={[Math.PI/2, 0, 0]} castShadow receiveShadow>
+        <torusGeometry args={[1, 0.3, 16, 32]} />
+        <primitive object={materials.exhibit} attach="material" />
+      </mesh>
+
+      {/* "Tangled Headphones: A Modern Tragedy" (Left Down Room) */}
+      <mesh 
+        position={[-25, floorH + 1.2, 15]} 
+        castShadow 
+        receiveShadow
+      >
+        {/* args: [radius, tube, tubularSegments, radialSegments] */}
+        <torusKnotGeometry args={[0.8, 0.25, 128, 16]} />
+        <primitive object={materials.exhibit} attach="material" />
+      </mesh>
 
     </group>
   )

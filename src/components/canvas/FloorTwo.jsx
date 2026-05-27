@@ -1,8 +1,11 @@
 import * as THREE from 'three'
 import { useMemo } from 'react'
-import CrowdLayer from './layers/CrowdLayer';
+import CrowdLayer from './layers/CrowdLayer'
+import NoiseLayer from './layers/NoiseLayer'
+import useAppStore from '../../store/useAppStore'
 
-export default function MuseumFloorPlan() {
+export default function FloorTwo() {
+  const layers = useAppStore((state) => state.layers)
   const materials = useMemo(() => ({
     floorBase: new THREE.MeshStandardMaterial({ color: '#f1f5f9', roughness: 0.9 }),
     floorCorridor: new THREE.MeshStandardMaterial({ color: '#f1f5f9', roughness: 0.8 }),
@@ -11,6 +14,7 @@ export default function MuseumFloorPlan() {
     wallExt: new THREE.MeshStandardMaterial({ color: '#334155', roughness: 1.0 }), 
     wallInt: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.9 }),
     stair: new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.7 }),
+    exhibit: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.3, metalness: 0.6 }),
     elevatorCar: new THREE.MeshStandardMaterial({ color: '#e2e8f0', metalness: 0.4, roughness: 0.2 }),
     column: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 0.8 }),
     ramp: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.9 }),
@@ -108,12 +112,6 @@ export default function MuseumFloorPlan() {
       <Wall x={1.5} z={0} w={intT} d={3} />
       <WallWithGap x={0} z={1.5} length={3} gapPos={1.5} gapWidth={dwStd} />
       
-      {/* Elevator Cabin Indicator */}
-      <mesh position={[0, floorH, 0.2]} castShadow>
-        <boxGeometry args={[2.4, 0.1, 2.4]} />
-        <primitive object={materials.elevatorCar} attach="material" />
-      </mesh>
-      
       {/* Tactile indicator for elevator controls / boarding area */}
       <mesh position={[0, floorH+0.1, 2.2]} rotation={[-Math.PI/2, 0, 0]}>
         <planeGeometry args={[1.5, 1.0]} />
@@ -161,8 +159,8 @@ export default function MuseumFloorPlan() {
   return (
     <group>
 
-      <CrowdLayer targetFloor={2} />
-
+      {layers.crowd && <CrowdLayer targetFloor={2} />}
+      {layers.noise && <NoiseLayer targetFloor={2} />}
 
       {/* ========================================================= */}
       {/* 1. WALKABLE SURFACES & FOUNDATION                           */}
@@ -276,6 +274,43 @@ export default function MuseumFloorPlan() {
           </mesh>
         ))}
       </group>
+
+      {/* "The Stack Overflow" (Near the Reading Lounge) */}
+      <group position={[23.5, floorH, -27]}>
+        {/* The Pedestal */}
+        <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+          <cylinderGeometry args={[1.2, 1.2, 1, 32]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+        
+        {/* The Precarious Stack */}
+        <mesh position={[0.1, 1.15, 0.1]} rotation={[0, 0.2, 0.1]} castShadow receiveShadow>
+          <boxGeometry args={[1.5, 0.3, 1.2]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+        <mesh position={[-0.2, 1.45, -0.1]} rotation={[0.1, -0.3, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.4, 0.25, 1.3]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+        <mesh position={[0.3, 1.75, 0.2]} rotation={[-0.1, 0.5, 0.2]} castShadow receiveShadow>
+          <boxGeometry args={[1.6, 0.35, 1.1]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+        <mesh position={[-0.4, 2.1, -0.3]} rotation={[0.2, -0.6, -0.1]} castShadow receiveShadow>
+          <boxGeometry args={[1.3, 0.4, 1.4]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+        <mesh position={[0.5, 2.45, 0.4]} rotation={[-0.2, 0.8, 0.3]} castShadow receiveShadow>
+          <boxGeometry args={[1.2, 0.2, 1.2]} />
+          <primitive object={materials.exhibit} attach="material" />
+        </mesh>
+      </group>
+
+      {/* Interactive Video Wall (Lobby Left) */}
+      <mesh position={[26, floorH + 1, 11]} rotation={[0, -Math.PI / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 2, 0.2]} />
+        <primitive object={materials.exhibit} attach="material" />
+      </mesh>
 
     </group>
   )

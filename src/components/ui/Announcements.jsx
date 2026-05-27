@@ -18,7 +18,6 @@ export default function Announcements() {
   }, [])
 
   // Desktop Hover Handlers
-  const handleMouseEnter = () => { if (hasAutoCollapsed) setIsCollapsed(false) }
   const handleMouseLeave = () => { if (hasAutoCollapsed) setIsCollapsed(true) }
 
   // NEW: Mobile Tap Handler
@@ -39,7 +38,6 @@ export default function Announcements() {
   return (
     <div 
       className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleToggle} /* <-- ADDED TOUCH SUPPORT HERE */
     >

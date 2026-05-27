@@ -11,6 +11,7 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
     // Personas dictate entry staggering and overall speed variance
     let timeOffset = 0;
     let speedMod = 1.0;
+    let baseNoise = 29;
 
     if (type === 'tour') {
       timeOffset = Math.random() * 0.1; // Tours clump tightly (within 6 minutes)
@@ -61,6 +62,8 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
       id: `${idPrefix}_${i}`,
       daysVisiting: EVERYDAY,
       floor: floor,
+      type: type,
+      baseNoise: baseNoise,
       path: path
     });
   }
@@ -78,7 +81,7 @@ const N = {
   // Left Wing (Volcano, Ammonite exhibits)
   // Removed dwell times from gates/doors so they walk straight through
   LeftWingGate:   { x: -23, z: 7, scatter: 1.5}, 
-  LeftDeep:       { x: -23, z: -18, scatter: 4.0, dwell: 0.2 }, 
+  LeftDeep:       { x: -23, z: -12, scatter: 4.0, dwell: 0.2 }, 
   
   // Right Wing (Sharks, Birds exhibits)
   RightWingGate:  { x: 23, z: 7, scatter: 1.5},
@@ -90,7 +93,7 @@ const N = {
   LeftLift:       { x: -6.7, z: 6, scatter: 1.0, dwell: 0.2 },
  
   // Additional Transitional Spaces
-  LeftDown:       { x: -23, z: 15, scatter: 1.5},  
+  LeftDown:       { x: -22, z: 12, scatter: 1.5},  
   RightDown:      { x: 23, z: 16, scatter: 1.5},  
   RightMidDoor:   { x: 23, z: -6, scatter: 1.5},  
   RightMidRoom:   { x: 25, z: 0, scatter: 2.5, dwell: 0.3 }, 
