@@ -7,23 +7,24 @@ export default function FloorSelector() {
 
   return (
     <div className={styles.container}>
-      {/* 1. OG is listed first so it renders on top */}
-      <button 
-        className={`${styles.floorBtn} ${activeFloor === 2 ? styles.active : ''}`}
-        onClick={() => setActiveFloor(2)}
-        title="1. Obergeschoss"
-      >
-        2F
-      </button>
-      
-      {/* EG is listed second so it renders on the bottom */}
-      <button 
-        className={`${styles.floorBtn} ${activeFloor === 1 ? styles.active : ''}`}
-        onClick={() => setActiveFloor(1)}
-        title="Erdgeschoss"
-      >
-        1F
-      </button>
+      <div className={styles.heading}>Switch Floors</div>
+      <div className={styles.list}>
+        <button 
+          className={`${styles.row} ${activeFloor === 2 ? styles.active : ''}`}
+          onClick={() => setActiveFloor(2)}
+        >
+          <div className={styles.indicator} />
+          <span className={styles.label}>2F / 1. OG</span>
+        </button>
+        
+        <button 
+          className={`${styles.row} ${activeFloor === 1 ? styles.active : ''}`}
+          onClick={() => setActiveFloor(1)}
+        >
+          <div className={styles.indicator} />
+          <span className={styles.label}>1F / EG</span>
+        </button>
+      </div>
     </div>
   )
 }

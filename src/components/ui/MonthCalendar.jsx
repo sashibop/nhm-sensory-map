@@ -59,40 +59,40 @@ export default function MonthCalendar() {
 
   return (
     <div className={styles.container}>
-      {/* 1. THE VERTICAL TRIGGER BUTTON */}
+      {/* 1. Refined GHOST ACTION PILL (Trigger Button) */}
+      {/* 1. GHOST TYPOGRAPHIC TRIGGER */}
       <button 
         className={`${styles.triggerBtn} ${isOpen ? styles.active : ''}`}
         onClick={() => setIsOpen(true)}
         aria-label="Open month overview"
       >
-        <div className={styles.btnTextWrapper}>
-          <span className={styles.btnMonth}>{displayMonth}</span>
-          <span className={styles.btnYear}>{displayYear}</span>
-        </div>
-        
-        {/* Subtle, smaller Chevron Down */}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.chevron}>
+        <span className={styles.btnMonth}>{displayMonth}</span>
+        <svg className={styles.chevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
 
-      {/* 2. THE FULLSCREEN MODAL (Portal) ... (keep exactly as is) */}
-
+      {/* 2. THE SPATIAL MODAL PORTAL */}
       {isOpen && createPortal(
         <div className={styles.portalWrapper}>
           <div className={styles.overlay} onClick={() => setIsOpen(false)} />
           <div className={styles.modal}>
             
             <div className={styles.header}>
-              {/* NEW: Month Navigation Controls */}
               <div className={styles.monthNav}>
-                <button onClick={handlePrevMonth} className={styles.navBtn}>←</button>
+                <button onClick={handlePrevMonth} className={styles.navBtn}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
                 <div className={styles.monthTitle}>
                   {viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </div>
-                <button onClick={handleNextMonth} className={styles.navBtn}>→</button>
+                <button onClick={handleNextMonth} className={styles.navBtn}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
               </div>
-              <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>×</button>
+              <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>
+                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
             </div>
             
             <div className={styles.grid}>
@@ -103,7 +103,6 @@ export default function MonthCalendar() {
                 const isPast = dateObj < todayDateOnly
                 const isToday = dateObj.getTime() === todayDateOnly.getTime()
                 const isSelected = dateObj.toDateString() === selectedDate.toDateString()
-                // Check if the current view is the current month before assigning static mock events
                 const isCurrentMonthRealTime = currentMonth === today.getMonth() && currentYear === today.getFullYear()
                 const eventText = isCurrentMonthRealTime ? monthlyEvents[day] : null
 
@@ -117,21 +116,26 @@ export default function MonthCalendar() {
                       ${isSelected ? styles.selected : ''} 
                       ${isToday ? styles.today : ''} 
                       ${isPast ? styles.past : ''}
-                      ${eventText ? styles.hasEvent : ''}
                     `}
                   >
                     <span className={styles.dayNumber}>{day}</span>
-                    {/* Fixed: Event renders even if it is in the past */}
-                    {eventText && <span className={styles.eventLabel}>{eventText}</span>}
+                    
+                    {/* Ghost UI Micro-Dot for Events */}
+                    {eventText && (
+                      <div className={styles.eventIndicator}>
+                        <div className={styles.eventDot} />
+                        <span className={styles.eventLabel}>{eventText}</span>
+                      </div>
+                    )}
                   </button>
                 )
               })}
             </div>
             
-            {/* NEW: The Predictive Disclaimer */}
             <div className={styles.disclaimer}>
               <span className={styles.disclaimerIcon}>ℹ</span>
-              Crowd level predictions are based on historical data and ticket sales. Accuracy may vary for dates beyond 30 days.
+                Predictive data visualization. <br></br>
+                Real-world conditions may vary.
             </div>
 
           </div>

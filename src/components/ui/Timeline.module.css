@@ -1,3 +1,6 @@
+/* ========================================= */
+/* 1. INVISIBLE CONTAINER                      */
+/* ========================================= */
 .container {
   position: absolute;
   top: 120px;
@@ -5,119 +8,211 @@
   transform: translateX(-50%);
   z-index: 10;
   
-  background: rgba(255, 255, 255, 0.9);
-  padding: 16px 24px;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  
+  /* Layout only. No glass, no borders, no resting shadows. */
   display: flex;
   align-items: center;
   gap: 24px;
   width: 540px; 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  transition: all 0.3s ease;
+  
+  /* Let clicks pass through the empty space between the play button and track */
+  pointer-events: none; 
 }
 
-/* Play Button with Disabled State for Live Mode */
+/* ========================================= */
+/* 2. GHOST RING PLAY BUTTON                 */
+/* ========================================= */
 .playBtn {
-  background: #f1f5f9;
-  color: #0f172a;
-  border: 1px solid #e2e8f0;
-  border-radius: 50%;
-  width: 44px; /* Accessible touch target size */
+  pointer-events: auto; 
+  background: transparent; 
+  
+  /* DEFAULT STATE (PAUSED): Ghost Gray */
+  border: none;
+  border-radius: 50%; 
+  width: 44px;
   height: 44px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(9, 9, 11, 0.05);
+  
+  color: var(--text-muted); 
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.playBtn:hover:not(:disabled) { 
-  background: #e2e8f0; 
-  transform: scale(1.05);
-}
 .playBtn:active:not(:disabled) { 
-  transform: scale(0.95);
+  transform: translateY(1px);
 }
+
 .playBtn:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-/* Track Layout */
+/* ========================================= */
+/* PLAY & PAUSE HOVER PHYSICS                */
+/* ========================================= */
+
+/* 1. HOVER WHEN PAUSED -> Turns Blue (Invites user to Play) */
+.playBtn:not(.isPlaying):hover:not(:disabled) { 
+  color: var(--color-primary); 
+  border-color: var(--color-primary); 
+  
+  transform: translateY(-2px); 
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12)); 
+  background: rgba(255, 255, 255, 0.4); 
+  backdrop-filter: blur(4px);
+}
+
+/* 2. DEFAULT WHEN PLAYING -> Rests at Blue */
+.playBtn.isPlaying {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 3. HOVER WHEN PLAYING -> Turns Gray (Invites user to Pause) */
+.playBtn.isPlaying:hover {
+  color: var(--text-muted);
+  border-color: var(--text-muted);
+  
+  transform: translateY(-2px); 
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12)); 
+  background: rgba(255, 255, 255, 0.4); 
+  backdrop-filter: blur(4px);
+  box-shadow: none; /* Strips away any glowing auras */
+}
+
+/* ========================================= */
+/* ICON OPTICAL ALIGNMENT                    */
+/* ========================================= */
+.playBtn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor; 
+  transition: var(--transition-fast);
+}
+
+/* Optically centers the play triangle */
+.playBtn:not(.isPlaying) svg {
+  transform: translateX(1px);
+}
+
+/* ========================================= */
+/* 3. THE SLIDER TRACK & MICRO-INDICATOR     */
+/* ========================================= */
 .trackWrapper {
   position: relative;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 12px 0 24px 0;
+  pointer-events: auto; /* Entire track area is clickable */
 }
 
-/* --- THE CUSTOM SLIDER --- */
-/* --- THE CUSTOM SLIDER --- */
 .slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 8px;
-  border-radius: 4px;
+  height: 4px; /* Ultra-thin minimalist track */
+  border-radius: var(--radius-pill);
   
-  /* Apply the gradient directly to the input background */
-  background: linear-gradient(to right, #3b82f6 var(--progress), #e2e8f0 var(--progress));
+  /* DEFAULT STATE (PAUSED): Ghost Gray */
+  background: linear-gradient(to right, var(--text-muted) var(--progress), rgba(161, 161, 170, 0.3) var(--progress));
   
   outline: none;
   z-index: 2;
   cursor: grab;
   margin: 0;
   position: relative;
-  transition: background 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: var(--transition-fast);
 }
 
 .slider:active { cursor: grabbing; }
-.slider:disabled { cursor: default; }
 
-/* Change fill color to green when Live Mode is active */
-.isLive .slider {
-  background: linear-gradient(to right, #10b981 var(--progress), #e2e8f0 var(--progress));
-}
-
-/* Custom Thumb (The Handle) */
+/* The Micro-Dot Thumb (Default Paused State) */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: white;
-  border: 2px solid #3b82f6;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: border-color 0.3s ease, transform 0.1s;
+  background: var(--text-muted); /* Ghost Gray */
+  box-shadow: 0 0 8px rgba(113, 113, 122, 0.4); /* Subdued muted glow */
+  transition: var(--transition-fast);
 }
 
 .slider::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: white;
-  border: 2px solid #3b82f6;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: border-color 0.3s ease, transform 0.1s;
+  background: var(--text-muted); /* Ghost Gray */
+  border: none;
+  box-shadow: 0 0 8px rgba(113, 113, 122, 0.4);
+  transition: var(--transition-fast);
 }
 
-.isLive .slider::-webkit-slider-thumb { border-color: #10b981; }
-.isLive .slider::-moz-range-thumb { border-color: #10b981; }
+/* ========================================= */
+/* PLAYING STATE (Cobalt Blue)               */
+/* ========================================= */
+.isPlaying .slider {
+  background: linear-gradient(to right, var(--color-primary) var(--progress), rgba(161, 161, 170, 0.3) var(--progress));
+}
 
-.slider:active::-webkit-slider-thumb { transform: scale(1.2); }
-.slider:active::-moz-range-thumb { transform: scale(1.2); }
+.isPlaying .slider::-webkit-slider-thumb {
+  background: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
 
-/* --- VISUAL TICKS & LABELS --- */
+.isPlaying .slider::-moz-range-thumb {
+  background: var(--color-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ========================================= */
+/* LIVE STATE (Neon Teal - Overrides Playing)*/
+/* ========================================= */
+.isLive .slider {
+  background: linear-gradient(to right, var(--color-live) var(--progress), rgba(161, 161, 170, 0.3) var(--progress));
+}
+
+.isLive .slider::-webkit-slider-thumb { 
+  background: var(--color-live); 
+  box-shadow: 0 0 10px var(--color-live);
+}
+.isLive .slider::-moz-range-thumb { 
+  background: var(--color-live); 
+  box-shadow: 0 0 10px var(--color-live);
+}
+
+/* ========================================= */
+/* HOVER & ACTIVE (DRAGGING) STATES          */
+/* ========================================= */
+
+/* Slight expansion when hovering over the track */
+.slider:hover::-webkit-slider-thumb { transform: scale(1.2); }
+.slider:hover::-moz-range-thumb { transform: scale(1.2); }
+
+/* Massive expansion and glow when actively dragging */
+.slider:active::-webkit-slider-thumb { 
+  transform: scale(1.8); 
+  /* Ignites to primary blue when physically grabbed, even if paused */
+  background: var(--color-primary);
+  box-shadow: 0 0 16px var(--color-primary); 
+}
+.slider:active::-moz-range-thumb { 
+  transform: scale(1.8); 
+  background: var(--color-primary);
+  box-shadow: 0 0 16px var(--color-primary); 
+}
+
+/* ========================================= */
+/* 4. VISUAL TICKS & GHOST LABELS            */
+/* ========================================= */
 .ticksContainer {
   position: absolute;
-  top: 13px; /* Aligns exactly with the center of the slider track */
+  top: 12px; /* Center aligned with the 4px track */
   left: 0;
   right: 0;
   pointer-events: none;
@@ -128,124 +223,111 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateX(-50%); /* Centers the group exactly on its calculated left % */
+  transform: translateX(-50%);
 }
 
 .tick {
   width: 2px;
-  height: 6px;
-  background-color: rgba(255, 255, 255, 0.9);
+  height: 4px; /* Shorter, minimalist tick */
+  background-color: var(--text-faint); /* Very subtle marker */
   border-radius: 1px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Helps white ticks pop on light backgrounds */
 }
 
 .label {
-  margin-top: 14px; /* Pushes the text neatly below the slider */
+  margin-top: 14px;
   font-size: 0.75rem;
-  color: #64748b;
   font-weight: 500;
+  color: var(--text-muted);
+  /* Halo to protect readability over 3D walls */
+  filter: var(--text-halo);
 }
 
-/* --- NOW / LIVE MARKER --- */
+/* ========================================= */
+/* 5. RAW TYPOGRAPHY NOW/LIVE MARKER         */
+/* ========================================= */
 .nowMarker {
   position: absolute;
-  top: -30px; /* Lifted slightly to avoid crowding the thumb */
+  top: -26px;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
   z-index: 2;
-  background: none;
+  
+  /* Invisible Hit Area */
+  background: transparent;
   border: none;
-  padding: 4px; /* Larger invisible hit area for accessibility */
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px 8px;
+  pointer-events: auto;
+  
+  /* Alpha-tracing lift */
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: var(--transition-fast);
 }
 
-.nowMarker:hover { transform: translateX(-50%) translateY(-2px); }
+.nowMarker:hover { 
+  transform: translateX(-50%) translateY(-2px); 
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12));
+}
+
 .nowMarker:active { transform: translateX(-50%) translateY(1px); }
 
+/* Stripped the pill background, using pure typography */
 .nowLabel {
-  background-color: #ef4444;
-  color: white;
+  color: var(--color-danger);
   font-size: 0.7rem;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
-  transition: background-color 0.3s;
+  letter-spacing: 1px;
+  transition: var(--transition-fast);
 }
 
 .nowLine {
   width: 2px;
-  height: 16px;
-  background-color: #ef4444;
+  height: 12px;
+  margin-top: 2px;
+  background-color: var(--color-danger);
   border-radius: 1px;
-  transition: background-color 0.3s;
+  transition: var(--transition-fast);
 }
 
 /* LIVE ACTIVE STATE */
 .liveActive .nowLabel {
-  background-color: #10b981;
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+  color: var(--color-live);
+  text-shadow: 0 0 10px rgba(13, 148, 136, 0.5); /* Glowing text */
 }
-.liveActive .nowLine { background-color: #10b981; }
-
-@keyframes pulse {
-  to { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+.liveActive .nowLine { 
+  background-color: var(--color-live); 
+  box-shadow: 0 0 8px rgba(13, 148, 136, 0.5);
 }
 
-/* --- MOBILE RESPONSIVENESS (Shrink everything) --- */
+/* ========================================= */
+/* 6. MOBILE RESPONSIVENESS                  */
+/* ========================================= */
 @media (max-width: 850px), (max-height: 500px) {
-    /* Shrink the main housing */
   .container {
-    top: 105px;
+    top: 86px;
     width: 90vw;
-    padding: 8px 10px;
     gap: 12px;
-    border-radius: 10px;
   }
 
-  /* Shrink the Play/Pause Button */
   .playBtn {
     width: 32px;
     height: 32px;
   }
   
   .playBtn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 
-  /* Scale down the hour text (9:00, 10:00, etc) */
-  .label {
-    font-size: 0.65rem;
-    margin-top: 4px;
-  }
-
-  /* Scale down the LIVE/NOW marker */
-  .nowLabel {
-    font-size: 0.6rem;
-    padding: 2px 6px;
-  }
+  .label { font-size: 0.65rem; margin-top: 10px; }
+  .nowLabel { font-size: 0.6rem; }
 }
 
-/* For extremely small devices (older iPhones) */
 @media (max-width: 400px) {
-  .container {
-    padding: 6px 8px;
-    gap: 8px;
-  }
-
-  .label {
-    font-size: 0.55rem;
-  }
-
-  /* Hide every other hour marker on tiny screens to prevent text collision */
-  .tickGroup:nth-child(even) .label {
-    display: none;
-  }
+  .container { gap: 8px; }
+  .label { font-size: 0.55rem; }
+  .tickGroup:nth-child(even) .label { display: none; }
 }

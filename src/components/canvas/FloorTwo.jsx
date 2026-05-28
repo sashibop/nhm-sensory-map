@@ -165,16 +165,16 @@ export default function FloorTwo() {
       {/* ========================================================= */}
       {/* 1. WALKABLE SURFACES & FOUNDATION                           */}
       {/* ========================================================= */}
-      
+      {/*       
       <Floor x={0} z={12} w={56} d={12} mat={materials.floorCorridor} /> 
       <Floor x={0} z={-4} w={18} d={20} mat={materials.floorCorridor} /> 
       <Floor x={-23} z={-8} w={10} d={50} /> 
-      <Floor x={23} z={-8} w={10} d={50} /> 
-      
+      <Floor x={23} z={-8} w={10} d={50} />  */}
+{/*       
       <mesh position={[0, floorH/2, -14]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <circleGeometry args={[9, 32, 0, Math.PI]} />
         <primitive object={materials.floorBase} attach="material" />
-      </mesh>
+      </mesh> */}
 
       {/* ========================================================= */}
       {/* 2. ACCESSIBILITY ENTRANCE, CIRCULATION, & REST AREAS        */}

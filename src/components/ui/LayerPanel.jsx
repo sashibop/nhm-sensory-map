@@ -6,27 +6,28 @@ export default function LayerPanel() {
   const toggleLayer = useAppStore((state) => state.toggleLayer)
 
   const layerOptions = [
-    { id: 'crowd', label: 'Crowd Level' },
-    { id: 'noise', label: 'Noise Level' },
+    { id: 'crowd', label: 'Crowd' },
+    { id: 'noise', label: 'Noise' },
     { id: 'brightness', label: 'Brightness' },
     { id: 'dimensions', label: 'Dimensions' },
   ]
 
   return (
     <div className={styles.container}>
-      <h3 style={{margin: '0 0 8px 0', fontSize: '0.85rem', color: '#64748b', textTransform: 'uppercase'}}>Display Layers</h3>
-      {layerOptions.map((option) => (
-        // Wrapping the whole row in a div with onClick makes it user-friendly
-        <div key={option.id} className={styles.row} onClick={() => toggleLayer(option.id)}>
-          <span>{option.label}</span>
-          
-          {/* The visual toggle switch */}
-          <div className={`${styles.switch} ${layers[option.id] ? styles.active : ''}`}>
-            <div className={styles.thumb} />
+      <div className={styles.heading}>Display Layers</div>
+      
+      <div className={styles.list}>
+        {layerOptions.map((option) => (
+          <div 
+            key={option.id} 
+            className={`${styles.row} ${layers[option.id] ? styles.active : ''}`} 
+            onClick={() => toggleLayer(option.id)}
+          >
+            <span className={styles.label}>{option.label}</span>
+            <div className={styles.indicator} />
           </div>
-          
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

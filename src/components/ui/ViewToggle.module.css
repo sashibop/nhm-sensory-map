@@ -1,0 +1,139 @@
+/* ========================================= */
+/* 1. CONTAINER & PLACEMENT                  */
+/* ========================================= */
+.container {
+  position: absolute;
+  top: 30px; 
+  left: 40px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Pegged to the left */
+  gap: 12px;
+  pointer-events: none;
+}
+
+/* ========================================= */
+/* 2. BASE GHOST UI                          */
+/* ========================================= */
+.heading {
+  margin-bottom: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  pointer-events: auto;
+  cursor: default;
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9));
+}
+
+.mobileIcon { 
+  display: none; 
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.row {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12));
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.row:hover .label { color: var(--text-dark); }
+.row.active .label {
+  color: var(--text-dark);
+  font-weight: 400;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-faint);
+  opacity: 0.3;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:hover .indicator { opacity: 0.6; }
+.row.active .indicator {
+  opacity: 1;
+  background-color: var(--color-primary);
+  transform: scale(1.3);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ========================================= */
+/* 3. MOBILE HUD CRUNCH RESPONSIVENESS       */
+/* ========================================= */
+@media (max-width: 850px), (max-height: 500px) {
+  .container { 
+    top: 135px; 
+    left: 16px; 
+    gap: 8px; 
+  }
+  
+  /* Swap Text for Icon */
+  .desktopText { display: none; }
+  .mobileIcon { 
+    display: block; 
+    color: var(--text-muted); 
+    transition: color 0.2s ease;
+  }
+  .heading:hover .mobileIcon { color: var(--text-dark); }
+  .heading { letter-spacing: normal; margin-bottom: 0; padding: 4px; }
+  
+  /* --- MOBILE ACCORDION LOGIC --- */
+  .list { 
+    gap: 6px; 
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .list.mobileOpen {
+    max-height: 120px; 
+    opacity: 1;
+    pointer-events: auto;
+    margin-top: 4px;
+    
+    /* Subtle frosted glass to protect readability over the model */
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    padding: 12px;
+    border-radius: var(--radius-md, 12px);
+    box-shadow: 0 8px 24px rgba(9, 9, 11, 0.08);
+  }
+  
+  /* Shrink hitboxes */
+  .row { gap: 8px; }
+  .label { font-size: 0.85rem; }
+  .indicator { width: 5px; height: 5px; }
+}

@@ -9,6 +9,7 @@ export default function Announcements() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false)
 
+  // Initial 3-second auto-collapse
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsCollapsed(true)
@@ -17,10 +18,7 @@ export default function Announcements() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Desktop Hover Handlers
   const handleMouseLeave = () => { if (hasAutoCollapsed) setIsCollapsed(true) }
-
-  // NEW: Mobile Tap Handler
   const handleToggle = () => { if (hasAutoCollapsed) setIsCollapsed(!isCollapsed) }
 
   const dailyAnnouncements = {
@@ -36,20 +34,26 @@ export default function Announcements() {
   const currentAnnouncement = dailyAnnouncements[dayOfWeek] || "Welcome to the library."
 
   return (
-    <div 
-      className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleToggle} /* <-- ADDED TOUCH SUPPORT HERE */
-    >
-      <div className={styles.iconWrapper}>
-        <svg className={styles.icon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-      </div>
+    // 1. Invisible spacer that reserves the slot in the WeekPicker row
+    <div className={styles.wrapper}>
       
-      <div className={styles.content}>
-        <span className={styles.text}>{currentAnnouncement}</span>
+      {/* 2. The dynamically expanding spatial plate */}
+      <div 
+        className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleToggle}
+      >
+        <div className={styles.iconWrapper}>
+          <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        
+        <div className={styles.content}>
+          <span className={styles.text}>{currentAnnouncement}</span>
+        </div>
       </div>
+
     </div>
   )
 }

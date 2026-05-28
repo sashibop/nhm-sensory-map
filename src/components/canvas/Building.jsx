@@ -27,7 +27,6 @@ export default function Building() {
     }
 
     if (floor1Ref.current && floor2Ref.current) {
-      // Use your preferred 80 distance here
       const t1Y = activeFloor === 1 ? 0 : -100
       const t2Y = activeFloor === 2 ? 0 : 100
       const t1F = activeFloor === 1 ? 1 : 0

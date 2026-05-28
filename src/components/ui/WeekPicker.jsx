@@ -7,19 +7,15 @@ export default function WeekPicker() {
   const selectedDate = useAppStore((state) => state.selectedDate)
   const setSelectedDate = useAppStore((state) => state.setSelectedDate)
   
-  // --- THE SYNC LOGIC ---
-  // Find the Monday of whatever week the selectedDate belongs to
   const getStartOfWeek = (date) => {
     const d = new Date(date)
     const day = d.getDay()
-    // Shift so Monday is the start of the week (if Sunday (0), go back 6 days)
     const diff = d.getDate() - day + (day === 0 ? -6 : 1) 
     return new Date(d.setDate(diff))
   }
 
   const startOfWeek = getStartOfWeek(selectedDate)
   
-  // Generate the 7 days based on that calculated Monday
   const week = Array.from({ length: 7 }).map((_, i) => {
     const date = new Date(startOfWeek)
     date.setDate(startOfWeek.getDate() + i)
@@ -28,9 +24,13 @@ export default function WeekPicker() {
 
   return (
     <div className={styles.wrapper}>
-      <Announcements />
+      {/* 1. The Month Breadcrumb Trigger */}
       <MonthCalendar />
+      
+      {/* Structural Divider */}
+      <div className={styles.divider} />
 
+      {/* 2. The Days of the Week */}
       <div className={styles.container}>
         {week.map((date, index) => {
           const isSelected = date.toDateString() === selectedDate.toDateString()
@@ -50,6 +50,12 @@ export default function WeekPicker() {
           )
         })}
       </div>
+
+      {/* Structural Divider */}
+      <div className={styles.divider} />
+
+      {/* 3. The Announcements (Moved to Right) */}
+      <Announcements />
     </div>
   )
 }

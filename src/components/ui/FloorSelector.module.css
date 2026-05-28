@@ -1,87 +1,108 @@
 .container {
   position: absolute;
   bottom: 40px;
-  left: 20px;
+  left: 40px; /* Moved slightly out to balance the right-side LayersPanel */
   z-index: 10;
-  
-  background: rgba(255, 255, 255, 0.85);
-  padding: 8px;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  
-  /* Stack buttons vertically */
   display: flex;
-  flex-direction: column; 
-  gap: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  flex-direction: column;
+  align-items: flex-start; /* Aligned left to match anchor point */
+  gap: 12px;
+  pointer-events: none;
 }
 
-.floorBtn {
+.heading {
+  margin-bottom: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: default;
+  pointer-events: auto;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.row {
+  pointer-events: auto;
   background: transparent;
   border: none;
-  padding: 14px 16px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-width: 60px;
-}
-
-.floorBtn:hover:not(.active) {
-  background: rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
-}
-
-.floorBtn:active:not(.active) {
-  transform: translateY(1px);
-}
-
-/* Active Floor Highlight */
-.floorBtn.active {
-  background: #3b82f6;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
-
-/* ========================================= */
-/* --- MOBILE & LANDSCAPE RESPONSIVENESS --- */
-/* ========================================= */
-
-@media (max-width: 850px), (max-height: 500px) {
-  .container {
-    bottom: 20px; /* Tuck it closer to the bottom edge */
-    left: 12px;
-    padding: 6px;
-    gap: 4px;
-    border-radius: 10px;
-  }
-
-  .floorBtn {
-    padding: 10px 12px;
-    min-width: 44px; /* Standard mobile touch target size */
-    font-size: 0.85rem;
-    border-radius: 8px;
-  }
-}
-
-/* For extremely small phones */
-@media (max-width: 400px) {
-  .container {
-    bottom: 12px;
-    left: 8px;
-    padding: 4px;
-  }
+  gap: 10px;
+  cursor: pointer;
   
-  .floorBtn {
-    padding: 8px 10px;
-    min-width: 38px;
-    font-size: 0.75rem;
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12));
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.row:hover .label { color: var(--text-dark); }
+.row.active .label {
+  color: var(--text-dark);
+  font-weight: 400;
+}
+
+/* --- THE MICRO-DOT INDICATOR (Mirrors LayersPanel) --- */
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  opacity: 0.3;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:hover .indicator { opacity: 0.6; }
+
+.row.active .indicator {
+  opacity: 1;
+  background-color: var(--color-primary);
+  transform: scale(1.3);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ========================================= */
+/* --- MOBILE RESPONSIVENESS ---             */
+/* ========================================= */
+@media (max-width: 850px), (max-height: 500px) {
+  .container { 
+    bottom: 20px; 
+    left: 16px; 
+    gap: 8px; 
+  }
+  .heading { 
+    font-size: 0.55rem; 
+    letter-spacing: 1.5px; 
+  }
+  .list { 
+    gap: 6px; 
+  }
+  .row { 
+    gap: 8px; 
+  }
+  .label { 
+    font-size: 0.85rem; 
+  }
+  .indicator { 
+    width: 5px; 
+    height: 5px; 
   }
 }

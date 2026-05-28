@@ -52,8 +52,8 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
         // Add a tiny random micro-movement during the dwell so they aren't totally frozen
         path.push({ 
           time: currentTime, 
-          x: targetX + THREE.MathUtils.randFloatSpread(0.2), 
-          z: targetZ + THREE.MathUtils.randFloatSpread(0.2) 
+          x: targetX, // + THREE.MathUtils.randFloatSpread(0.2), 
+          z: targetZ  //+ THREE.MathUtils.randFloatSpread(0.2) 
         });
       }
     });

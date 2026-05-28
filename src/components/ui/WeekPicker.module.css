@@ -1,98 +1,122 @@
-/* --- NEW MASTER WRAPPER --- */
+/* ========================================= */
+/* 1. INVISIBLE LAYOUT GRIDS                 */
+/* ========================================= */
 .wrapper {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
+  
   display: flex;
   align-items: center;
-  z-index: 50; /* Ensures the whole block is above the 3D canvas */
+  gap: 16px; /* Space between the components and dividers */
+  z-index: 50; 
+  pointer-events: none; 
 }
 
-/* --- UPDATED CONTAINER --- */
+.divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(9, 9, 11, 0.1); /* Subtle spatial line */
+  border-radius: 1px;
+}
+
 .container {
-  position: relative; /* Removed absolute positioning, top, and left */
-  
-  background: rgba(255, 255, 255, 0.9);
-  padding: 10px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   display: flex;
-  gap: 8px;
-  font-family: sans-serif;
-  backdrop-filter: blur(4px);
+  gap: 12px; /* Tighter gap for the dates to group them visually */
+  pointer-events: none;
 }
-
-/* Base button styles */
+/* ... KEEP YOUR EXISTING .dayButton CSS EXACTLY AS IT IS ... */
+/* ========================================= */
+/* 2. GHOST UI DAY BUTTONS                   */
+/* ========================================= */
 .dayButton {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 8px;
+  pointer-events: auto; 
   background: transparent;
-  color: #333;
+  border: none;
+  padding: 12px 16px; 
   cursor: pointer;
+  
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 50px;
-  transition: all 0.2s ease;
+  
+  /* Prevent horizontal layout shifts by locking a comfortable minimum width */
+  min-width: 64px; 
+  
+  /* FORCE HARDWARE ACCELERATION to stop text-flicker during animation */
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  transform: translateZ(0); 
+  
+  color: var(--text-muted);
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Modifier class for the selected state */
+.dayButton:hover:not(.selected) {
+  color: var(--text-dark);
+  transform: translateY(-2px) translateZ(0); /* Maintain hardware acceleration */
+  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12)); 
+}
+
 .dayButton.selected {
-  background: #2563eb;
-  color: white;
+  color: var(--color-primary);
+  transform: translateY(-2px) translateZ(0);
+  filter: drop-shadow(0 4px 12px rgba(54, 92, 206, 0.35)); 
 }
 
-/* Base text styles */
-.weekday {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  opacity: 0.6;
+/* ========================================= */
+/* 3. TYPOGRAPHIC HIERARCHY & STATE SHIFTS   */
+/* ========================================= */
+.weekday { 
+  font-size: 0.75rem; 
+  text-transform: uppercase; 
+  font-weight: 400; 
+  letter-spacing: 1px; 
+  transition: color 0.3s ease; /* Removed font-weight transition */
 }
 
-.date {
-  font-size: 1.25rem;
-  font-weight: normal;
-  margin-top: 2px;
+.date { 
+  font-size: 1.5rem; 
+  font-weight: 300; 
+  margin-top: 2px; 
+  transition: color 0.3s ease; /* Removed font-weight transition */
 }
 
-/* Modifier styles for text when the parent button is selected */
-.dayButton.selected .weekday {
-  opacity: 1;
-}
+/* THE FIX: Only apply the bold structural shift when actually selected, NOT on hover */
+.dayButton.selected .weekday { font-weight: 600; }
+.dayButton.selected .date { font-weight: 700; }
 
-.dayButton.selected .date {
-  font-weight: bold;
-}
-
-
-/* --- MOBILE RESPONSIVENESS --- */
+/* ========================================= */
+/* 4. MOBILE & RESPONSIVENESS                */
+/* ========================================= */
 @media (max-width: 850px), (max-height: 500px) {
   .wrapper {
-    width: 100%;
-    /* THE FIX: Use Grid to lock the layout in place */
-    display: grid;
-    grid-template-columns: 44px 1fr 44px; 
-    gap: 6px;
-    align-items: center;
+    top: 16px;
+    width: 100vw;
+    padding: 0 8px;
+    
+    /* THE FIX: Reverts to a natural flex row instead of Grid */
+    display: flex;
+    justify-content: space-between; 
+    gap: 4px;
+  }
+
+  .divider {
+    display: none; /* Hide vertical lines on mobile to save space */
   }
 
   .container {
-    grid-column: 2; /* Lock to the center column */
-    grid-row: 1;
-    
-    padding: 6px 4px;
-    gap: 2px;
+    flex-grow: 1; /* Pushes the Month and Announcement to the edges */
     justify-content: space-around; 
-    border-radius: 10px;
-    display: flex; /* Keep the inner days as flex */
+    gap: 2px;
+    display: flex; 
   }
 
   .dayButton {
-    padding: 6px 2px; 
-    min-width: 32px; 
-    border-radius: 6px;
+    padding: 6px 2px;
+    min-width: 32px;
   }
 
   .weekday { font-size: 0.65rem; }
@@ -100,9 +124,8 @@
 }
 
 @media (max-width: 400px) {
-  .wrapper { gap: 4px; }
-  .container { padding: 4px 2px; }
-  .dayButton { min-width: 28px; }
+  .wrapper { padding: 0 4px; }
+  .dayButton { min-width: 28px; padding: 6px 2px; }
   .weekday { font-size: 0.55rem; }
   .date { font-size: 0.85rem; }
 }

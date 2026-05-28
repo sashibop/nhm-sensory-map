@@ -14,14 +14,16 @@ export default function Timeline() {
   // Real-world clock (updates every minute)
   const [realTimeFloat, setRealTimeFloat] = useState(() => {
     const now = new Date()
-    return now.getHours() + (now.getMinutes() / 60)
+    return now.getHours() + (now.getMinutes() / 60) + (now.getSeconds() / 3600)
   })
 
   useEffect(() => {
+    // Run every 50ms so the marker glides smoothly even when the simulation is paused
     const interval = setInterval(() => {
       const now = new Date()
-      setRealTimeFloat(now.getHours() + (now.getMinutes() / 60))
-    }, 60000)
+      const exact = now.getHours() + (now.getMinutes() / 60) + (now.getSeconds() / 3600) + (now.getMilliseconds() / 3600000)
+      setRealTimeFloat(exact)
+    }, 50)
     return () => clearInterval(interval)
   }, [])
 
@@ -82,9 +84,9 @@ export default function Timeline() {
   }
 
   return (
-    <div className={`${styles.container} ${isLiveMode ? styles.isLive : ''}`}>
+    <div className={`${styles.container} ${isLiveMode ? styles.isLive : ''} ${isPlaying ? styles.isPlaying : ''}`}>
       <button 
-        className={styles.playBtn} 
+        className={`${styles.playBtn} ${isPlaying ? styles.isPlaying : ''}`} 
         onClick={togglePlaying}
         aria-label={isPlaying ? "Pause simulation" : "Play simulation"}
       >
@@ -101,16 +103,15 @@ export default function Timeline() {
         {showNowMarker && (
           <button 
             className={`${styles.nowMarker} ${isLiveMode ? styles.liveActive : ''}`} 
-            style={{ left: `calc(${nowPercentage}% + ${10 - nowPercentage * 0.2}px)` }}
+            // FIX: Updated math for a 10px thumb
+            style={{ 
+               left: `calc(${nowPercentage}% + ${5 - nowPercentage * 0.1}px)`,
+               cursor: isLiveMode ? 'default' : 'pointer' 
+            }}
             onClick={() => {
               if (!isLiveMode) setLiveMode(true)
             }}
             title={isLiveMode ? "Live Tracking Active" : "Jump to Now"}
-            // Optional: Remove pointer cursor when already live so it feels less like a button
-            style={{ 
-               left: `calc(${nowPercentage}% + ${10 - nowPercentage * 0.2}px)`,
-               cursor: isLiveMode ? 'default' : 'pointer' 
-            }}
           >
             <div className={styles.nowLabel}>{isLiveMode ? 'LIVE' : 'NOW'}</div>
             <div className={styles.nowLine} />
@@ -134,7 +135,7 @@ export default function Timeline() {
               <div 
                 key={`tickGroup-${h}`} 
                 className={styles.tickGroup}
-                style={{ left: `calc(${pct}% + ${10 - pct * 0.2}px)` }}
+                style={{ left: `calc(${pct}% + ${5 - pct * 0.1}px)` }}
               >
                 <div className={styles.tick} />
                 {h % 1 === 0 && <div className={styles.label}>{h}:00</div>}
