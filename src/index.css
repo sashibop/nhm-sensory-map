@@ -68,7 +68,7 @@ html, body, #root {
     circle at center, 
     transparent 30%, 
     rgba(228, 228, 231, 0.3) 75%, 
-    var(--text-faint) 200%
+    var(--text-muted) 200%
   );
   
   /* Subtle inward depth shadow */

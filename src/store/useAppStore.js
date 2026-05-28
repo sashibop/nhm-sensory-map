@@ -6,7 +6,10 @@ const useAppStore = create((set, get) => ({
   timeOfDay: 9.0, 
   isPlaying: false,
   isLiveMode: false, 
-  activeFloor: 1, // NEW: Defaults to Ground Floor
+  activeFloor: 1, 
+  activeView: '3D',
+
+  setActiveView: (view) => set({ activeView: view }),
 
   // --- ACTIONS ---
   setActiveFloor: (floorNumber) => set({ activeFloor: floorNumber }),

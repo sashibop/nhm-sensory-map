@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import styles from './GlobalSettings.module.css'
+// 1. IMPORT YOUR APP STORE
+import useAppStore from '../../store/useAppStore'
 
 export default function GlobalSettings() {
-  // 1. NEW: State to control the main menu visibility on mobile
+  // Pull the current view state ('3D' or '2D')
+  const activeView = useAppStore((state) => state.activeView)
+
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [activeSetting, setActiveSetting] = useState(null)
   
@@ -17,7 +21,7 @@ export default function GlobalSettings() {
   const cursorProgress = ((cursorSize - 50) / 100) * 100;
 
   const settingsOptions = [
-    { id: 'help', label: 'Help' },
+    ...(activeView === '3D' ? [{ id: 'help', label: 'Controls' }] : []),
     { id: 'language', label: 'Language' },
     { id: 'accessibility', label: 'Accessibility' },
   ]
@@ -26,10 +30,9 @@ export default function GlobalSettings() {
     setActiveSetting(activeSetting === id ? null : id)
   }
 
-  // 2. UPDATED: Header click handler
   const handleHeaderClick = () => {
-    setIsMobileOpen(!isMobileOpen) // Toggles the menu on mobile
-    if (activeSetting) setActiveSetting(null) // Closes any open sub-panels
+    setIsMobileOpen(!isMobileOpen) 
+    if (activeSetting) setActiveSetting(null) 
   }
 
   return (
@@ -38,13 +41,11 @@ export default function GlobalSettings() {
       {/* GHOST TRIGGER HEADER */}
       <div className={styles.heading} onClick={handleHeaderClick}>
         <span className={styles.desktopText}>Settings</span>
-        {/* Mobile Ellipsis */}
         <svg className={styles.mobileIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
         </svg>
       </div>
       
-      {/* 3. UPDATED: Apply the mobileOpen class conditionally */}
       <div className={`${styles.list} ${isMobileOpen ? styles.mobileOpen : ''}`}>
         {settingsOptions.map((option) => (
           <div key={option.id} className={styles.wrapper}>
@@ -61,20 +62,20 @@ export default function GlobalSettings() {
             {/* --- GHOST SUB-PANELS --- */}
             <div className={`${styles.subContent} ${activeSetting === option.id ? styles.expanded : ''}`}>
               
-              {/* 1. HELP */}
+              {/* 1. CONTROLS (THE FIX: Added the conditional wrapper back) */}
               {option.id === 'help' && (
                 <div className={styles.subGroup}>
                   <div className={styles.infoRow}>
-                    <span className={styles.subLabel}>Orbit</span>
-                    <span className={styles.value}>Left-Click</span>
+                    <span className={styles.subLabel}>Left-Click + Drag</span>
+                    <span className={styles.value}>Orbit</span>
                   </div>
                   <div className={styles.infoRow}>
-                    <span className={styles.subLabel}>Pan</span>
-                    <span className={styles.value}>Right-Click</span>
+                    <span className={styles.subLabel}>Right-Click + Drag</span>
+                    <span className={styles.value}>Pan</span>
                   </div>
                   <div className={styles.infoRow}>
-                    <span className={styles.subLabel}>Zoom</span>
-                    <span className={styles.value}>Scroll</span>
+                    <span className={styles.subLabel}>Scroll</span>
+                    <span className={styles.value}>Zoom</span>
                   </div>
                 </div>
               )}
@@ -82,7 +83,7 @@ export default function GlobalSettings() {
               {/* 2. LANGUAGE */}
               {option.id === 'language' && (
                 <div className={styles.subGroup}>
-                  {['EN', 'DE', 'FR'].map(lang => (
+                  {['DE', 'EN'].map(lang => (
                     <div 
                       key={lang} 
                       className={`${styles.subRow} ${activeLang === lang ? styles.subActive : ''}`}
@@ -98,8 +99,6 @@ export default function GlobalSettings() {
               {/* 3. ACCESSIBILITY */}
               {option.id === 'accessibility' && (
                 <div className={styles.subGroup}>
-                  
-                  {/* Micro-Dot Toggles */}
                   <div className={`${styles.subRow} ${highContrast ? styles.subActive : ''}`} onClick={() => setHighContrast(!highContrast)}>
                     <span className={styles.subLabel}>High Contrast</span>
                     <div className={styles.subIndicator} />
@@ -110,7 +109,6 @@ export default function GlobalSettings() {
                     <div className={styles.subIndicator} />
                   </div>
 
-                  {/* Architectural Sliders */}
                   <div className={styles.sliderRow}>
                     <span className={styles.subLabel}>Text Size</span>
                     <input 
@@ -126,7 +124,6 @@ export default function GlobalSettings() {
                       min="50" max="150" step="1" value={cursorSize} onChange={(e) => setCursorSize(e.target.value)} 
                     />
                   </div>
-
                 </div>
               )}
             </div>

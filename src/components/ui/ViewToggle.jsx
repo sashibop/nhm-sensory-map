@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import styles from './ViewToggle.module.css'
+import useAppStore from '../../store/useAppStore'
 
 export default function ViewToggle() {
-  const activeView = '3D'; // This will eventually come from useAppStore
-  
+  const activeView = useAppStore((state) => state.activeView)
+  const setActiveView = useAppStore((state) => state.setActiveView)
+    
   // Mobile accordion state
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const handleToggle = (view) => {
-    // setActiveView(view) // Call store setter here
+    setActiveView(view) 
     setIsMobileOpen(false) // Auto-close menu after selection on mobile
   }
 

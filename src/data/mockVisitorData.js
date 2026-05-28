@@ -73,6 +73,12 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
 // --- ARCHITECTURAL NODES ---
 // scatter dictates how wide the radius is. Rooms = Big (3.0), Doors = Tight (1.5)
 const N = {
+  Info:           { x: -4, z: 15, scatter: 2.0, dwell: 8.5 },
+  Info2:          { x: 23, z: -6, scatter: 1.5, dwell: 8.5 },  
+  Info3:          { x: -23, z: 7, scatter: 1.5, dwell: 8.5 }, 
+  Info4:          { x: 14, z: 12, scatter: 1.5, dwell: 8.5 },
+
+
   Entrance:       { x: 0, z: 20, scatter: 4.0 },
   Lobby:          { x: 0, z: 12, scatter: 10.0, dwell: 0.1}, // Lobby is a big open space, so it has a huge scatter to encourage wandering
   LobbyLeft:      { x: -14, z: 12, scatter: 3.5},
@@ -140,6 +146,12 @@ const ROUTE_QUICK_LOOK = [
   N.LobbyRightGate, N.Lobby, N.Octagon, N.Lobby, N.Entrance
 ];
 
+// Staff arrive through the public route, dwell at their desk, then retrace their steps to exit.
+const ROUTE_INFO_1 = [N.Entrance, N.Lobby, N.Info, N.Lobby, N.Entrance];
+const ROUTE_INFO_2 = [N.Entrance, N.Lobby, N.LobbyRightGate, N.RightWingGate, N.Info2, N.RightWingGate, N.LobbyRightGate, N.Lobby, N.Entrance];
+const ROUTE_INFO_3 = [N.Entrance, N.Lobby, N.LobbyLeft, N.Info3, N.LobbyLeft, N.Lobby, N.Entrance];
+const ROUTE_INFO_4 = [N.Entrance, N.Lobby, N.LobbyRightGate, N.Info4, N.LobbyRightGate, N.Lobby, N.Entrance];
+
 // --- FLOOR 2 ARCHITECTURAL NODES ---
 const N2 = {
   // Assuming they arrive via the central stairs or elevator
@@ -164,6 +176,12 @@ const ROUTE_F2_TOUR = [
 
 // --- GENERATE THE CROWD VARIANCE ---
 export const visitors = [
+  // Staff at Information Desk (constant presence)
+  ...generateGroup('staff_info', 3, 'staff', 9.0, ROUTE_INFO_1, 1),
+  ...generateGroup('staff_info2', 1, 'staff', 9.0, ROUTE_INFO_2, 1),
+  ...generateGroup('staff_info3', 1, 'staff', 9.0, ROUTE_INFO_3, 1),
+  ...generateGroup('staff_info4', 1, 'staff', 9.0, ROUTE_INFO_4, 1),
+
   // 9:30 AM - Morning Guided Tour (Left Wing)
   ...generateGroup('tour_morn_left', 12, 'tour', 9.5, ROUTE_LEFT_FULL),
   // 9:45 AM - Morning Guided Tour (Right Wing) -> SIMULTANEOUS EXPLORATION
@@ -192,3 +210,116 @@ export const visitors = [
   ...generateGroup('f2_couple_lunch', 6, 'couple', 12.5, ROUTE_F2_WANDER, 2),
   ...generateGroup('f2_tour_morning', 12, 'tour', 9.0, ROUTE_F2_TOUR, 2),
 ];
+
+// ==========================================
+// STATIC EXHIBIT NOISE SOURCES
+// ==========================================
+export const staticNoiseSources = {
+  1: [
+    { id: 'aviary', x: 25, z: -27, baseNoise: 55, spread: 0.22 }, 
+    { id: 'waterfall', x: -23, z: -18, baseNoise: 45, spread: 0.25 }, 
+    { id: 'AC', x: -25, z: 15, baseNoise: 32, spread: 0.30 },
+    { id: 'elevator1', x: -7, z: 6, baseNoise: 25, spread: 0.40 }, 
+    { id: 'elevator2', x: 7, z: 6, baseNoise: 25, spread: 0.40 },
+    { id: 'stairs', x: 3.5, z: -3, baseNoise: 25, spread: 0.25}, 
+    { id: 'stairs2', x: -3.5, z: -3, baseNoise: 25, spread: 0.25 },  
+    { id: 'stairs3', x: -23, z: -26, baseNoise: 25, spread: 0.30 },  
+  ],
+  2: [
+    { id: 'stairs', x: 3.5, z: -4, baseNoise: 25, spread: 0.30 }, 
+    { id: 'stairs2', x: -3.5, z: -4, baseNoise: 25, spread: 0.30 }, 
+    { id: 'stairs3', x: -23, z: -26, baseNoise: 30, spread: 0.20 },  
+    { id: 'cafe_area', x: 0, z: 16.5, baseNoise: 45, spread: 0.10 }, 
+    { id: 'elevator1_F2', x: -6.8, z: 6, baseNoise: 15, spread: 0.60 }, 
+    { id: 'elevator2_F2', x: 6.8, z: 6, baseNoise: 15, spread: 0.60 },
+    { id: 'video_wall', x: 26, z: 11, baseNoise: 35, spread: 0.12 }, 
+  ]
+}
+
+// Helper for linear interpolation
+const lerp = (x, y, t) => (1 - t) * x + t * y;
+
+// ==========================================
+// UNIFIED NOISE ENGINE
+// ==========================================
+export function getNoiseSources(timeOfDay, targetFloor, dayOfWeek) {
+  const activeSources = [];
+
+  // 1. Inject Static Architectural Sources
+  const staticExhibits = staticNoiseSources[targetFloor] || [];
+  staticExhibits.forEach(exhibit => {
+    activeSources.push({
+      x: exhibit.x,
+      z: exhibit.z,
+      volume: exhibit.baseNoise,
+      spread: exhibit.spread,
+      isStatic: true
+    });
+  });
+
+  // 2. Filter Active Visitors for this Day and Floor
+  const activeVisitors = visitors.filter(v => 
+    v.daysVisiting.includes(dayOfWeek) && v.floor === targetFloor
+  );
+
+  // 3. Compute Raw Interpolated Positions for Visitors
+  const visitorPositions = [];
+  activeVisitors.forEach((visitor) => {
+    const path = visitor.path;
+    const enterTime = path[0].time;
+    const exitTime = path[path.length - 1].time
+
+    if (timeOfDay >= enterTime && timeOfDay <= exitTime) {
+      let startIndex = 0;
+      for (let j = 0; j < path.length - 1; j++) {
+        if (timeOfDay >= path[j].time && timeOfDay <= path[j+1].time) {
+          startIndex = j;
+          break;
+        }
+      }
+      
+      const startNode = path[startIndex];
+      const endNode = path[startIndex + 1];
+      const duration = endNode.time - startNode.time;
+      const progress = duration === 0 ? 1 : (timeOfDay - startNode.time) / duration
+      
+      // Simulating Three.js smootherstep interpolation natively
+      const t = Math.max(0, Math.min(1, progress));
+      const easedProgress = t * t * t * (t * (t * 6 - 15) + 10);
+
+      const currentX = lerp(startNode.x, endNode.x, easedProgress);
+      const currentZ = lerp(startNode.z, endNode.z, easedProgress);
+
+      // Lower noise if they are dwelling (standing still)
+      const segmentDistance = Math.hypot(endNode.x - startNode.x, endNode.z - startNode.z);
+      const isDwelling = segmentDistance < 0.5;
+      const currentNoise = isDwelling ? visitor.baseNoise - 12 : visitor.baseNoise;
+
+      visitorPositions.push({ x: currentX, z: currentZ, volume: currentNoise });
+    }
+  });
+
+  // 4. Calculate Proximity Compounding Factors (Crowd Buzz)
+  visitorPositions.forEach((pos, i) => {
+    let dynamicNoise = pos.volume;
+    
+    visitorPositions.forEach((neighbor, j) => {
+      if (i !== j) {
+        const dist = Math.hypot(pos.x - neighbor.x, pos.z - neighbor.z);
+        if (dist < 1) {
+          dynamicNoise += (2.5 - dist) * 0.2; // Crowded spaces generate secondary group murmur
+        }
+      }
+    });
+
+    activeSources.push({
+      x: pos.x,
+      z: pos.z,
+      volume: Math.min(dynamicNoise, 65), // Cap volume at 65dB
+      spread: 0.9,
+      isStatic: false
+    });
+  });
+
+  return activeSources;
+}

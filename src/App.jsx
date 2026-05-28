@@ -1,4 +1,6 @@
 import { Canvas } from '@react-three/fiber'
+import useAppStore from './store/useAppStore' 
+
 import WeekPicker from './components/ui/WeekPicker'
 import LayerPanel from './components/ui/LayerPanel'
 import Timeline from './components/ui/Timeline'
@@ -9,20 +11,35 @@ import ViewToggle from './components/ui/ViewToggle'
 import GlobalSettings from './components/ui/GlobalSettings'
 import Disclaimer from './components/ui/Disclaimer'
 import LayerLegend from './components/ui/LayerLegend'
+import FloorOne2D from './components/canvas/FloorOne2D'
+import FloorTwo2D from './components/canvas/FloorTwo2D'
 
 export default function App() {
+  // 1. Pull BOTH activeView and activeFloor from the store
+  const activeView = useAppStore((state) => state.activeView) 
+  const activeFloor = useAppStore((state) => state.activeFloor)
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       
-      {/* 1. 3D WebGL Layer (The Foundation) */}
-      <Canvas gl={{ alpha: true }} camera={{ position: [0, 80, 80], fov: 45 }}>
+      {/* 2. THE VIEWPORT ROUTER */}
+      {activeView === '3D' ? (
+        // The WebGL Engine
+        <Canvas gl={{ alpha: true }} camera={{ position: [0, 80, 80], fov: 45 }}>
           <Scene />
-      </Canvas>
+        </Canvas>
+      ) : (
+        // The 2D Engine: Switch based on activeFloor
+        <>
+          {activeFloor === 1 && <FloorOne2D />}
+          {activeFloor === 2 && <FloorTwo2D />}
+        </>
+      )}
       
-      {/* 2. The Vignette Layer (The "Tabletop" Frame) */}
+      {/* 3. The Vignette Layer */}
       <div className="vignette-overlay" />
       
-      {/* 3. The Ghost UI Layer (Floating above everything) */}
+      {/* 4. The Ghost UI Layer */}
       <WeekPicker />
       <FloorSelector />
       <LayerPanel />
