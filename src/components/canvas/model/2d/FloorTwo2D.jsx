@@ -1,6 +1,6 @@
-import useAppStore from '../../store/useAppStore'
-import CrowdLayer2D from './layers/CrowdLayer2D'
-import NoiseLayer2D from './layers/NoiseLayer2D'
+import useAppStore from '../../../../store/useAppStore'
+import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
+import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
 
 export default function FloorTwo2D() {
   const layers = useAppStore((state) => state.layers)

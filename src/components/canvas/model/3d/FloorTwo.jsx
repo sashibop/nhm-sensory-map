@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { useMemo } from 'react'
-import CrowdLayer from './layers/CrowdLayer'
-import NoiseLayer from './layers/NoiseLayer'
-import useAppStore from '../../store/useAppStore'
+import CrowdLayer from '../../layers/3d/CrowdLayer'
+import NoiseLayer from '../../layers/3d/NoiseLayer'
+import useAppStore from '../../../../store/useAppStore'
 
 export default function FloorTwo() {
   const layers = useAppStore((state) => state.layers)

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import useAppStore from '../../store/useAppStore'
-import styles from './Timeline.module.css'
+import styles from './styles/Timeline.module.css'
 
 export default function Timeline() {
   const { 

@@ -1,8 +1,8 @@
 import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import useAppStore from '../../../store/useAppStore'
-import { visitors } from '../../../data/mockVisitorData'
+import useAppStore from '../../../../store/useAppStore'
+import { visitors } from '../../../../data/mockVisitorData'
 
 export default function CrowdLayer({ targetFloor = 1 }) {
   const timeOfDay = useAppStore((state) => state.timeOfDay)

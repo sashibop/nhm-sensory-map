@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import useAppStore from '../../store/useAppStore'
-import FloorOne from './FloorOne'
-import FloorTwo from './FloorTwo'
+import FloorOne from './model/3d/FloorOne'
+import FloorTwo from './model/3d/FloorTwo'
 
 export default function Building() {
   const activeFloor = useAppStore((state) => state.activeFloor)

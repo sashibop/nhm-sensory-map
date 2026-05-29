@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import useAppStore from '../../../store/useAppStore'
-import { getNoiseSources } from '../../../data/mockVisitorData'
+import useAppStore from '../../../../store/useAppStore'
+import { getNoiseSources } from '../../../../data/mockVisitorData'
 
 export default function NoiseLayer2D({ targetFloor = 1 }) {
   const selectedDate = useAppStore((state) => state.selectedDate)

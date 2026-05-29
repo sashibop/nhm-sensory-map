@@ -11,8 +11,8 @@ import ViewToggle from './components/ui/ViewToggle'
 import GlobalSettings from './components/ui/GlobalSettings'
 import Disclaimer from './components/ui/Disclaimer'
 import LayerLegend from './components/ui/LayerLegend'
-import FloorOne2D from './components/canvas/FloorOne2D'
-import FloorTwo2D from './components/canvas/FloorTwo2D'
+import FloorOne2D from './components/canvas/model/2d/FloorOne2D'
+import FloorTwo2D from './components/canvas/model/2d/FloorTwo2D'
 
 export default function App() {
   // 1. Pull BOTH activeView and activeFloor from the store

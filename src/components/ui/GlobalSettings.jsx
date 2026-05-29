@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import styles from './GlobalSettings.module.css'
-// 1. IMPORT YOUR APP STORE
+import styles from './styles/GlobalSettings.module.css'
 import useAppStore from '../../store/useAppStore'
 
 export default function GlobalSettings() {
@@ -99,15 +98,6 @@ export default function GlobalSettings() {
               {/* 3. ACCESSIBILITY */}
               {option.id === 'accessibility' && (
                 <div className={styles.subGroup}>
-                  <div className={`${styles.subRow} ${highContrast ? styles.subActive : ''}`} onClick={() => setHighContrast(!highContrast)}>
-                    <span className={styles.subLabel}>High Contrast</span>
-                    <div className={styles.subIndicator} />
-                  </div>
-                  
-                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} onClick={() => setPlainLang(!plainLang)}>
-                    <span className={styles.subLabel}>Plain Language</span>
-                    <div className={styles.subIndicator} />
-                  </div>
 
                   <div className={styles.sliderRow}>
                     <span className={styles.subLabel}>Text Size</span>
@@ -123,6 +113,16 @@ export default function GlobalSettings() {
                       type="range" className={styles.ghostSlider} style={{ '--progress': `${cursorProgress}%` }}
                       min="50" max="150" step="1" value={cursorSize} onChange={(e) => setCursorSize(e.target.value)} 
                     />
+                  </div>
+
+                  <div className={`${styles.subRow} ${highContrast ? styles.subActive : ''}`} onClick={() => setHighContrast(!highContrast)}>
+                    <span className={styles.subLabel}>High Contrast</span>
+                    <div className={styles.subIndicator} />
+                  </div>
+                  
+                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} onClick={() => setPlainLang(!plainLang)}>
+                    <span className={styles.subLabel}>Plain Language</span>
+                    <div className={styles.subIndicator} />
                   </div>
                 </div>
               )}

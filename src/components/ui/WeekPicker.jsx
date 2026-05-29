@@ -1,7 +1,7 @@
 import useAppStore from '../../store/useAppStore'
 import Announcements from './Announcements'
 import MonthCalendar from './MonthCalendar'
-import styles from './WeekPicker.module.css'
+import styles from './styles/WeekPicker.module.css'
 
 export default function WeekPicker() {
   const selectedDate = useAppStore((state) => state.selectedDate)

@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './LayerLegend.module.css'
+import styles from './styles/LayerLegend.module.css'
 
 export default function LayerLegend() {
   return (

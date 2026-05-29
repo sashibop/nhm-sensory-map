@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './Disclaimer.module.css'
+import styles from './styles/Disclaimer.module.css'
 
 export default function Disclaimer() {
   return (

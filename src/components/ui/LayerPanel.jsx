@@ -1,5 +1,5 @@
 import useAppStore from '../../store/useAppStore'
-import styles from './LayerPanel.module.css'
+import styles from './styles/LayerPanel.module.css'
 
 export default function LayerPanel() {
   const layers = useAppStore((state) => state.layers)

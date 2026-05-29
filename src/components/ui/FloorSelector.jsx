@@ -1,5 +1,5 @@
 import useAppStore from '../../store/useAppStore'
-import styles from './FloorSelector.module.css'
+import styles from './styles/FloorSelector.module.css'
 
 export default function FloorSelector() {
   const activeFloor = useAppStore((state) => state.activeFloor)

@@ -1,8 +1,8 @@
 import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import useAppStore from '../../../store/useAppStore'
-import { getNoiseSources } from '../../../data/mockVisitorData'
+import useAppStore from '../../../../store/useAppStore'
+import { getNoiseSources } from '../../../../data/mockVisitorData'
 
 const MAX_SOURCES = 150 
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
-import useAppStore from '../../../store/useAppStore'
-import { visitors } from '../../../data/mockVisitorData'
+import useAppStore from '../../../../store/useAppStore'
+import { visitors } from '../../../../data/mockVisitorData'
 
 // Helper function to smooth out movement (mirrors THREE.MathUtils.smootherstep)
 const smootherstep = (x, min, max) => {

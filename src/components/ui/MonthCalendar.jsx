@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import useAppStore from '../../store/useAppStore'
-import styles from './MonthCalendar.module.css'
+import styles from './styles/MonthCalendar.module.css'
 
 export default function MonthCalendar() {
   const [isOpen, setIsOpen] = useState(false)

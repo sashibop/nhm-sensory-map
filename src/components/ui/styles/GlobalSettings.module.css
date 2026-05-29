@@ -120,6 +120,7 @@
   align-items: flex-end;
   gap: 12px;
   padding-right: 8px; 
+  padding-left: 30px;
   padding-bottom: 8px; /* Breathing room for final slider thumb */
   border-right: 1px solid rgba(9, 9, 11, 0.1); /* Architectural connecting line */
 }

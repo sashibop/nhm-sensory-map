@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import useAppStore from '../../store/useAppStore'
-import styles from './Announcements.module.css'
+import styles from './styles/Announcements.module.css'
 
 export default function Announcements() {
   const selectedDate = useAppStore((state) => state.selectedDate)

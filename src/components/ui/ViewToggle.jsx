@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import styles from './ViewToggle.module.css'
+import styles from './styles/ViewToggle.module.css'
 import useAppStore from '../../store/useAppStore'
 
 export default function ViewToggle() {
