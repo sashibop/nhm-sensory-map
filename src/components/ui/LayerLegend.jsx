@@ -41,7 +41,6 @@ export default function LayerLegend() {
   const activeFloor = useAppStore((state) => state.activeFloor)
 
   const stats = useMemo(() => {
-    if (!layers.crowd) return { total: 0, individuals: 0, groups: 0 }
     const dayOfWeek = selectedDate.getDay()
     const todayVisitors = visitors.filter(v => v.daysVisiting.includes(dayOfWeek) && v.floor === activeFloor)
     const liveVisitors = todayVisitors.filter(v => {
@@ -54,7 +53,7 @@ export default function LayerLegend() {
     const groupVisitors = liveVisitors.filter(v => v.type !== 'solo')
     const uniqueGroups = new Set(groupVisitors.map(v => v.id.substring(0, v.id.lastIndexOf('_'))))
     return { total, individuals, groups: uniqueGroups.size }
-  }, [layers.crowd, selectedDate, activeFloor, timeOfDay])
+  }, [selectedDate, activeFloor, timeOfDay])
 
   const averageNoise = useMemo(() => {
     if (!layers.noise) return 15;
