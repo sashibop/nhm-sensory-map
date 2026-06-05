@@ -47,6 +47,7 @@ export default function App() {
       
       <ViewToggle />
       <GlobalSettings />
+      <LayerLegend />
       <Disclaimer />
     </div>
   )

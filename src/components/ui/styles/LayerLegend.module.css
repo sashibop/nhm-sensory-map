@@ -1,39 +1,334 @@
+/* ========================================= */
+/* 1. INVISIBLE SPATIAL CONTAINER            */
+/* ========================================= */
 .container {
   position: absolute;
-  bottom: 180px; /* Tweak this if it overlaps your LayerPanel */
-  right: 20px;
-  z-index: 10;
+  bottom: 40px; 
+  right: 170px; 
   
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  pointer-events: auto;
+  display: flex;
+  flex-direction: row-reverse; 
+  align-items: flex-end; 
+  gap: 40px; 
   
+  z-index: 9;
+  pointer-events: none; 
+}
+
+/* ========================================= */
+/* 2. THE GHOST BLOCKS                       */
+/* ========================================= */
+.ghostBlock {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 220px; 
+  align-items: center; 
+  gap: 12px;
+  
+  animation: slideOutFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
 }
 
-.title {
-  font-size: 10px;
-  font-weight: bold;
-  color: #64748b;
+.heading {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
   text-transform: uppercase;
+  letter-spacing: 2px;
+  filter: var(--text-halo); 
 }
 
-.gradientBar {
-  height: 8px;
-  width: 100%;
-  border-radius: 4px;
-  background: linear-gradient(to right, #0d9488, #22c55e, #eab308, #f97316, #ef4444);
-}
-
-.labels {
+/* ========================================= */
+/* 3. CROWD STATS TYPOGRAPHY                 */
+/* ========================================= */
+.statsRow {
   display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: #94a3b8;
+  align-items: flex-end; 
+  height: 40px; 
+  gap: 16px;
+  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: flex-end;
+  height: 100%;
+  min-width: 50px; 
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--text-main);
+  line-height: 0.9; 
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+}
+
+.highlight {
+  color: var(--color-primary); 
+  font-weight: 400;
+  text-shadow: var(--shadow-glow);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--text-muted);
+  opacity: 0.2;
+  margin-bottom: 2px;
+}
+
+/* ========================================= */
+/* 4. NOISE GRADIENT TRACK (PREMIUM GHOST)   */
+/* ========================================= */
+.trackWrapper {
+  position: relative;
+  width: 180px; 
+  height: 40px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; 
+}
+
+.gradientTrack {
+  width: 100%;
+  height: 6px; 
+  border-radius: var(--radius-pill);
+  
+  /* 
+    1:1 Shader Match: Uses the exact RGB values, Alpha fade (0.15 -> 1.0), 
+    and percentage stops from your smoothstep() WebGL logic 
+  */
+  background: linear-gradient(to right, 
+    rgba(13, 102, 115, 0.15) 5%,    /* c1 */
+    rgba(31, 178, 102, 0.35) 20%,   /* c2 */
+    rgba(153, 204, 38, 0.55) 35%,   /* c3 */
+    rgba(250, 191, 13, 0.75) 50%,   /* c4 */
+    rgba(242, 102, 26, 0.90) 65%,   /* c5 */
+    rgba(230, 38, 51, 0.95) 85%,    /* c6 */
+    rgba(127, 0, 51, 1.0) 100%      /* c7 */
+  );
+  
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.7), 
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05),     
+    0 4px 8px rgba(9, 9, 11, 0.08);          
+  
+
+  backdrop-filter: blur(4px);
+  
+  margin-bottom: 16px; 
+}
+
+.ticksContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px; 
+}
+
+.tickGroup {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  bottom: 0; 
+}
+
+.tick {
+  width: 1px;
+  height: 4px; 
+  background-color: var(--text-muted); 
+  opacity: 0.4;
+  margin-bottom: 4px;
+  border-radius: 1px;
+}
+
+.tickLabel {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  filter: var(--text-halo);
+  line-height: 1;
+}
+
+/* ========================================= */
+/* 5. THE LIVE GLIDING RING (Ghost UI Style) */
+/* ========================================= */
+.liveNeedle {
+  position: absolute;
+  bottom: 19px; 
+  transform: translateX(-50%) translateY(50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none; 
+}
+
+.needleLabel {
+  position: absolute;
+  bottom: 12px; 
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  filter: var(--text-halo);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.needleLabel span {
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ========================================= */
+/* DESKTOP: STATIC COBALT THUMB              */
+/* ========================================= */
+.needleDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-primary); 
+  border: none;
+  box-shadow: 
+    var(--shadow-glow),                 
+    0 4px 8px rgba(9, 9, 11, 0.15);     
+}
+
+.needleDot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ========================================= */
+/* DYNAMIC GLOWING THUMB                     */
+/* ========================================= */
+.dynamicNeedleDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  
+  /* Falls back to Cobalt Blue if the variable is missing */
+  background-color: var(--glow-color, var(--color-primary)); 
+  border: none;
+  
+  box-shadow: 
+    0 0 10px var(--glow-color, var(--color-primary)), /* Dynamic glowing halo */
+    0 4px 8px rgba(9, 9, 11, 0.15);                   /* Physical drop shadow */
+    
+  /* Smoothly animates the color shift as the noise levels change */
+  transition: background-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.dynamicNeedleDot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--glow-color, var(--color-primary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ========================================= */
+/* UTILITY CLASSES                           */
+/* ========================================= */
+.mobileOnly {
+  display: none !important;
+}
+
+/* ========================================= */
+/* ANIMATIONS & RESPONSIVENESS               */
+/* ========================================= */
+@keyframes slideOutFromRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 850px) {
+  .desktopOnly {
+    display: none !important;
+  }
+  
+  div.mobileOnly {
+    display: flex !important;
+  }
+
+  .container {
+    right: 38%;
+    transform: translateX(50%);
+    bottom: 24px;
+    gap: 10px; 
+  }
+
+  .ghostBlock {
+    gap: 6px;
+  }
+
+  /* Shrink the headings */
+  .heading { 
+    font-size: 0.5rem; 
+    letter-spacing: 1px;
+  }
+
+  /* 2. Shrink the Crowd Stats */
+  .statsRow {
+    height: auto; 
+  }
+  
+  .statItem {
+    min-width: 0; 
+    gap: 2px;
+  }
+
+  .statLabel {
+    font-size: 0.5rem;
+  }
+
+  .statValue { 
+    font-size: 1.1rem;
+  }
+
+  .mobileNoiseBlock {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobileNoiseValue {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 1px;
+    filter: var(--text-halo);
+  }
+
+  .mobileNoiseValue span {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+  }
 }
