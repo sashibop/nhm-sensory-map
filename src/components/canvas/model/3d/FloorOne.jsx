@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber' 
 import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
+import BrightnessLayer from '../../layers/3d/BrightnessLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { Html } from '@react-three/drei'
 
@@ -285,6 +286,7 @@ export default function FloorOne({ isActive, focusRef }) {
 
       {layers.crowd && <CrowdLayer targetFloor={1} />}
       {layers.noise && <NoiseLayer targetFloor={1} />}
+      {layers.brightness && <BrightnessLayer targetFloor={1} />}
       {/* <DebugNodes /> */}
 
       {/* ========================================================= */}

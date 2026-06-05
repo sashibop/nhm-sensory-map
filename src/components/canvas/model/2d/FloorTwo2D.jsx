@@ -1,6 +1,7 @@
 import useAppStore from '../../../../store/useAppStore'
 import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
+import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
 
 export default function FloorTwo2D() {
   const layers = useAppStore((state) => state.layers)
@@ -90,6 +91,10 @@ export default function FloorTwo2D() {
         {/* ========================================== */}
         {/* DATA LAYERS (Fetching Floor 2 Data)        */}
         {/* ========================================== */}
+        {layers.brightness && (
+          <BrightnessLayer2D targetFloor={2} />
+        )}
+
         {layers.noise && (
           <NoiseLayer2D targetFloor={2} />
         )}

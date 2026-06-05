@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { useMemo } from 'react'
 import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
+import BrightnessLayer from '../../layers/3d/BrightnessLayer'
 import useAppStore from '../../../../store/useAppStore'
 
 export default function FloorTwo() {
@@ -161,6 +162,8 @@ export default function FloorTwo() {
 
       {layers.crowd && <CrowdLayer targetFloor={2} />}
       {layers.noise && <NoiseLayer targetFloor={2} />}
+      {layers.brightness && <BrightnessLayer targetFloor={2} />}
+
 
       {/* ========================================================= */}
       {/* 1. WALKABLE SURFACES & FOUNDATION                           */}
