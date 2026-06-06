@@ -34,6 +34,7 @@ export default function ViewToggle() {
         
         <button 
           className={`${styles.row} ${activeView === '3D' ? styles.active : ''}`}
+          aria-selected={activeView === '3D'}
           onClick={() => handleToggle('3D')}
         >
           <div className={styles.indicator} />
@@ -42,6 +43,7 @@ export default function ViewToggle() {
         
         <button 
           className={`${styles.row} ${activeView === '2D' ? styles.active : ''}`}
+          aria-selected={activeView === '2D'}
           onClick={() => handleToggle('2D')}
         >
           <div className={styles.indicator} />

@@ -23,6 +23,7 @@ export default function LayerPanel() {
           <div 
             key={option.id} 
             className={`${styles.row} ${layers[option.id] ? styles.active : ''}`} 
+            aria-selected={layers[option.id]}
             onClick={() => toggleLayer(option.id)}
           >
             <span className={styles.label}>{option.label}</span>

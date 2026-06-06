@@ -37,13 +37,19 @@
   cursor: pointer;
   
   /* Razor-sharp, low-altitude hover shadow */
-  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  filter: drop-shadow(var(--shadow-drop-subtle));
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .row:hover {
   transform: translateY(-2px); /* Subtle lift */
-  filter: drop-shadow(0 8px 16px rgba(9, 9, 11, 0.12));
+  filter: drop-shadow(var(--shadow-drop-medium));
 }
 
 /* Base Label: Muted and medium weight */
@@ -67,20 +73,34 @@
   height: 6px;
   border-radius: 50%;
   background-color: var(--text-muted);
-  opacity: 0.3; /* Barely visible when off */
+  opacity: var(--opacity-indicator-off); /* Barely visible when off */
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .row:hover .indicator {
-  opacity: 0.6;
+  opacity: var(--opacity-indicator-hover);
 }
 
 /* Active State: The dot ignites */
 .row.active .indicator {
-  opacity: 1;
+  opacity: var(--opacity-full);
   background-color: var(--color-primary);
   transform: scale(1.3); /* Slightly expands to command attention */
-  box-shadow: var(--shadow-glow); /* Glows softly to signify active status */
+  box-shadow: var(--shadow-primary-drop); /* Softer drop to avoid doubled glow */
+}
+
+/* Reduce parent drop-shadow when active so indicator glow doesn't double-up */
+.row.active {
+  filter: drop-shadow(var(--shadow-drop-micro));
+}
+
+@media (prefers-contrast: more) {
+  .row.active {
+    background-color: #ffffcc;
+    border: 2px solid #0000ff;
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
 }
 
 /* ========================================= */

@@ -13,6 +13,7 @@ export default function FloorSelector() {
       <div className={styles.list}>
         <button 
           className={`${styles.row} ${activeFloor === 2 ? styles.active : ''}`}
+          aria-selected={activeFloor === 2}
           onClick={() => setActiveFloor(2)}
         >
           <div className={styles.indicator} />
@@ -21,6 +22,7 @@ export default function FloorSelector() {
         
         <button 
           className={`${styles.row} ${activeFloor === 1 ? styles.active : ''}`}
+          aria-selected={activeFloor === 1}
           onClick={() => setActiveFloor(1)}
         >
           <div className={styles.indicator} />

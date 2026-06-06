@@ -65,6 +65,7 @@ export default function GlobalSettings() {
             {/* --- MAIN MENU ROW --- */}
             <div
               className={`${styles.row} ${activeSetting === option.id ? styles.active : ''}`}
+              aria-selected={activeSetting === option.id}
               onClick={() => togglePanel(option.id)}
             >
               <span className={styles.label}>{option.label}</span>
@@ -128,12 +129,12 @@ export default function GlobalSettings() {
                     />
                   </div>
 
-                  <div className={`${styles.subRow} ${settings.highContrast ? styles.subActive : ''}`} onClick={() => toggleHighContrast()}>
+                  <div className={`${styles.subRow} ${settings.highContrast ? styles.subActive : ''}`} aria-selected={settings.highContrast} onClick={() => toggleHighContrast()}>
                     <span className={styles.subLabel}>{t("accessibility.highContrast")}</span>
                     <div className={styles.subIndicator} />
                   </div>
 
-                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} onClick={() => setPlainLang(!plainLang)}>
+                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} aria-selected={plainLang} onClick={() => setPlainLang(!plainLang)}>
                     <span className={styles.subLabel}>{t("accessibility.plainLanguage")}</span>
                     <div className={styles.subIndicator} />
                   </div>
