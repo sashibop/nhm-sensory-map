@@ -3,74 +3,138 @@
 /* ========================================= */
 :root {
 
-  --text-halo: 0 2px 12px rgba(255, 255, 255, 0.9); /* Ensures raw text is readable over 3D lines */
-  
-  --color-bg: radial-gradient(circle at top center, #ffffff 0%, #e4e4e7 100%);
-  
-  /* Brand & Semantic Accents */
-  --color-primary: #365cce;       /* Gallery Cobalt */
-  --color-primary-hover: #1e40af; 
-  --color-live: #0d9488;          /* Deep Teal */
-  --color-danger: #e11d48;        /* Architectural Rose */
-  --color-warning: #664d03;      
+  --text-halo: 0 2px 12px rgba(255, 255, 255, 0.9);
+  /* Ensures raw text is readable over 3D lines */
 
-  
+  --color-bg: radial-gradient(circle at top center, #ffffff 0%, #e4e4e7 100%);
+
+  /* Brand & Semantic Accents */
+  --color-primary: #365cce;
+  /* Gallery Cobalt */
+  --color-primary-hover: #1e40af;
+  --color-live: #0d9488;
+  /* Deep Teal */
+  --color-danger: #e11d48;
+  /* Architectural Rose */
+  --color-warning: #664d03;
+
+
   /* Spatial Typography (Zinc Scale) */
-  --text-dark: #09090b;           /* Active / Hover / Headers */
-  --text-main: #27272a;           /* Standard readable text */
-  --text-muted: #63636b;          /* Inactive / Resting state */
-  --text-faint: #a1a1aa;          /* Micro-labels and disclaimers */
+  --text-dark: #09090b;
+  /* Active / Hover / Headers */
+  --text-main: #27272a;
+  /* Standard readable text */
+  --text-muted: #63636b;
+  /* Inactive / Resting state */
+  --text-faint: #a1a1aa;
+  /* Micro-labels and disclaimers */
 
   /* The Ghost Shadows (Using box-shadow for glowing, drop-shadow for alpha-tracing) */
-  --shadow-glow: 0 0 10px var(--color-primary); 
-  --text-halo: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9)); /* Text readability over 3D lines */
+  --shadow-glow: 0 0 10px var(--color-primary);
+  --text-halo: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9));
+  /* Text readability over 3D lines */
 
   /* Structural Variables */
   --transition-fast: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);     
-  
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Individual Element Glass (Used on buttons/sliders, NOT containers) */
-  --element-bg: rgba(255, 255, 255, 0.85); 
+  --element-bg: rgba(255, 255, 255, 0.85);
   --element-blur: blur(12px);
 
   /* The magic: Heavy, diffused shadows to separate elements from the background */
   --shadow-float: 0 12px 40px rgba(9, 9, 11, 0.08), 0 4px 12px rgba(9, 9, 11, 0.04);
-  --shadow-pressed: 0 2px 8px rgba(9, 9, 11, 0.05); /* Shrinks when clicked */
+  --shadow-pressed: 0 2px 8px rgba(9, 9, 11, 0.05);
+  /* Shrinks when clicked */
 
   /* Shapes & Animations */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-pill: 9999px;
+
+  /* Accessibility */
+  --text-size: 1;
+  /*--cursor-size: 1;*/
 }
 
-html, body, #root {
+html[data-contrast="high"] {
+  --text-dark: #000000;
+  --text-main: #000000;
+  --text-muted: #000000;
+  --text-faint: #000000;
+  --color-bg: #ffffff;
+  --color-primary: #0000ff;
+  --shadow-glow: none;
+  --shadow-float: none;
+  --element-bg: #fff;
+  --element-blur: none;
+  color: black;
+}
+
+html[data-contrast="high"] span,
+html[data-contrast="high"] label,
+html[data-contrast="high"] button,
+html[data-contrast="high"] p {
+  font-weight: 500 !important;
+}
+
+
+html[data-contrast="high"] .vignette-overlay {
+  display: none;
+}
+
+html {
+  font-size: calc(16px * var(--text-size));
+}
+
+/*body {
+  cursor: none;
+}*/
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; 
-  overflow: hidden; 
-  
-  background: var(--color-bg) !important; 
+  height: 100dvh;
+  overflow: hidden;
+
+  background: var(--color-bg) !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/*.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(12px * var(--cursor-size));
+  height: calc(12px * var(--cursor-size));
+  border-radius: 50%;
+  background: black;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease;
+  z-index: 9999;
+}*/
 
 /* The Vignette Overlay */
 .vignette-overlay {
   position: absolute;
   inset: 0;
-  pointer-events: none; /* Crucial: Allows clicks to pass through to UI and 3D */
-  z-index: 5; /* Above Canvas (z-index 0), below UI (z-index 10+) */
-  
+  pointer-events: none;
+  /* Crucial: Allows clicks to pass through to UI and 3D */
+  z-index: 5;
+  /* Above Canvas (z-index 0), below UI (z-index 10+) */
+
   /* Radial gradient: Transparent center, soft falloff, solid edge */
-  background: radial-gradient(
-    circle at center, 
-    transparent 30%, 
-    rgba(228, 228, 231, 0.3) 75%, 
-    var(--text-muted) 200%
-  );
-  
+  background: radial-gradient(circle at center,
+      transparent 30%,
+      rgba(228, 228, 231, 0.3) 75%,
+      var(--text-muted) 200%);
+
   /* Subtle inward depth shadow */
   box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.05);
 }
@@ -79,22 +143,26 @@ html, body, #root {
 /* --- 2. BROWSER RESETS & BASE LAYOUT ---   */
 /* ========================================= */
 
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; 
-  overflow: hidden; 
+  height: 100dvh;
+  overflow: hidden;
 
   background-color: var(--color-bg) !important;
-  
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Ensure font inheritance for inputs and buttons globally */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  font-family: inherit; 
+  font-family: inherit;
 }

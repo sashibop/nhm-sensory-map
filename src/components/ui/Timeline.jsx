@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import useAppStore from '../../store/useAppStore'
 import styles from './styles/Timeline.module.css'
+import { useTranslation } from "react-i18next"
 
 export default function Timeline() {
+  const { t } = useTranslation()
   const { 
     timeOfDay, isPlaying, isLiveMode, 
     setTimeOfDay, togglePlaying, setLiveMode, advanceTime, selectedDate 
@@ -111,9 +113,9 @@ export default function Timeline() {
             onClick={() => {
               if (!isLiveMode) setLiveMode(true)
             }}
-            title={isLiveMode ? "Live Tracking Active" : "Jump to Now"}
+            title={isLiveMode ? t('timeline.trackingActive') : t('timeline.jumpToNow')}
           >
-            <div className={styles.nowLabel}>{isLiveMode ? 'LIVE' : 'NOW'}</div>
+            <div className={styles.nowLabel}>{isLiveMode ? t('timeline.live') : t('timeline.now')}</div>
             <div className={styles.nowLine} />
           </button>
         )}

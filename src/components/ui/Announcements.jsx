@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import useAppStore from '../../store/useAppStore'
 import styles from './styles/Announcements.module.css'
+import { useTranslation } from "react-i18next"
 
 export default function Announcements() {
   const selectedDate = useAppStore((state) => state.selectedDate)
@@ -8,6 +9,7 @@ export default function Announcements() {
 
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false)
+  const { t } = useTranslation()
 
   // Initial 3-second auto-collapse
   useEffect(() => {
@@ -22,16 +24,16 @@ export default function Announcements() {
   const handleToggle = () => { if (hasAutoCollapsed) setIsCollapsed(!isCollapsed) }
 
   const dailyAnnouncements = {
-    0: "Sunday Matinee: Archival readings in the Main Hall at 11:00.",
-    1: "Notice: The main wing is closed on Mondays for archival cataloging.",
-    2: "Attention: There is a school visit from the local Gymnasium (9:00 - 11:00).",
-    3: "Weekly deep-dive guided tour of the Bücherspeicher starting at 14:00.",
-    4: "Late opening hours until 21:00 for the special evening reading night.",
-    5: "Afternoon lecture series: 'Preserving Regional Literary History' at 15:00.",
-    6: "Weekend Workshop: Bookbinding basics taking place in Room 85."
+    0: t('dailyAnnouncements.0'),
+    1: t('dailyAnnouncements.1'),
+    2: t('dailyAnnouncements.2'),
+    3: t('dailyAnnouncements.3'),
+    4: t('dailyAnnouncements.4'),
+    5: t('dailyAnnouncements.5'),
+    6: t('dailyAnnouncements.6')
   }
 
-  const currentAnnouncement = dailyAnnouncements[dayOfWeek] || "Welcome to the library."
+  const currentAnnouncement = dailyAnnouncements[dayOfWeek] || t('dailyAnnouncements.default')
 
   return (
     // 1. Invisible spacer that reserves the slot in the WeekPicker row

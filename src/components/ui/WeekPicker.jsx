@@ -2,10 +2,12 @@ import useAppStore from '../../store/useAppStore'
 import Announcements from './Announcements'
 import MonthCalendar from './MonthCalendar'
 import styles from './styles/WeekPicker.module.css'
+import { useTranslation } from "react-i18next"
 
 export default function WeekPicker() {
   const selectedDate = useAppStore((state) => state.selectedDate)
   const setSelectedDate = useAppStore((state) => state.setSelectedDate)
+  const { i18n } = useTranslation()
   
   const getStartOfWeek = (date) => {
     const d = new Date(date)
@@ -41,7 +43,7 @@ export default function WeekPicker() {
               className={`${styles.dayButton} ${isSelected ? styles.selected : ''}`}
             >
               <span className={styles.weekday}>
-                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                {date.toLocaleDateString(i18n.language, { weekday: 'short' })}
               </span>
               <span className={styles.date}>
                 {date.getDate()}
