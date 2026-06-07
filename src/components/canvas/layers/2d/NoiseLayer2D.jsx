@@ -37,7 +37,7 @@ export default function NoiseLayer2D({ targetFloor = 1 }) {
 
         for (let x = 0; x < w; x++) {
           // Map canvas coordinate space to exact math X boundaries (-35 to 35)
-          const currentX = -35 + (x / w) * 70
+          const currentX = -40 + (x / w) * 80
 
           let totalHeat = 0.0
 
@@ -118,9 +118,9 @@ export default function NoiseLayer2D({ targetFloor = 1 }) {
 
   return (
     <foreignObject 
-      x="-35" 
+      x="-40" 
       y="-45" 
-      width="70" 
+      width="80" 
       height="80" 
       style={{ 
         pointerEvents: 'none', 
