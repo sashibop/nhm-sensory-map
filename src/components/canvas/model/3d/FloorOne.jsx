@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useFrame } from '@react-three/fiber' 
 import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
@@ -280,6 +280,8 @@ export default function FloorOne({ isActive, focusRef }) {
     </group>
   )
 
+
+
   return (
     <group>
 
@@ -502,6 +504,9 @@ export default function FloorOne({ isActive, focusRef }) {
         <torusKnotGeometry args={[0.8, 0.25, 128, 16]} />
         <primitive object={materials.exhibit} attach="material" />
       </mesh>
+
+      
+
 
     </group>
   )
