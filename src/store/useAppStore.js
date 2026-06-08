@@ -14,6 +14,10 @@ const useAppStore = create((set, get) => ({
     textSize: 100,
     cursorSize: 100,
   },
+  selectedIcon: null,
+
+  setSelectedIcon: (id) => set({ selectedIcon: id }),
+  clearSelectedIcon: () => set({ selectedIcon: null }),
 
   setActiveView: (view) => set({ activeView: view }),
 
