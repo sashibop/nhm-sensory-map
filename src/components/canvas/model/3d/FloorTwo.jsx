@@ -4,6 +4,7 @@ import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
 import BrightnessLayer from '../../layers/3d/BrightnessLayer'
 import useAppStore from '../../../../store/useAppStore'
+import DimensionLayerDynamic from '../../layers/3d/DimensionLayerDynamic'
 
 export default function FloorTwo() {
   const layers = useAppStore((state) => state.layers)
@@ -163,6 +164,8 @@ export default function FloorTwo() {
       {layers.crowd && <CrowdLayer targetFloor={2} />}
       {layers.noise && <NoiseLayer targetFloor={2} />}
       {layers.brightness && <BrightnessLayer targetFloor={2} />}
+      {layers.dimensions && <DimensionLayerDynamic targetFloor={2} />}
+
 
 
       {/* ========================================================= */}

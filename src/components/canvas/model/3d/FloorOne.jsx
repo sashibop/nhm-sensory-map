@@ -6,6 +6,7 @@ import NoiseLayer from '../../layers/3d/NoiseLayer'
 import BrightnessLayer from '../../layers/3d/BrightnessLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { Html } from '@react-three/drei'
+import DimensionLayerStatic from '../../layers/3d/DimensionLayer'
 
 // --- DEBUG TOOL: WAYPOINT VISUALIZER ---
 const DebugNodes = () => {
@@ -287,6 +288,7 @@ export default function FloorOne({ isActive, focusRef }) {
       {layers.crowd && <CrowdLayer targetFloor={1} />}
       {layers.noise && <NoiseLayer targetFloor={1} />}
       {layers.brightness && <BrightnessLayer targetFloor={1} />}
+      {layers.dimensions && <DimensionLayerStatic targetFloor={1} />}
       {/* <DebugNodes /> */}
 
       {/* ========================================================= */}
@@ -371,7 +373,7 @@ export default function FloorOne({ isActive, focusRef }) {
       <WallWithGap x={-23} z={-2} length={10} gapPos={5} gapWidth={dwDbl} rot={0} /> 
       <WallWithGap x={-23} z={-22} length={10} gapPos={5} gapWidth={dwDbl} rot={0} /> 
       <WallWithGap x={23} z={-6} length={10} gapPos={5} gapWidth={dwDbl} rot={0} />
-
+      
       {/* ========================================================= */}
       {/* 5. STRUCTURAL HIGHLIGHTS                                    */}
       {/* ========================================================= */}

@@ -2,6 +2,7 @@ import useAppStore from '../../../../store/useAppStore'
 import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
 import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
+import DimensionLayer2D from '../../layers/2d/DimensionLayer2D'
 
 export default function FloorOne2D() {
   const layers = useAppStore((state) => state.layers)
@@ -90,6 +91,9 @@ export default function FloorOne2D() {
         
         {layers.crowd && (
           <CrowdLayer2D targetFloor={1} />
+        )}
+        {layers.dimensions && (
+          <DimensionLayer2D targetFloor={1} />
         )}
        
       </svg>
