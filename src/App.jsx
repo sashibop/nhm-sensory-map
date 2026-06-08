@@ -25,7 +25,7 @@ export default function App() {
       {/* 2. THE VIEWPORT ROUTER */}
       {activeView === '3D' ? (
         // The WebGL Engine
-        <Canvas gl={{ alpha: true }} camera={{ position: [0, 80, 80], fov: 45 }}>
+        <Canvas gl={{ alpha: true }} camera={{ position: [0, 80, 80], fov: 50 }}>
           <Scene />
         </Canvas>
       ) : (
