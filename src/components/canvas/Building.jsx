@@ -27,8 +27,8 @@ export default function Building() {
     }
 
     if (floor1Ref.current && floor2Ref.current) {
-      const t1Y = activeFloor === 1 ? 0 : -100
-      const t2Y = activeFloor === 2 ? 0 : 100
+      const t1Y = activeFloor === 1 ? 0 : -110
+      const t2Y = activeFloor === 2 ? 0 : 110
       const t1F = activeFloor === 1 ? 1 : 0
       const t2F = activeFloor === 2 ? 1 : 0
 
