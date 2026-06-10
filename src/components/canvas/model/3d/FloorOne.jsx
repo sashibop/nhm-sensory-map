@@ -12,22 +12,15 @@ export default function FloorOne({ isActive, focusRef }) {
 
   const { materials, origColors, dullColors } = useMemo(() => {
     const mats = {
-      // FIX: Shifted from #f8fafc to #eaeff4 (a subtle, cool paper-white) 
-      // to separate it from the background void without causing screen glare.
-      floor: new THREE.MeshStandardMaterial({ color: '#d8dbdd', roughness: 0.9, side: THREE.DoubleSide, transparent: true }),
-      
-      wallInt: new THREE.MeshStandardMaterial({ color: '#7f8b9c', roughness: 0.9, side: THREE.DoubleSide, transparent: true }), 
+      floor: new THREE.MeshStandardMaterial({ color: '#eaeff4', roughness: 0.9, side: THREE.DoubleSide, transparent: true }),
+      wallInt: new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.9, side: THREE.DoubleSide, transparent: true }), 
       outsideWalls: new THREE.MeshStandardMaterial({ color: '#e2e8f0', roughness: 1.0, transparent: true }),
-      
-      // Default Stairs: Slightly darker than the floor so they read as structure
       stairs: new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 0.9, transparent: true }),
       
-      // NEW: Highlight material for stairs when Dimensions toggle is ON.
-      // Uses a soft, calming sky blue that is distinct but not visually aggressive.
       stairsHighlight: new THREE.MeshStandardMaterial({ 
         color: '#7dd3fc', 
         emissive: '#7dd3fc', 
-        emissiveIntensity: 0.2, // A very gentle glow
+        emissiveIntensity: 0.2, 
         roughness: 0.7, 
         transparent: true 
       }),
@@ -57,9 +50,8 @@ export default function FloorOne({ isActive, focusRef }) {
     const orig = {}
     const dull = {}
 
-    // Only apply the focus fade logic to the base materials, 
-    // skipping the highlight material so it stays bright when active
     Object.entries(mats).forEach(([key, mat]) => {
+      if (key === 'stairsHighlight') return 
       orig[key] = mat.color.clone()
       dull[key] = mat.color.clone().lerp(new THREE.Color('#475569'), 0.1).multiplyScalar(0.9)
     })
@@ -74,6 +66,7 @@ export default function FloorOne({ isActive, focusRef }) {
 
     if (Math.abs(materials.wallInt.opacity - targetSolidOpacity) > 0.01) {
       Object.entries(materials).forEach(([key, mat]) => {
+        if (key === 'stairsHighlight') return
         let maxOpacity = 1.0;
         if (key === 'accessibility') maxOpacity = 0.6; 
         if (key === 'windows') maxOpacity = 0.5;       
@@ -87,14 +80,36 @@ export default function FloorOne({ isActive, focusRef }) {
   return (
     <group scale={[1, 1, 1]}>
       {layers.crowd && <CrowdLayer targetFloor={1} />}
-      {layers.noise && <NoiseLayer targetFloor={1} />}
 
+      {/* --- NOISE HEATMAP LAYER --- */}
+      {layers.noise && nodes.floor && (
+        <group 
+          position={[nodes.floor.position.x, nodes.floor.position.y + 0.02, nodes.floor.position.z]}
+          rotation={nodes.floor.rotation}
+          scale={nodes.floor.scale}
+        >
+          <NoiseLayer targetFloor={1} geometry={nodes.floor.geometry} />
+        </group>
+      )}
+
+      {/* --- EXPLORABLE INNER FLOOR --- */}
       <mesh 
         geometry={nodes.floor?.geometry} 
         material={materials.floor} 
         position={nodes.floor?.position}
         rotation={nodes.floor?.rotation}
         scale={nodes.floor?.scale}
+        renderOrder={1}
+        receiveShadow 
+      />
+
+      {/* --- UNEXPLORABLE OUTSIDE FLOOR (ADDED) --- */}
+      <mesh 
+        geometry={nodes['outside-floor']?.geometry} 
+        material={materials.floor} 
+        position={nodes['outside-floor']?.position}
+        rotation={nodes['outside-floor']?.rotation}
+        scale={nodes['outside-floor']?.scale}
         renderOrder={1}
         receiveShadow 
       />
@@ -123,7 +138,6 @@ export default function FloorOne({ isActive, focusRef }) {
 
       <mesh 
         geometry={nodes['stairs-and-platforms']?.geometry} 
-        // FIX: Swaps to the blue highlight when Dimensions is toggled on
         material={layers.dimensions ? materials.stairsHighlight : materials.stairs} 
         position={nodes['stairs-and-platforms']?.position}
         rotation={nodes['stairs-and-platforms']?.rotation}
@@ -150,10 +164,10 @@ export default function FloorOne({ isActive, focusRef }) {
         position={nodes.windows?.position}
         rotation={nodes.windows?.rotation}
         scale={nodes.windows?.scale}
-        renderOrder={3} // Always render on top of walls/floors
+        renderOrder={3} 
       />
 
-      {/* --- TOGGLED LAYERS --- */}
+      {/* --- TOGGLED DIMENSIONS LAYERS --- */}
       <mesh 
         geometry={nodes.columns?.geometry} 
         material={materials.columns} 
@@ -172,7 +186,7 @@ export default function FloorOne({ isActive, focusRef }) {
         position={nodes.accessibility?.position}
         rotation={nodes.accessibility?.rotation}
         scale={nodes.accessibility?.scale}
-        renderOrder={3} // Always render on top of walls/floors
+        renderOrder={3} 
         visible={layers.dimensions}
       />
     </group>
