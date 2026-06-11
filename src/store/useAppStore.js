@@ -16,6 +16,26 @@ const useAppStore = create((set, get) => ({
   },
   selectedIcon: null,
 
+  // Multi-select rooms
+  selectedRooms: new Set(),
+
+  toggleSelectedRoom: (key) =>
+    set((state) => {
+      const next = new Set(state.selectedRooms);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return { selectedRooms: next };
+    }),
+
+  clearSelectedRooms: () => set({ selectedRooms: new Set() }),
+
+  // Hover sync (chart line ↔ map icon)
+  hoveredMapIcon: null,
+  setHoveredMapIcon: (key) => set({ hoveredMapIcon: key }),
+
   setSelectedIcon: (id) => set({ selectedIcon: id }),
   clearSelectedIcon: () => set({ selectedIcon: null }),
 

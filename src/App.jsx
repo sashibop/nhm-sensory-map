@@ -15,6 +15,7 @@ import LayerLegend from './components/ui/LayerLegend'
 import FloorOne2D from './components/canvas/model/2d/FloorOne2D'
 import FloorTwo2D from './components/canvas/model/2d/FloorTwo2D'
 import IconAnalytics from './components/ui/IconAnalytics'
+import AnalyticsSidePanel from './components/ui/AnalyticsSidePanel';
 
 export default function App() {
   // 1. Pull BOTH activeView and activeFloor from the store
@@ -23,28 +24,6 @@ export default function App() {
   const textSize = useAppStore((state) => state.settings.textSize)
   const highContrast = useAppStore((state) => state.settings.highContrast)
 
-
-  /*const cursorSize = useAppStore((state) => state.settings.cursorSize)
-  const [mouse, setMouse] = useState({ x: 0, y: 0 })
-
-
-    useEffect(() => {
-      document.documentElement.style.setProperty(
-        "--cursor-size",
-        cursorSize / 100
-      )
-    }, [cursorSize])
-
-    useEffect(() => {
-    const move = (e) => {
-      setMouse({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", move)
-
-    return () => window.removeEventListener("mousemove", move)
-  }, [])
-*/
   useEffect(() => {
     document.documentElement.style.setProperty(
       '--text-size',
@@ -96,7 +75,7 @@ export default function App() {
       <GlobalSettings />
       <Disclaimer />
       
-      <IconAnalytics/>
+      <AnalyticsSidePanel />
       
     </div>
   )

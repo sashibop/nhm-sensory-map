@@ -316,43 +316,57 @@ export default function FloorOne({ isActive, focusRef }) {
     return texture;
   }, []);
 
-  function Hotspot({ position, rotation, texture, onClick, size = 6 }) {
+  function Hotspot({ position, rotation, texture, onClick, onPointerEnter, onPointerLeave, isSelected, isHighlighted, size = 6 }) {
     const [hovered, setHovered] = useState(false);
+    const active = hovered || isHighlighted;
 
     return (
       <group position={position} rotation={rotation}>
-
         {/* Glow */}
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[size * 2.5, size * 2.5]} />
-
           <meshBasicMaterial
             map={glowTexture}
             transparent
-            opacity={hovered ? 0.75 : 0.5}
+            opacity={isSelected ? 0.9 : active ? 0.75 : 0.5}
             depthWrite={false}
           />
         </mesh>
 
+        {/* Selection ring */}
+        {isSelected && (
+          <mesh position={[0, 0, -0.005]}>
+            <ringGeometry args={[size * 0.6, size * 0.72, 32]} />
+            <meshBasicMaterial
+              color="#6C8EFF"
+              transparent
+              opacity={0.9}
+              depthWrite={false}
+            />
+          </mesh>
+        )}
+
         {/* Icon */}
         <mesh
-          scale={hovered ? 1.15 : 1}
-          onPointerOver={() => {
+          scale={active ? 1.15 : 1}
+          onPointerOver={(e) => {
             setHovered(true);
             document.body.style.cursor = 'pointer';
+            onPointerEnter?.(e);
           }}
-          onPointerOut={() => {
+          onPointerOut={(e) => {
             setHovered(false);
             document.body.style.cursor = 'default';
+            onPointerLeave?.(e);
           }}
           onClick={onClick}
         >
           <planeGeometry args={[size, size]} />
-
           <meshBasicMaterial
             map={texture}
             transparent
             side={THREE.DoubleSide}
+            opacity={isSelected ? 1 : active ? 0.95 : 0.75}
           />
         </mesh>
       </group>
@@ -604,9 +618,19 @@ rotation={[-Math.PI / 2, 0, -Math.PI / 4]}
         position={[23, floorH + 0.01, -18]}
         rotation={[-Math.PI / 2, 0, -Math.PI / 4]}
         texture={sharkTexture}
+        isSelected={useAppStore((s) => s.selectedRooms.has("shark"))}
+        isHighlighted={useAppStore((s) => s.hoveredMapIcon === "shark")}
         onClick={(e) => {
           e.stopPropagation();
-          useAppStore.getState().setSelectedIcon("shark");
+          useAppStore.getState().toggleSelectedRoom("shark");
+        }}
+        onPointerEnter={(e) => {
+          e.stopPropagation();
+          useAppStore.getState().setHoveredMapIcon("shark");
+        }}
+        onPointerLeave={(e) => {
+          e.stopPropagation();
+          useAppStore.getState().setHoveredMapIcon(null);
         }}
       />
 

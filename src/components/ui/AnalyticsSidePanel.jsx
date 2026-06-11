@@ -1,0 +1,324 @@
+// AnalyticsSidePanel.jsx
+// Drop-in replacement for IconAnalytics.
+// – Slides in from the right when the user clicks the chart icon
+// – Three stacked LineCharts: Crowd · Noise · Brightness
+// – Default view = museum-wide overview (all rooms aggregated)
+// – Multi-select: clicking an exhibition icon on the map adds / removes it;
+//   each selected room gets its own coloured line
+// – Cross-highlight: hovering a chart line ↔ hovering the map icon
+
+import { useCallback, useRef, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from "recharts";
+import useAppStore from "../../store/useAppStore";
+import {
+  getRoomCrowdHourlyData,
+  getRoomNoiseHourlyData,
+} from "../../data/roomAnalytics";
+import styles from "./styles/AnalyticsSidePanel.module.css";
+
+// ─── colour palette for multi-room lines ────────────────────────────────────
+const ROOM_COLORS = [
+  "#6C8EFF", // blue-violet
+  "#FF8C6B", // coral
+  "#4DD9AC", // mint
+  "#F7C948", // amber
+  "#C084FC", // purple
+  "#34D1BF", // teal
+];
+
+// ─── mock brightness (replace with real data fn when available) ───────────────
+function getRoomBrightnessHourlyData(roomKey, dayOfWeek, _activeFloor) {
+  // Placeholder: sinusoidal daylight curve ± per-room jitter
+  const seed = roomKey.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return Array.from({ length: 24 }, (_, hour) => {
+    const base = Math.max(0, Math.sin(((hour - 6) / 12) * Math.PI));
+    const jitter = ((seed * (hour + 1)) % 17) / 100;
+    return { hour, value: Math.round((base + jitter) * 1000) / 10 };
+  });
+}
+
+// ─── museum-wide aggregated data ─────────────────────────────────────────────
+function getMuseumOverviewData(fn, dayOfWeek, activeFloor) {
+  const ROOM_KEYS = ["shark"]; // extend as you add rooms to ROOMS
+  const allData = ROOM_KEYS.map((k) => fn(k, dayOfWeek, activeFloor));
+  return Array.from({ length: 24 }, (_, hour) => ({
+    hour,
+    value:
+      Math.round(
+        (allData.reduce((sum, d) => sum + (d[hour]?.value ?? 0), 0) /
+          allData.length) *
+          10
+      ) / 10,
+  }));
+}
+
+// ─── label maps ──────────────────────────────────────────────────────────────
+const ROOM_LABELS = {
+  shark: "Vivarium",
+  default: "Exhibition",
+};
+
+// ─── chart config ─────────────────────────────────────────────────────────────
+const CHARTS = [
+  {
+    key: "crowd",
+    label: "Crowd Density",
+    unit: "visitors",
+    dataFn: getRoomCrowdHourlyData,
+  },
+  {
+    key: "noise",
+    label: "Noise Level",
+    unit: "dB",
+    dataFn: getRoomNoiseHourlyData,
+  },
+  {
+    key: "brightness",
+    label: "Brightness",
+    unit: "lux",
+    dataFn: getRoomBrightnessHourlyData,
+  },
+];
+
+// ─── custom tooltip ──────────────────────────────────────────────────────────
+function CustomTooltip({ active, payload, label, unit }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className={styles.tooltip}>
+      <span className={styles.tooltipHour}>{label}:00</span>
+      {payload.map((p) => (
+        <div key={p.dataKey} className={styles.tooltipRow}>
+          <span
+            className={styles.tooltipDot}
+            style={{ background: p.color }}
+          />
+          <span className={styles.tooltipName}>{p.name}</span>
+          <span className={styles.tooltipValue}>
+            {p.value} {unit}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── single stacked chart ────────────────────────────────────────────────────
+function AnalyticsChart({
+  chartCfg,
+  selectedRooms,
+  dayOfWeek,
+  activeFloor,
+  hoveredRoom,
+  onHoverRoom,
+}) {
+  const isOverview = selectedRooms.length === 0;
+
+  // build merged dataset [{hour, roomA, roomB, …}] or [{hour, Museum}]
+  let data;
+  if (isOverview) {
+    const raw = getMuseumOverviewData(chartCfg.dataFn, dayOfWeek, activeFloor);
+    data = raw.map((d) => ({ hour: d.hour, Museum: d.value }));
+  } else {
+    data = Array.from({ length: 24 }, (_, h) => ({ hour: h }));
+    selectedRooms.forEach((room) => {
+      const raw = chartCfg.dataFn(room, dayOfWeek, activeFloor);
+      raw.forEach((d) => {
+        data[d.hour][room] = d.value;
+      });
+    });
+  }
+
+  const lineKeys = isOverview ? ["Museum"] : selectedRooms;
+
+  return (
+    <div className={styles.chartBlock}>
+      <div className={styles.chartLabel}>{chartCfg.label}</div>
+      <ResponsiveContainer width="100%" height={160}>
+        <LineChart data={data} margin={{ top: 4, right: 16, bottom: 0, left: 0 }}>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgba(255,255,255,0.08)"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="hour"
+            tickFormatter={(h) => `${h}h`}
+            tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+            axisLine={false}
+            tickLine={false}
+            interval={3}
+          />
+          <YAxis
+            tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+            axisLine={false}
+            tickLine={false}
+            width={32}
+          />
+          <Tooltip
+            content={<CustomTooltip unit={chartCfg.unit} />}
+            cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
+          />
+          {lineKeys.length > 1 && (
+            <Legend
+              iconType="circle"
+              iconSize={7}
+              wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
+              formatter={(v) => ROOM_LABELS[v] ?? v}
+            />
+          )}
+          {lineKeys.map((room, idx) => {
+            const color = isOverview
+              ? "var(--color-primary)"
+              : ROOM_COLORS[idx % ROOM_COLORS.length];
+            const isHovered = hoveredRoom === room;
+            const anyHovered = hoveredRoom !== null;
+            return (
+              <Line
+                key={room}
+                type="monotone"
+                dataKey={room}
+                name={ROOM_LABELS[room] ?? room}
+                stroke={color}
+                strokeWidth={isHovered ? 2.5 : anyHovered ? 1 : 1.8}
+                dot={false}
+                activeDot={{
+                  r: 4,
+                  fill: color,
+                  stroke: "var(--bg-base)",
+                  strokeWidth: 1.5,
+                }}
+                opacity={anyHovered && !isHovered ? 0.3 : 1}
+                style={{ transition: "opacity 0.2s, stroke-width 0.2s" }}
+                onMouseEnter={() => onHoverRoom(room)}
+                onMouseLeave={() => onHoverRoom(null)}
+              />
+            );
+          })}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// ─── main panel ──────────────────────────────────────────────────────────────
+export default function AnalyticsSidePanel() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoveredRoom, setHoveredRoom] = useState(null);
+
+  // store: selectedRooms = Set<string>; setHoveredMapIcon = fn
+  // You'll need to add `selectedRooms`, `toggleSelectedRoom`,
+  // `hoveredMapIcon`, `setHoveredMapIcon` to your useAppStore.
+  // Below we gracefully fall back if they're absent.
+  const selectedRooms = useAppStore((s) => s.selectedRooms ?? []);
+  const selectedDate = useAppStore((s) => s.selectedDate);
+  const activeFloor = useAppStore((s) => s.activeFloor);
+  const setHoveredMapIcon = useAppStore(
+    (s) => s.setHoveredMapIcon ?? (() => {})
+  );
+
+  const dayOfWeek = selectedDate?.getDay() ?? 1;
+  const roomList = Array.from(selectedRooms); // supports both Set and Array
+
+  const handleHoverRoom = useCallback(
+    (room) => {
+      setHoveredRoom(room);
+      setHoveredMapIcon(room); // notifies map layer
+    },
+    [setHoveredMapIcon]
+  );
+
+  return (
+    <>
+      {/* ── toggle button ── */}
+      <button
+        className={styles.toggleBtn}
+        onClick={() => setIsOpen((o) => !o)}
+        aria-label={isOpen ? "Close analytics" : "Open analytics"}
+        title="Analytics"
+      >
+        {/* simple bar-chart icon */}
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="11" width="3" height="7" rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.5} />
+          <rect x="8.5" y="6" width="3" height="12" rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.65} />
+          <rect x="15" y="2" width="3" height="16" rx="1" fill="currentColor" />
+        </svg>
+      </button>
+
+      {/* ── panel ── */}
+      <aside
+        className={`${styles.panel} ${isOpen ? styles.panelOpen : ""}`}
+        aria-hidden={!isOpen}
+      >
+        {/* header */}
+        <div className={styles.panelHeader}>
+          <div>
+            <div className={styles.panelTitle}>
+              {roomList.length === 0
+                ? "Museum Overview"
+                : roomList.length === 1
+                ? (ROOM_LABELS[roomList[0]] ?? "Exhibition")
+                : `${roomList.length} Exhibitions`}
+            </div>
+            <div className={styles.panelSub}>
+              {roomList.length === 0
+                ? "All areas · today"
+                : roomList
+                    .map((r) => ROOM_LABELS[r] ?? r)
+                    .join(", ")}
+            </div>
+          </div>
+          <button
+            className={styles.closeBtn}
+            onClick={() => setIsOpen(false)}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* stacked charts */}
+        <div className={styles.chartsWrapper}>
+          {CHARTS.map((cfg) => (
+            <AnalyticsChart
+              key={cfg.key}
+              chartCfg={cfg}
+              selectedRooms={roomList}
+              dayOfWeek={dayOfWeek}
+              activeFloor={activeFloor}
+              hoveredRoom={hoveredRoom}
+              onHoverRoom={handleHoverRoom}
+            />
+          ))}
+        </div>
+
+        {roomList.length > 0 && (
+          <div className={styles.legend}>
+            {roomList.map((room, idx) => (
+              <span
+                key={room}
+                className={styles.legendItem}
+                style={{
+                  "--dot-color": ROOM_COLORS[idx % ROOM_COLORS.length],
+                }}
+                onMouseEnter={() => handleHoverRoom(room)}
+                onMouseLeave={() => handleHoverRoom(null)}
+              >
+                <span className={styles.legendDot} />
+                {ROOM_LABELS[room] ?? room}
+              </span>
+            ))}
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
