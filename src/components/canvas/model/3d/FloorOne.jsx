@@ -281,7 +281,7 @@ export default function FloorOne({ isActive, focusRef }) {
   )
 
   const sharkTexture = useMemo(() => {
-    return new THREE.TextureLoader().load('src/assets/shark-facing-right-svgrepo-com.svg');
+    return new THREE.TextureLoader().load('src/assets/natureRoleModel.svg');
   }, []);
 
 
@@ -596,23 +596,6 @@ export default function FloorOne({ isActive, focusRef }) {
         <primitive object={materials.exhibit} attach="material" />
       </mesh>
 
-      {/* The Shark Icon */}
-      {/*<mesh position={[23, floorH + 0.01, -18]}
-rotation={[-Math.PI / 2, 0, -Math.PI / 4]}
-  onClick={() => console.log("Shark clicked")}
-  onPointerOver={() => {
-    document.body.style.cursor = "pointer";
-  }}
-  onPointerOut={() => {
-    document.body.style.cursor = "default";
-  }}
-  >
-  <planeGeometry args={[6, 6]} />
-  <meshBasicMaterial 
-  map={sharkTexture}
-  transparent
-  />
-</mesh>*/}
 
       <Hotspot
         position={[23, floorH + 0.01, -18]}
