@@ -10,7 +10,7 @@ export default function NoiseLayer({ targetFloor = 1, geometry }) {
   const timeOfDay = useAppStore((state) => state.timeOfDay)
   const selectedDate = useAppStore((state) => state.selectedDate)
   const activeFloor = useAppStore((state) => state.activeFloor)
-  
+
   const heatmapMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       transparent: true,
@@ -29,6 +29,7 @@ export default function NoiseLayer({ targetFloor = 1, geometry }) {
         }
       `,
       fragmentShader: `
+        // ... (Your exact same fragmentShader code) ...
         uniform vec4 uSources[${MAX_SOURCES}];
         uniform int uSourceCount;
         uniform float uTime;
@@ -45,7 +46,6 @@ export default function NoiseLayer({ targetFloor = 1, geometry }) {
             if (i >= uSourceCount) break;
             vec4 source = uSources[i];
             
-            // Read .xz instead of .xy because GLTF geometry lies on the XZ floor plane
             float dist = distance(vLocalPos.xz, source.xy); 
             float heatContribution = source.z / (1.0 + pow(dist * source.w, 2.0));
             totalHeat += heatContribution;
@@ -106,7 +106,9 @@ export default function NoiseLayer({ targetFloor = 1, geometry }) {
 
     activeNoiseData.forEach((source) => {
       if (count < MAX_SOURCES) {
-        // Pass directly to source (x, z) positions to match native 3D space coordinates
+        // ⚠️ UN-ROTATE: Spin the coordinate backwards to map it onto the physical mesh
+
+        // .x and .y from the Vector2 represent the X and Z axes
         uniforms[count].set(source.x, source.z, source.volume, source.spread)
         count++
       }
@@ -122,7 +124,7 @@ export default function NoiseLayer({ targetFloor = 1, geometry }) {
     <mesh 
       geometry={geometry} 
       material={heatmapMaterial}
-      renderOrder={4} // Renders on top of base floors/walls
+      renderOrder={4} 
     />
   )
 }
