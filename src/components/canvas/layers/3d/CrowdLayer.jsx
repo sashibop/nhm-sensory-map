@@ -5,22 +5,23 @@ import useAppStore from '../../../../store/useAppStore'
 import { visitors } from '../../../../data/mockVisitorData'
 
 export default function CrowdLayer({ targetFloor = 1 }) {
+
   const timeOfDay = useAppStore((state) => state.timeOfDay)
   const selectedDate = useAppStore((state) => state.selectedDate)
   const activeFloor = useAppStore((state) => state.activeFloor)
-  
+
   const activeVisitors = useMemo(() => {
     const dayOfWeek = selectedDate.getDay()
     return visitors.filter(v => v.daysVisiting.includes(dayOfWeek) && v.floor === targetFloor)
   }, [selectedDate, targetFloor])
 
   const meshRef = useRef()
-  const shadowRef = useRef() 
+  const shadowRef = useRef()
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useFrame((state) => {
     if (!meshRef.current || !shadowRef.current) return
-    
+
     if (activeFloor !== targetFloor) {
       meshRef.current.count = 0
       shadowRef.current.count = 0
@@ -46,7 +47,7 @@ export default function CrowdLayer({ targetFloor = 1 }) {
       } else {
         let startIndex = 0
         for (let j = 0; j < path.length - 1; j++) {
-          if (timeOfDay >= path[j].time && timeOfDay <= path[j+1].time) {
+          if (timeOfDay >= path[j].time && timeOfDay <= path[j + 1].time) {
             startIndex = j
             break
           }
@@ -60,6 +61,8 @@ export default function CrowdLayer({ targetFloor = 1 }) {
         const easedProgress = THREE.MathUtils.smootherstep(progress, 0, 1)
 
         const currentX = THREE.MathUtils.lerp(startNode.x, endNode.x, easedProgress)
+        // ⚠️ NEW: Calculate exact elevation!
+        const currentY = THREE.MathUtils.lerp(startNode.y || 0, endNode.y || 0, easedProgress)
         const currentZ = THREE.MathUtils.lerp(startNode.z, endNode.z, easedProgress)
 
         // 2. ARRIVAL OVERSHOOT: Springy pop-in when they first spawn
@@ -74,29 +77,30 @@ export default function CrowdLayer({ targetFloor = 1 }) {
         const breath = Math.sin(elapsedTime * 2.5 + (rand * 10)) * 0.04
 
         // --- UPDATE THE SOLID ORANGE SPHERE ---
-        // Anchored at Y=1 based on your preference, plus the gentle breath
-        dummy.position.set(currentX, 1 + breath, currentZ) 
+        // ⚠️ NEW: Anchor 1 unit above their current exact floor height
+        dummy.position.set(currentX, currentY + 0.7 + breath, currentZ)
         dummy.rotation.set(0, 0, 0)
         dummy.scale.set(currentScale, currentScale, currentScale)
         dummy.updateMatrix()
         meshRef.current.setMatrixAt(i, dummy.matrix)
 
         // --- UPDATE THE CONTACT SHADOW ---
-        dummy.position.set(currentX, 0.42, currentZ) 
+        // ⚠️ NEW: Hug the floor exactly 0.02 units above currentY to prevent clipping
+        dummy.position.set(currentX, currentY + 0.02, currentZ)
         dummy.rotation.set(-Math.PI / 2, 0, 0)
-        
+
         // Shadow dynamically scales with the visitor's size, and shrinks slightly as they bob up
         const shadowScale = (currentScale * 1.2) - (breath * 1.5)
         dummy.scale.set(shadowScale, shadowScale, shadowScale)
-        
+
         dummy.updateMatrix()
         shadowRef.current.setMatrixAt(i, dummy.matrix)
       }
     })
-    
+
     meshRef.current.count = activeVisitors.length
     meshRef.current.instanceMatrix.needsUpdate = true
-    
+
     shadowRef.current.count = activeVisitors.length
     shadowRef.current.instanceMatrix.needsUpdate = true
   })
@@ -106,9 +110,9 @@ export default function CrowdLayer({ targetFloor = 1 }) {
       {/* 1. THE DATA ORBS (Original Physical Texture) */}
       <instancedMesh ref={meshRef} args={[null, null, visitors.length]}>
         <sphereGeometry args={[0.2, 24, 24]} />
-        <meshStandardMaterial 
-          color="#f97316" 
-          roughness={0.4} 
+        <meshStandardMaterial
+          color="#f97316"
+          roughness={0.4}
           metalness={0.1}
           emissive="#f97316"
           emissiveIntensity={0.2}
@@ -117,18 +121,17 @@ export default function CrowdLayer({ targetFloor = 1 }) {
 
       {/* 2. THE GHOST UI CONTACT SHADOWS */}
       <instancedMesh ref={shadowRef} args={[null, null, visitors.length]}>
-  <circleGeometry args={[0.2, 24]} />
-  <meshBasicMaterial 
-    color="#09090b" 
-    transparent={true} 
-    opacity={0.15} 
-    depthWrite={false}
-    // FIX: Force the shadow to render with a small depth bias
-    polygonOffset={true}
-    polygonOffsetFactor={-1}
-    polygonOffsetUnits={-1}
-  />
-</instancedMesh>
+        <circleGeometry args={[0.2, 24]} />
+        <meshBasicMaterial
+          color="#09090b"
+          transparent={true}
+          opacity={0.15}
+          depthWrite={false}
+          polygonOffset={true}
+          polygonOffsetFactor={-1}
+          polygonOffsetUnits={-1}
+        />
+      </instancedMesh>
     </group>
   )
 }

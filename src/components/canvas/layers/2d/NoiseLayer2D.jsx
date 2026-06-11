@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import useAppStore from '../../../../store/useAppStore'
 import { getNoiseSources } from '../../../../data/mockVisitorData'
 
-export default function NoiseLayer2D({ targetFloor = 1 }) {
+// ⚠️ ADDED: mapScale, offsetX, and offsetZ as props!
+export default function NoiseLayer2D({ targetFloor = 1, mapScale = 0.9, offsetX = 0, offsetZ = 0 }) {
   const selectedDate = useAppStore((state) => state.selectedDate)
   const activeFloor = useAppStore((state) => state.activeFloor)
   
@@ -15,64 +16,60 @@ export default function NoiseLayer2D({ targetFloor = 1 }) {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-
-    // High performance matching dimension grid matrix
     const w = canvas.width
     const h = canvas.height
 
     const renderLoop = () => {
       const state = useAppStore.getState()
       const dayOfWeek = selectedDate.getDay()
-      const sources = getNoiseSources(state.timeOfDay, targetFloor, dayOfWeek)
-      const uTime = window.performance.now() / 1000
+      const rawSources = getNoiseSources(state.timeOfDay, targetFloor, dayOfWeek)
 
-      // Reset backing array buffer
+      // ⚠️ UPDATED: Now uses the props passed from the specific floor
+      const sources = rawSources.map(src => {
+        return {
+          ...src,
+          x: (src.x * mapScale) + offsetX,
+          z: (src.z * mapScale) + offsetZ,
+          spread: src.spread / mapScale 
+        }
+      })
+
       const imgData = ctx.createImageData(w, h)
       const data = imgData.data
 
-      // Evaluate density function per point inside the local system mapping window
       for (let y = 0; y < h; y++) {
-        // Map canvas coordinate space to exact math Z boundaries (-45 to 35)
         const currentZ = -45 + (y / h) * 80
-
         for (let x = 0; x < w; x++) {
-          // Map canvas coordinate space to exact math X boundaries (-35 to 35)
           const currentX = -40 + (x / w) * 80
-
           let totalHeat = 0.0
 
           for (let i = 0; i < sources.length; i++) {
             const src = sources[i]
             const dx = currentX - src.x
-            const dz = currentZ - src.z // Matches shifted 2D coordinate track
+            const dz = currentZ - src.z 
             const dist = Math.sqrt(dx * dx + dz * dz)
-
             const contribution = src.volume / (1.0 + Math.pow(dist * src.spread, 2.0))
             totalHeat += contribution
           }
 
-          // Complete 7-Stage Color Field Mixing Array Mapping
           const c1 = [0.05, 0.40, 0.45]; const c2 = [0.12, 0.70, 0.40]
           const c3 = [0.60, 0.80, 0.15]; const c4 = [0.98, 0.75, 0.05]
           const c5 = [0.95, 0.40, 0.10]; const c6 = [0.90, 0.15, 0.20]
           const c7 = [0.50, 0.00, 0.20]
 
-          // THE FIX: If silent, paint the base greyish-greenish floor fog!
           if (totalHeat < 15.0) {
             const pixelIndex = (x + y * w) * 4
             data[pixelIndex] = Math.floor(c1[0] * 255)
             data[pixelIndex + 1] = Math.floor(c1[1] * 255)
             data[pixelIndex + 2] = Math.floor(c1[2] * 255)
-            data[pixelIndex + 3] = Math.floor(0.13 * 255) // Base 15% opacity fog
-            continue // Skip the intense heat math for this pixel
+            data[pixelIndex + 3] = Math.floor(0.13 * 255) 
+            continue 
           }
 
-          // Map values directly matching the WebGL shader limits (15.0 - 65.0 dB)
           let norm = (totalHeat - 15.0) / (65.0 - 15.0)
           norm = Math.max(0.0, Math.min(1.0, norm))
 
           let r = c1[0], g = c1[1], b = c1[2]
-
           const mix = (from, to, weight) => (1 - weight) * from + weight * to
 
           if (norm < 0.20) {
@@ -95,7 +92,6 @@ export default function NoiseLayer2D({ targetFloor = 1 }) {
             r = mix(c6[0], c7[0], t); g = mix(c6[1], c7[1], t); b = mix(c6[2], c7[2], t)
           }
 
-          // Dynamic alpha attenuation mapping matching the 3D focus transparency
           const alpha = 0.15 + (norm * 0.75)
 
           const pixelIndex = (x + y * w) * 4
@@ -112,32 +108,13 @@ export default function NoiseLayer2D({ targetFloor = 1 }) {
 
     requestRef.current = requestAnimationFrame(renderLoop)
     return () => cancelAnimationFrame(requestRef.current)
-  }, [selectedDate, activeFloor, targetFloor])
+  }, [selectedDate, activeFloor, targetFloor, mapScale, offsetX, offsetZ])
 
   if (activeFloor !== targetFloor) return null
 
   return (
-    <foreignObject 
-      x="-40" 
-      y="-45" 
-      width="80" 
-      height="80" 
-      style={{ 
-        pointerEvents: 'none', 
-        clipPath: 'url(#museum-floor-mask)' 
-      }}
-    >
-      <canvas 
-        ref={canvasRef} 
-        width="140" 
-        height="160" 
-        style={{ 
-          width: '100%', 
-          height: '100%', 
-          display: 'block', 
-          filter: 'blur(0.2px)' 
-        }} 
-      />
+    <foreignObject x="-40" y="-45" width="80" height="80" style={{ pointerEvents: 'none', clipPath: 'url(#museum-floor-mask)' }}>
+      <canvas ref={canvasRef} width="140" height="160" style={{ width: '100%', height: '100%', display: 'block', filter: 'blur(0.2px)' }} />
     </foreignObject>
   )
 }
