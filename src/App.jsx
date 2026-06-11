@@ -45,6 +45,9 @@ export default function App() {
 
       <LayerPanel />
       <Timeline />
+
+      <LayerPanel />
+      <FloorSelector />
       
       <ViewToggle />
       <GlobalSettings />

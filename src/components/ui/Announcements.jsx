@@ -21,6 +21,14 @@ export default function Announcements() {
   const handleMouseLeave = () => { if (hasAutoCollapsed) setIsCollapsed(true) }
   const handleToggle = () => { if (hasAutoCollapsed) setIsCollapsed(!isCollapsed) }
 
+  // ⚠️ WCAG HELPER: Catch Enter and Spacebar presses
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleToggle()
+    }
+  }
+
   const dailyAnnouncements = {
     0: "Sunday Matinee: Archival readings in the Main Hall at 11:00.",
     1: "Notice: The main wing is closed on Mondays for archival cataloging.",
@@ -34,16 +42,20 @@ export default function Announcements() {
   const currentAnnouncement = dailyAnnouncements[dayOfWeek] || "Welcome to the library."
 
   return (
-    // 1. Invisible spacer that reserves the slot in the WeekPicker row
     <div className={styles.wrapper}>
       
-      {/* 2. The dynamically expanding spatial plate */}
+      {/* ⚠️ WCAG FIX: Converted interactive div to an accessible button role */}
       <div 
         className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!isCollapsed}
+        aria-label="Toggle daily announcement"
         onMouseLeave={handleMouseLeave}
         onClick={handleToggle}
+        onKeyDown={handleKeyDown}
       >
-        <div className={styles.iconWrapper}>
+        <div className={styles.iconWrapper} aria-hidden="true">
           <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>

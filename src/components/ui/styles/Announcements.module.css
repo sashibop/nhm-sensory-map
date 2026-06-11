@@ -150,3 +150,13 @@
     white-space: normal; 
   } 
 }
+
+/* ========================================= */
+/* --- WCAG FOCUS STATE ---                  */
+/* ========================================= */
+.container:focus-visible {
+  outline: 2px solid var(--color-primary, #38bdf8);
+  outline-offset: 4px;
+  /* Match this to your container's actual border-radius */
+  border-radius: var(--radius-pill, 24px); 
+}

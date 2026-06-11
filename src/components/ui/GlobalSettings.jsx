@@ -4,7 +4,6 @@ import useAppStore from '../../store/useAppStore'
 import A11yAssistant from './A11yAssistant'
 
 export default function GlobalSettings() {
-  // Pull the current view state ('3D' or '2D')
   const activeView = useAppStore((state) => state.activeView)
 
   const [isMobileOpen, setIsMobileOpen] = useState(false)
@@ -35,36 +34,51 @@ export default function GlobalSettings() {
     if (activeSetting) setActiveSetting(null) 
   }
 
+  const handleKeyDown = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault(); // Prevents spacebar from scrolling the page
+      callback();
+    }
+  }
+
   return (
     <div className={styles.container}>
       
-      {/* GHOST TRIGGER HEADER */}
-      <div className={styles.heading} onClick={handleHeaderClick}>
+      <button 
+        className={styles.heading} 
+        onClick={handleHeaderClick}
+        aria-expanded={isMobileOpen}
+        aria-label="Toggle Global Settings"
+        style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+      >
         <span className={styles.desktopText}>Settings</span>
-        <svg className={styles.mobileIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg aria-hidden="true" className={styles.mobileIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
         </svg>
-      </div>
+      </button>
       
       <div className={`${styles.list} ${isMobileOpen ? styles.mobileOpen : ''}`}>
         {settingsOptions.map((option) => (
           <div key={option.id} className={styles.wrapper}>
             
-            {/* --- MAIN MENU ROW --- */}
             <div 
               className={`${styles.row} ${activeSetting === option.id ? styles.active : ''}`} 
+              role="button"
+              tabIndex={0}
+              aria-expanded={activeSetting === option.id}
               onClick={() => togglePanel(option.id)}
+              onKeyDown={(e) => handleKeyDown(e, () => togglePanel(option.id))}
             >
               <span className={styles.label}>{option.label}</span>
-              <div className={styles.indicator} />
+              <div className={styles.indicator} aria-hidden="true" />
             </div>
 
             {/* --- GHOST SUB-PANELS --- */}
             <div className={`${styles.subContent} ${activeSetting === option.id ? styles.expanded : ''}`}>
               
-              {/* 1. CONTROLS (THE FIX: Added the conditional wrapper back) */}
+              {/* 1. CONTROLS */}
               {option.id === 'help' && (
-                <div className={styles.subGroup}>
+                <div className={styles.subGroup} aria-label="Control instructions">
                   <div className={styles.infoRow}>
                     <span className={styles.subLabel}>Left-Click + Drag</span>
                     <span className={styles.value}>Orbit</span>
@@ -82,15 +96,19 @@ export default function GlobalSettings() {
 
               {/* 2. LANGUAGE */}
               {option.id === 'language' && (
-                <div className={styles.subGroup}>
+                <div className={styles.subGroup} role="radiogroup" aria-label="Select Language">
                   {['DE', 'EN'].map(lang => (
                     <div 
                       key={lang} 
                       className={`${styles.subRow} ${activeLang === lang ? styles.subActive : ''}`}
+                      role="radio"
+                      aria-checked={activeLang === lang}
+                      tabIndex={0}
                       onClick={() => setActiveLang(lang)}
+                      onKeyDown={(e) => handleKeyDown(e, () => setActiveLang(lang))}
                     >
                       <span className={styles.subLabel}>{lang}</span>
-                      <div className={styles.subIndicator} />
+                      <div className={styles.subIndicator} aria-hidden="true" />
                     </div>
                   ))}
                 </div>
@@ -101,29 +119,51 @@ export default function GlobalSettings() {
                 <div className={styles.subGroup}>
 
                   <div className={styles.sliderRow}>
-                    <span className={styles.subLabel}>Text Size</span>
+                    <span className={styles.subLabel} aria-hidden="true">Text Size</span>
                     <input 
-                      type="range" className={styles.ghostSlider} style={{ '--progress': `${textProgress}%` }}
-                      min="50" max="150" step="1" value={textSize} onChange={(e) => setTextSize(e.target.value)} 
+                      type="range" 
+                      className={styles.ghostSlider} 
+                      aria-label="Adjust Text Size"
+                      style={{ '--progress': `${textProgress}%` }}
+                      min="50" max="150" step="1" value={textSize} 
+                      onChange={(e) => setTextSize(e.target.value)} 
                     />
                   </div>
                   
                   <div className={styles.sliderRow}>
-                    <span className={styles.subLabel}>Cursor Size</span>
+                    <span className={styles.subLabel} aria-hidden="true">Cursor Size</span>
                     <input 
-                      type="range" className={styles.ghostSlider} style={{ '--progress': `${cursorProgress}%` }}
-                      min="50" max="150" step="1" value={cursorSize} onChange={(e) => setCursorSize(e.target.value)} 
+                      type="range" 
+                      className={styles.ghostSlider} 
+                      aria-label="Adjust Cursor Size"
+                      style={{ '--progress': `${cursorProgress}%` }}
+                      min="50" max="150" step="1" value={cursorSize} 
+                      onChange={(e) => setCursorSize(e.target.value)} 
                     />
                   </div>
 
-                  <div className={`${styles.subRow} ${highContrast ? styles.subActive : ''}`} onClick={() => setHighContrast(!highContrast)}>
+                  <div 
+                    className={`${styles.subRow} ${highContrast ? styles.subActive : ''}`} 
+                    role="switch"
+                    aria-checked={highContrast}
+                    tabIndex={0}
+                    onClick={() => setHighContrast(!highContrast)}
+                    onKeyDown={(e) => handleKeyDown(e, () => setHighContrast(!highContrast))}
+                  >
                     <span className={styles.subLabel}>High Contrast</span>
-                    <div className={styles.subIndicator} />
+                    <div className={styles.subIndicator} aria-hidden="true" />
                   </div>
                   
-                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} onClick={() => setPlainLang(!plainLang)}>
+                  <div 
+                    className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} 
+                    role="switch"
+                    aria-checked={plainLang}
+                    tabIndex={0}
+                    onClick={() => setPlainLang(!plainLang)}
+                    onKeyDown={(e) => handleKeyDown(e, () => setPlainLang(!plainLang))}
+                  >
                     <span className={styles.subLabel}>Plain Language</span>
-                    <div className={styles.subIndicator} />
+                    <div className={styles.subIndicator} aria-hidden="true" />
                   </div>
 
                   <div className={styles.sliderRow} style={{ marginTop: '4px', alignItems: 'flex-end' }}>
