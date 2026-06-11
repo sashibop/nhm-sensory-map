@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import styles from './styles/GlobalSettings.module.css'
 import useAppStore from '../../store/useAppStore'
+import A11yAssistant from './A11yAssistant'
 
 export default function GlobalSettings() {
   // Pull the current view state ('3D' or '2D')
@@ -123,6 +124,11 @@ export default function GlobalSettings() {
                   <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} onClick={() => setPlainLang(!plainLang)}>
                     <span className={styles.subLabel}>Plain Language</span>
                     <div className={styles.subIndicator} />
+                  </div>
+
+                  <div className={styles.sliderRow} style={{ marginTop: '4px', alignItems: 'flex-end' }}>
+                    <span className={styles.subLabel} style={{ marginBottom: '4px' }}>Screen Reader</span>
+                    <A11yAssistant />
                   </div>
                 </div>
               )}
