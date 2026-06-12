@@ -60,7 +60,7 @@ export default function App() {
         {activeView === '3D' && (
           <Canvas
             gl={{ alpha: true }}
-            camera={{ position: [0, 80, 80], fov: 45 }}
+            camera={{ position: [0, 80, 80], fov: 50 }}
           >
             <Scene />
           </Canvas>
@@ -75,6 +75,7 @@ export default function App() {
 
         <WeekPicker />
         <FloorSelector />
+        <LayerLegend />
         <LayerPanel />
         <Timeline />
         <ViewToggle />

@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
 const EVERYDAY = [0, 1, 2, 3, 4, 5, 6];
-const WALKING_SPEED = 800; // Base speed
+const WALKING_SPEED = 2000; // Base speed
 
+// Helper to calculate paths based on specific personas
 // Helper to calculate paths based on specific personas
 function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
   const visitors = [];
@@ -14,46 +15,55 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
     let baseNoise = 29;
 
     if (type === 'tour') {
-      timeOffset = Math.random() * 0.1; // Tours clump tightly (within 6 minutes)
-      speedMod = 0.8; // Tours walk slower
+      timeOffset = Math.random() * 0.1;
+      speedMod = 0.8;
+      baseNoise = 45;
     } else if (type === 'couple') {
-      timeOffset = Math.random() * 0.05 + (i % 2 === 0 ? 0 : 0.01); // Couples stick together
+      timeOffset = Math.random() * 0.05 + (i % 2 === 0 ? 0 : 0.01);
       speedMod = 1.0;
+      baseNoise = 35;
     } else if (type === 'solo') {
-      timeOffset = Math.random() * 2.5; // Solos enter randomly across a 2.5 hour window!
-      speedMod = 1.3; // Solos walk fast
+      timeOffset = Math.random() * 2.5;
+      speedMod = 1.3;
+      baseNoise = 25;
+    } else if (type === 'staff') {
+      speedMod = 0.9;
+      baseNoise = 10;
     }
 
     let currentTime = baseTime + timeOffset;
     const path = [];
 
     route.forEach((node, index) => {
-      // Use the node's specific scatter radius to fan out in rooms, but squeeze through doors
+      // Use the node's specific scatter radius
       const scatterX = THREE.MathUtils.randFloatSpread(node.scatter || 0.5);
       const scatterZ = THREE.MathUtils.randFloatSpread(node.scatter || 0.5);
-      
+
       const targetX = node.x + scatterX;
+      // ⚠️ FIX: Safely pull the Y elevation from the node, fallback to 0.99 if missing
+      const targetY = node.y !== undefined ? node.y : 0.99;
       const targetZ = node.z + scatterZ;
 
       if (index > 0) {
         const prev = path[index - 1];
-        const distance = Math.hypot(targetX - prev.x, targetZ - prev.z);
-        // Calculate travel time
+        // ⚠️ FIX: Use proper 3D distance calculation (hypot for X, Y, and Z) so they don't walk up stairs too fast
+        const distance = Math.hypot(targetX - prev.x, targetY - prev.y, targetZ - prev.z);
         currentTime += (distance / (WALKING_SPEED * speedMod));
       }
 
-      path.push({ time: currentTime, x: targetX, z: targetZ });
+      // ⚠️ FIX: Push the Y value into the path array!
+      path.push({ time: currentTime, x: targetX, y: targetY, z: targetZ });
 
       if (node.dwell) {
-        // Solos spend less time dwelling, tours spend more
         const dwellMod = type === 'solo' ? 0.5 : (type === 'tour' ? 1.2 : 1.0);
         currentTime += (node.dwell * dwellMod);
-        
-        // Add a tiny random micro-movement during the dwell so they aren't totally frozen
-        path.push({ 
-          time: currentTime, 
-          x: targetX, // + THREE.MathUtils.randFloatSpread(0.2), 
-          z: targetZ  //+ THREE.MathUtils.randFloatSpread(0.2) 
+
+        // ⚠️ FIX: Ensure the dwell point also has the Y value
+        path.push({
+          time: currentTime,
+          x: targetX,
+          y: targetY,
+          z: targetZ
         });
       }
     });
@@ -70,97 +80,219 @@ function generateGroup(idPrefix, count, type, baseTime, route, floor = 1) {
   return visitors;
 }
 
-// --- ARCHITECTURAL NODES ---
-// scatter dictates how wide the radius is. Rooms = Big (3.0), Doors = Tight (1.5)
-const N = {
-  Info:           { x: -4, z: 15, scatter: 2.0, dwell: 8.5 },
-  Info2:          { x: 23, z: -6, scatter: 1.5, dwell: 8.5 },  
-  Info3:          { x: -23, z: 7, scatter: 1.5, dwell: 8.5 }, 
-  Info4:          { x: 14, z: 12, scatter: 1.5, dwell: 8.5 },
+// ==========================================
+// 📍 ARCHITECTURAL NODES FLOOR 1
+// ==========================================
+export const N = {
+  // --- ENTRANCE & MAIN LOBBY (Lower Elevation ~0.99 - 1.07) ---
+  Entrance_1: { x: -0.66, y: 1.07, z: 19.50, scatter: 3.0, dwell: 0.01 },
+  Entrance_2: { x: -0.51, y: 1.07, z: 15.73, scatter: 2.0 },
+  Lobby_Front: { x: -0.45, y: 0.99, z: 14.13, scatter: 2.0 },
+  Lobby_Mid: { x: -0.56, y: 0.99, z: 8.28, scatter: 3.0, dwell: 0.01 },
+  Lobby_Deep: { x: -0.58, y: 0.99, z: 4.20, scatter: 1 },
+  Lobby_Left1: { x: -3.99, y: 0.99, z: 11.92, scatter: 2.0, dwell: 0.01 },
+  Lobby_Left2: { x: -3.97, y: 0.99, z: 8.76, scatter: 2.0, dwell: 0.1 },
+  Info_Left: { x: -4.37, y: 0.99, z: 2.47, scatter: 0.5 },
+  Info_Right: { x: 3.23, y: 0.99, z: 2.35, scatter: 0.5 },
 
+  // --- STAIRS & ELEVATIONS (Transitional Y values) ---
+  Stairs_L_Mid: { x: -6.83, y: 1.68, z: 8.27, scatter: 0.5 },
+  Stairs_R_Mid: { x: 5.47, y: 1.64, z: 8.33, scatter: 0.5 },
+  Stairs_C_Mid1: { x: 1.34, y: 1.36, z: 2.16, scatter: 0.5 },
+  Stairs_C_Mid2: { x: 5.07, y: 1.21, z: -1.40, scatter: 0.5 },
+  Stairs_C_Mid3: { x: 5.46, y: 1.21, z: -6.78, scatter: 1.5, dwell: 0.01 },
 
-  Entrance:       { x: 0, z: 20, scatter: 4.0 },
-  Lobby:          { x: 0, z: 12, scatter: 10.0, dwell: 0.1}, // Lobby is a big open space, so it has a huge scatter to encourage wandering
-  LobbyLeft:      { x: -14, z: 12, scatter: 3.5},
-  LobbyRightGate: { x: 14, z: 12, scatter: 1.5},
-  
-  // Left Wing (Volcano, Ammonite exhibits)
-  // Removed dwell times from gates/doors so they walk straight through
-  LeftWingGate:   { x: -23, z: 7, scatter: 1.5}, 
-  LeftDeep:       { x: -23, z: -12, scatter: 4.0, dwell: 0.2 }, 
-  
-  // Right Wing (Sharks, Birds exhibits)
-  RightWingGate:  { x: 23, z: 7, scatter: 1.5},
-  RightDeep:      { x: 23, z: -18, scatter: 6, dwell: 0.2 },
-  
-  // Center (Info Desk, Restrooms)
-  Octagon:        { x: 0, z: 0, scatter: 2.5, dwell: 0.3 },
-  Restroom:       { x: 8, z: 15, scatter: 1.5, dwell: 0.2 },
-  LeftLift:       { x: -6.7, z: 6, scatter: 1.0, dwell: 0.2 },
- 
-  // Additional Transitional Spaces
-  LeftDown:       { x: -22, z: 12, scatter: 1.5},  
-  RightDown:      { x: 23, z: 16, scatter: 1.5},  
-  RightMidDoor:   { x: 23, z: -6, scatter: 1.5},  
-  RightMidRoom:   { x: 25, z: 0, scatter: 2.5, dwell: 0.3 }, 
+  // --- CENTER BACK CORRIDORS (y: 0.99) ---
+  Center_Back1: { x: -3.67, y: 0.99, z: -1.08, scatter: 0.5 },
+  Center_Back2: { x: -0.74, y: 0.99, z: -4.83, scatter: 1.5, dwell: 0.005 },
+  Center_Back3: { x: -0.42, y: 0.99, z: -9.22, scatter: 0.5 },
+  Center_Back4: { x: 0.63, y: 0.99, z: -15.24, scatter: 1.0, dwell: 0.01 },
+  Center_Back5: { x: -1.48, y: 0.99, z: -18.84, scatter: 1.5, dwell: 0.015 },
+  Center_Right1: { x: 2.84, y: 0.99, z: -2.35, scatter: 0.5 },
+  Center_Right2: { x: 3.59, y: 0.99, z: 0.33, scatter: 0.5 },
+  Center_Right3: { x: 7.20, y: 0.99, z: -0.61, scatter: 0.5 },
+  Center_Right4: { x: 10.72, y: 0.99, z: -0.65, scatter: 0.5 },
+
+  // --- LEFT WING (Upper Elevation ~1.85) ---
+  Left_1: { x: -10.54, y: 1.85, z: 6.55, scatter: 0.5 },
+  Left_2: { x: -13.88, y: 1.85, z: 8.84, scatter: 0.5 },
+  Left_3: { x: -20.25, y: 1.85, z: 8.85, scatter: 2.0, dwell: 0.015 },
+  Left_4: { x: -19.92, y: 1.85, z: 4.90, scatter: 2.5, dwell: 0.015 },
+  Left_5: { x: -27.55, y: 1.85, z: 8.77, scatter: 0.5 },
+  Left_6: { x: -34.11, y: 1.85, z: 8.91, scatter: 3.5, dwell: 0.01 },
+  Left_7: { x: -34.29, y: 1.85, z: 14.06, scatter: 2.5, dwell: 0.015 },
+  Left_8: { x: -34.15, y: 1.85, z: 2.59, scatter: 0.5 },
+  Left_9: { x: -30.53, y: 1.85, z: -9.63, scatter: 2.5, dwell: 0.015 },
+  Left_10: { x: -30.60, y: 1.85, z: -24.57, scatter: 2.5, dwell: 0.015 },
+  Left_11: { x: -34.02, y: 1.85, z: -38.36, scatter: 0.5 },
+  Left_12: { x: -34.07, y: 1.85, z: -45.36, scatter: 2.5 },
+  Left_13: { x: -37.30, y: 1.85, z: -45.99, scatter: 1.5, dwell: 0.01 },
+  Left_14: { x: -36.80, y: 1.85, z: -30.87, scatter: 2.5, dwell: 0.015 },
+  Left_15: { x: -36.65, y: 1.85, z: -16.96, scatter: 2.5, dwell: 0.015 },
+  Left_16: { x: -36.70, y: 1.85, z: -5.85, scatter: 2.5, dwell: 0.015 },
+
+  // --- RIGHT WING (Upper Elevation ~1.85) ---
+  Right_1: { x: 8.96, y: 1.85, z: 6.59, scatter: 1.5 },
+  Right_2: { x: 9.16, y: 1.85, z: 10.09, scatter: 1.5, dwell: 0.01 },
+  Right_3: { x: 12.59, y: 1.85, z: 8.88, scatter: 0.5 },
+  Right_4: { x: 19.68, y: 1.85, z: 8.68, scatter: 3.0, dwell: 0.01 },
+  Right_5: { x: 19.48, y: 1.85, z: 13.79, scatter: 1.5, dwell: 0.01 },
+  Right_6: { x: 26.26, y: 1.85, z: 9.12, scatter: 0.5 },
+  Right_7: { x: 28.86, y: 1.85, z: 8.66, scatter: 1.5, dwell: 0.015 },
+  Right_8: { x: 29.05, y: 1.85, z: 11.29, scatter: 0.5 },
+  Right_9: { x: 30.57, y: 1.85, z: 12.48, scatter: 1.5, dwell: 0.015 },
+  Right_10: { x: 32.65, y: 1.85, z: 14.09, scatter: 0.5 },
+  Right_11: { x: 34.84, y: 1.85, z: 12.14, scatter: 0.5 },
+  Right_12: { x: 36.38, y: 1.85, z: 9.16, scatter: 0.5 },
+  Right_13: { x: 36.81, y: 1.85, z: 12.87, scatter: 1.5, dwell: 0.015 },
+  Right_14: { x: 36.66, y: 1.85, z: 5.79, scatter: 0.5 },
+  Right_15: { x: 32.89, y: 1.85, z: 4.18, scatter: 1.5, dwell: 0.015 },
+  Right_16: { x: 32.47, y: 1.85, z: 0.16, scatter: 1.5, dwell: 0.035 },
+  Right_17: { x: 30.19, y: 1.85, z: -0.96, scatter: 0.5 },
+  Right_18: { x: 29.00, y: 1.85, z: -3.88, scatter: 0.5 },
+  Right_19: { x: 28.77, y: 1.85, z: -10.61, scatter: 1.0 },
+  Right_20: { x: 29.03, y: 1.85, z: -15.47, scatter: 0.5 },
+  Right_21: { x: 30.89, y: 1.85, z: -18.33, scatter: 1.5, dwell: 0.015 },
+  Right_22: { x: 28.65, y: 1.85, z: -21.70, scatter: 0.5 },
+  Right_23: { x: 33.99, y: 1.85, z: -18.40, scatter: 1.5, dwell: 0.015 },
+  Right_24: { x: 36.08, y: 1.85, z: -17.53, scatter: 1.5, dwell: 0.015 },
+  Right_25: { x: 36.73, y: 1.85, z: -13.03, scatter: 0.5 },
+  Right_26: { x: 36.80, y: 1.85, z: -7.78, scatter: 0.5 },
+  Right_27: { x: 35.94, y: 1.85, z: -1.16, scatter: 0.5 },
+  Right_28: { x: 33.95, y: 1.85, z: -22.50, scatter: 1.5, dwell: 0.015 },
+  Right_29: { x: 34.81, y: 1.85, z: -26.92, scatter: 0.5 },
+  Right_30: { x: 32.89, y: 1.85, z: -29.03, scatter: 1.5, dwell: 0.015 },
+  Right_31: { x: 35.06, y: 1.85, z: -30.06, scatter: 0.5 },
+  Right_32: { x: 36.67, y: 1.85, z: -31.52, scatter: 1.5, dwell: 0.015 },
+  Right_33: { x: 29.84, y: 1.85, z: -28.89, scatter: 1.5 },
+  Right_34: { x: 29.23, y: 1.85, z: -34.11, scatter: 1.5, dwell: 0.015 },
+  Right_35: { x: 27.72, y: 1.85, z: -40.41, scatter: 0.5 },
+  Right_36: { x: 27.43, y: 1.85, z: -50.30, scatter: 0.5 },
+  Right_37: { x: 32.46, y: 1.85, z: -50.31, scatter: 1.5 },
+  Right_38: { x: 32.93, y: 1.85, z: -42.60, scatter: 2.5, dwell: 0.015 },
+  Right_39: { x: 24.31, y: 1.85, z: -46.47, scatter: 0.5 },
+  Right_40: { x: 24.11, y: 1.85, z: -42.75, scatter: 0.5 },
+
+  Staff_Info: { x: -5.7, y: 0.99, z: 11.89, scatter: 1.6, dwell: 1.4 },
+  Staff_Lobby: { x: -2.22, y: 1.14, z: 3.3, dwell: 4.3 },
+  Staff_Locker: { x: 8.35, y: 1.85, z: 13.2, dwell: 4.3 },
+  Staff_Left: { x: -35.11, y: 1.85, z: 3.52, dwell: 4.3 },
+  Staff_Left_Deep: { x: -35.15, y: 1.85, z: -37.36, dwell: 4 },
+  Staff_Right: { x: 25.46, y: 1.85, z: 7.2, dwell: 4.3 },
+  Staff_Right_Mid: { x: 31.8, y: 1.85, z: 3.34, dwell: 4.4 },
+  Staff_Right_Deep: { x: 29.64, y: 1.85, z: -37.42, dwell: 4.4 },
+
 };
 
-// --- ROUTE DEFINITIONS ---
+// ==========================================
+// 🚶 ROUTE DEFINITIONS (FIXED NODE REFERENCES)
+// ==========================================
 
-// Comprehensive Left Wing Tour
-const ROUTE_LEFT_FULL = [
-  N.Entrance, N.Lobby, N.LobbyLeft, N.LeftDown, N.LeftWingGate, N.LeftDeep, 
-  N.LeftWingGate, N.LeftDown, N.LobbyLeft, N.Lobby, N.Entrance
+
+const ROUTE_FULL_MUSEUM = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1,
+  N.Lobby_Mid, N.Lobby_Deep, N.Info_Right, N.Center_Right2,
+  N.Stairs_C_Mid2, N.Stairs_C_Mid3, N.Stairs_C_Mid2, N.Center_Right2,
+  N.Center_Right1, N.Center_Back2, N.Center_Back3, N.Center_Back4,
+  N.Center_Back5, N.Center_Back3, N.Center_Back2, N.Center_Back1,
+  N.Info_Left, N.Lobby_Deep, N.Stairs_R_Mid, N.Right_3, N.Right_4,
+  N.Right_6, N.Right_7, N.Right_8, N.Right_9, N.Right_10, N.Right_11,
+  N.Right_13, N.Right_12, N.Right_14, N.Right_15, N.Right_16, N.Right_27,
+  N.Right_26, N.Right_25, N.Right_24, N.Right_23, N.Right_28, N.Right_29,
+  N.Right_31, N.Right_32, N.Right_30, N.Right_33, N.Right_34, N.Right_35,
+  N.Right_36, N.Right_37, N.Right_38, N.Right_37, N.Right_36, N.Right_35,
+  N.Right_34, N.Right_33, N.Right_22, N.Right_21, N.Right_20, N.Right_19,
+  N.Right_18, N.Right_17, N.Right_16, N.Right_15, N.Right_14, N.Right_12,
+  N.Right_11, N.Right_9, N.Right_6, N.Right_3, N.Stairs_R_Mid, N.Stairs_L_Mid,
+  N.Left_2, N.Left_4, N.Left_5, N.Left_7, N.Left_8, N.Left_16, N.Left_9,
+  N.Left_10, N.Left_11, N.Left_12, N.Left_13, N.Left_11, N.Left_14, N.Left_15,
+  N.Left_8, N.Left_6, N.Left_3, N.Stairs_L_Mid, N.Lobby_Left2,
+  N.Lobby_Front, N.Entrance_1
 ];
 
-// Deep Right Wing Tour 
-const ROUTE_RIGHT_FULL = [
-  N.Entrance, N.Lobby, N.LobbyRightGate, N.RightDown, N.RightWingGate, 
-  N.RightMidDoor, N.RightMidRoom, N.RightMidDoor, N.RightDeep, 
-  N.RightWingGate, N.RightDown, N.LobbyRightGate, N.Lobby, N.Entrance
+const ROUTE_LEFT_WING = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1, N.Lobby_Mid,
+
+  N.Stairs_L_Mid, N.Left_2, N.Left_4, N.Left_5, N.Left_7, N.Left_8, N.Left_16,
+  N.Left_9, N.Left_10, N.Left_11, N.Left_12, N.Left_13, N.Left_11, N.Left_14,
+  N.Left_15, N.Left_8, N.Left_6, N.Left_3, N.Stairs_L_Mid, N.Lobby_Left2,
+
+  N.Lobby_Front, N.Entrance_1
 ];
 
-// Center focused: Lobby -> Lift -> Lobby -> Octagon -> Lobby -> Restroom
-const ROUTE_CENTER_REST = [
-  N.Entrance, N.Lobby, 
-  N.LeftLift, N.Lobby,   // Visit Lift, return to Lobby
-  N.Octagon,  N.Lobby,   // RULE ENFORCED: Must enter from Lobby, must exit to Lobby
-  N.Restroom, N.Lobby,   // Visit Restroom, return to Lobby
-  N.Entrance
+const ROUTE_RIGHT_WING = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1, N.Lobby_Mid,
+
+  N.Stairs_R_Mid, N.Right_3, N.Right_4,
+  N.Right_6, N.Right_7, N.Right_8, N.Right_9, N.Right_10, N.Right_11,
+  N.Right_13, N.Right_12, N.Right_14, N.Right_15, N.Right_16, N.Right_27,
+  N.Right_26, N.Right_25, N.Right_24, N.Right_23, N.Right_28, N.Right_29,
+  N.Right_31, N.Right_32, N.Right_30, N.Right_33, N.Right_34, N.Right_35,
+  N.Right_36, N.Right_37, N.Right_38, N.Right_37, N.Right_36, N.Right_35,
+  N.Right_34, N.Right_33, N.Right_22, N.Right_21, N.Right_20, N.Right_19,
+  N.Right_18, N.Right_17, N.Right_16, N.Right_15, N.Right_14, N.Right_12,
+  N.Right_11, N.Right_9, N.Right_6, N.Right_3, N.Stairs_R_Mid,
+
+  N.Lobby_Left2, N.Lobby_Front, N.Entrance_1
 ];
 
-// Cross-museum wandering: Backtracks to Lobby before crossing to Octagon/Right Wing
-const ROUTE_WANDER = [
-  N.Entrance, N.Lobby, 
-  N.LobbyLeft, N.LeftDown, N.LeftWingGate, // Go deep Left
-  N.LeftDown, N.LobbyLeft, N.Lobby,        // Retreat back to Lobby
-  N.Octagon, N.Lobby,                      // RULE ENFORCED: Enter Octagon, return to Lobby
-  N.LobbyRightGate, N.RightDown, N.RightWingGate, N.RightMidDoor, N.RightMidRoom, // Go deep Right
-  N.RightMidDoor, N.RightWingGate, N.RightDown, N.LobbyRightGate, N.Lobby, // Retreat
-  N.Entrance
+const ROUTE_MID_WING = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1, N.Lobby_Mid,
+
+  N.Lobby_Deep, N.Info_Right, N.Center_Right2,
+  N.Stairs_C_Mid2, N.Stairs_C_Mid3, N.Stairs_C_Mid2, N.Center_Right2,
+  N.Center_Right1, N.Center_Back2, N.Center_Back3, N.Center_Back4,
+  N.Center_Back5, N.Center_Back3, N.Center_Back2, N.Center_Back1,
+  N.Info_Left, N.Lobby_Deep,
+
+  N.Lobby_Left2, N.Lobby_Front, N.Entrance_1
 ];
 
-// Just popping into the Right Wing briefly
-const ROUTE_QUICK_LOOK = [
-  N.Entrance, N.Lobby, N.LobbyRightGate, N.RightDown, N.RightWingGate, 
-  N.LobbyRightGate, N.Lobby, N.Octagon, N.Lobby, N.Entrance
+const ROUTE_STAFF_INFO = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left2, N.Staff_Info, N.Staff_Info, N.Staff_Info, N.Lobby_Left2, N.Lobby_Front, N.Entrance_1
 ];
 
-// Staff arrive through the public route, dwell at their desk, then retrace their steps to exit.
-const ROUTE_INFO_1 = [N.Entrance, N.Lobby, N.Info, N.Lobby, N.Entrance];
-const ROUTE_INFO_2 = [N.Entrance, N.Lobby, N.LobbyRightGate, N.RightWingGate, N.Info2, N.RightWingGate, N.LobbyRightGate, N.Lobby, N.Entrance];
-const ROUTE_INFO_3 = [N.Entrance, N.Lobby, N.LobbyLeft, N.Info3, N.LobbyLeft, N.Lobby, N.Entrance];
-const ROUTE_INFO_4 = [N.Entrance, N.Lobby, N.LobbyRightGate, N.Info4, N.LobbyRightGate, N.Lobby, N.Entrance];
+const ROUTE_STAFF_LOBBY = [
+  N.Entrance_1, N.Lobby_Front, N.Lobby_Mid, N.Staff_Lobby, N.Lobby_Front, N.Entrance_1
+];
+
+const ROUTE_STAFF_LEFT = [
+  N.Entrance_1, N.Lobby_Front, N.Lobby_Mid, N.Stairs_L_Mid, N.Left_2, N.Left_5,
+  N.Staff_Left, N.Left_5, N.Left_2, N.Lobby_Mid, N.Entrance_1
+];
+
+const ROUTE_STAFF_LEFT_DEEP = [
+  N.Entrance_1, N.Lobby_Front, N.Lobby_Mid, N.Left_2, N.Left_5, N.Left_8,
+  N.Staff_Left_Deep, N.Left_8, N.Left_5, N.Left_2, N.Lobby_Mid, N.Entrance_1
+];
+
+const ROUTE_STAFF_RIGHT = [
+  N.Entrance_1, N.Lobby_Mid, N.Right_3, N.Staff_Right, N.Right_3, N.Lobby_Mid, N.Entrance_1
+];
+
+const ROUTE_STAFF_RIGHT_MID = [
+  N.Entrance_1, N.Lobby_Mid, N.Right_3, N.Right_6, N.Right_9, N.Right_11, N.Right_12,
+  N.Right_14, N.Staff_Right_Mid, N.Right_14, N.Right_12, N.Right_11, N.Right_9,
+  N.Right_6, N.Right_3, N.Lobby_Mid, N.Entrance_1
+];
+
+const ROUTE_STAFF_RIGHT_DEEP = [
+  N.Right_9, N.Right_11, N.Right_12, N.Right_14, N.Right_15, N.Right_16, N.Right_17,
+  N.Right_18, N.Right_19, N.Right_20, N.Right_22, N.Right_33, N.Staff_Right_Deep,
+  N.Right_33, N.Right_22, N.Right_19, N.Right_17, N.Right_15, N.Right_14, N.Right_12,
+  N.Right_11, N.Right_9, N.Right_6, N.Lobby_Mid, N.Entrance_1
+];
+
 
 // --- FLOOR 2 ARCHITECTURAL NODES ---
 const N2 = {
   // Assuming they arrive via the central stairs or elevator
-  Arrival:    { x: 3, z: 0, scatter: 3.0 }, 
-  Balcony:    { x: 0, z: 10, scatter: 10.0 },
-  GalleryA:   { x: -23, z: 13, scatter: 3.5, dwell: 0.2 },
-  GalleryB:   { x: 23, z: 13, scatter: 3.5, dwell: 0.1 },
-  GalleryA2:   { x: -23, z: -18, scatter: 3.5, dwell: 0.4 },
-  GalleryB2:   { x: 23, z: -23, scatter: 3.5, dwell: 0.1 },
+  Arrival: { x: 3, z: 0, scatter: 3.0 },
+  Balcony: { x: 0, z: 10, scatter: 10.0 },
+  GalleryA: { x: -23, z: 13, scatter: 3.5, dwell: 0.2 },
+  GalleryB: { x: 23, z: 13, scatter: 3.5, dwell: 0.1 },
+  GalleryA2: { x: -23, z: -18, scatter: 3.5, dwell: 0.4 },
+  GalleryB2: { x: 23, z: -23, scatter: 3.5, dwell: 0.1 },
 
 };
 
@@ -176,39 +308,37 @@ const ROUTE_F2_TOUR = [
 
 // --- GENERATE THE CROWD VARIANCE ---
 export const visitors = [
-  // Staff at Information Desk (constant presence)
-  ...generateGroup('staff_info', 3, 'staff', 9.0, ROUTE_INFO_1, 1),
-  ...generateGroup('staff_info2', 1, 'staff', 9.0, ROUTE_INFO_2, 1),
-  ...generateGroup('staff_info3', 1, 'staff', 9.0, ROUTE_INFO_3, 1),
-  ...generateGroup('staff_info4', 1, 'staff', 9.0, ROUTE_INFO_4, 1),
 
-  // 9:30 AM - Morning Guided Tour (Left Wing)
-  ...generateGroup('tour_morn_left', 12, 'tour', 9.5, ROUTE_LEFT_FULL),
-  // 9:45 AM - Morning Guided Tour (Right Wing) -> SIMULTANEOUS EXPLORATION
-  ...generateGroup('tour_morn_right', 12, 'tour', 9.75, ROUTE_RIGHT_FULL),
+  ...generateGroup('tour_morn_full', 20, 'tour', 9.0, ROUTE_FULL_MUSEUM),
+  ...generateGroup('solo_morn_full', 10, 'solo', 9.1, ROUTE_FULL_MUSEUM),
+  ...generateGroup('tour_morn_left', 12, 'tour', 9.0, ROUTE_LEFT_WING),
+  ...generateGroup('couple_morn_right', 6, 'couple', 9.0, ROUTE_RIGHT_WING),
+  ...generateGroup('tour_morn_full_2', 8, 'tour', 10.5, ROUTE_FULL_MUSEUM),
 
-  // 10:00 AM to 12:30 PM - Solo Wanderers filtering through both wings independently
-  ...generateGroup('solo_morn', 20, 'solo', 10.0, ROUTE_WANDER),
+  ...generateGroup('couple_noon_mid', 8, 'couple', 12.0, ROUTE_MID_WING),
 
-  // 11:30 AM to 1:30 PM - Couples going to the center and restrooms 
-  ...generateGroup('couple_lunch', 10, 'couple', 11.5, ROUTE_CENTER_REST),
+  ...generateGroup('tour_aft_full', 10, 'tour', 13.0, ROUTE_FULL_MUSEUM),
+  ...generateGroup('tour_aft_mid', 8, 'tour', 13.0, ROUTE_MID_WING),
+  ...generateGroup('solo_aft_right', 10, 'solo', 15.0, ROUTE_RIGHT_WING),
+  ...generateGroup('solo_aft_left', 4, 'solo', 14.0, ROUTE_LEFT_WING),
+  ...generateGroup('couple_aft_left', 2, 'couple', 16.0, ROUTE_LEFT_WING),
 
-  // 13:30 PM - Afternoon School Groups (Splitting up left and right at the same time)
-  ...generateGroup('tour_aft_left', 15, 'tour', 13.5, ROUTE_LEFT_FULL),
-  ...generateGroup('tour_aft_right', 15, 'tour', 13.5, ROUTE_RIGHT_FULL),
-  
-  // 14:00 PM to 16:30 PM - Afternoon Solo Explorers
-  ...generateGroup('solo_aft', 15, 'solo', 14.0, ROUTE_LEFT_FULL),
+  ...generateGroup('staff_info', 1, 'staff', 9.0, ROUTE_STAFF_INFO),
+  ...generateGroup('staff_lobby', 1, 'staff', 9.0, ROUTE_STAFF_LOBBY),
+  ...generateGroup('staff_left', 1, 'staff', 9.0, ROUTE_STAFF_LEFT),
+  ...generateGroup('staff_left_deep', 1, 'staff', 9.0, ROUTE_STAFF_LEFT_DEEP),
+  ...generateGroup('staff_right', 1, 'staff', 9.0, ROUTE_STAFF_RIGHT),
+  ...generateGroup('staff_right_mid', 1, 'staff', 9.0, ROUTE_STAFF_RIGHT_MID),
+  ...generateGroup('staff_right_deep', 1, 'staff', 9.0, ROUTE_STAFF_RIGHT_DEEP),
 
-  // 15:30 PM - Late Afternoon Quick Look
-  ...generateGroup('couple_late', 8, 'couple', 16.5, ROUTE_QUICK_LOOK),
+  ...generateGroup('staff_info_aft', 2, 'staff', 13.0, ROUTE_STAFF_INFO),
+  ...generateGroup('staff_lobby_aft', 1, 'staff', 13.0, ROUTE_STAFF_LOBBY),
+  ...generateGroup('staff_left_aft', 1, 'staff', 13.0, ROUTE_STAFF_LEFT),
+  ...generateGroup('staff_left_deep_aft', 1, 'staff', 13.0, ROUTE_STAFF_LEFT_DEEP),
+  ...generateGroup('staff_right_aft', 1, 'staff', 13.0, ROUTE_STAFF_RIGHT),
+  ...generateGroup('staff_right_mid_aft', 1, 'staff', 13.0, ROUTE_STAFF_RIGHT_MID),
+  ...generateGroup('staff_right_deep_aft', 1, 'staff', 13.0, ROUTE_STAFF_RIGHT_DEEP),
 
-  // --- FLOOR 2 CROWDS ---
-  ...generateGroup('f2_tour_aft', 12, 'tour', 14.0, ROUTE_F2_TOUR, 2),
-  ...generateGroup('f2_tour_aft2', 9, 'tour', 14.0, ROUTE_F2_WANDER, 2),
-  ...generateGroup('f2_solo_lunch', 15, 'solo', 11.0, ROUTE_F2_WANDER, 2),
-  ...generateGroup('f2_couple_lunch', 6, 'couple', 12.5, ROUTE_F2_WANDER, 2),
-  ...generateGroup('f2_tour_morning', 12, 'tour', 9.0, ROUTE_F2_TOUR, 2),
 ];
 
 // ==========================================
@@ -216,23 +346,26 @@ export const visitors = [
 // ==========================================
 export const staticNoiseSources = {
   1: [
-    { id: 'aviary', x: 25, z: -27, baseNoise: 55, spread: 0.22 }, 
-    { id: 'waterfall', x: -23, z: -18, baseNoise: 45, spread: 0.25 }, 
-    { id: 'AC', x: -25, z: 15, baseNoise: 32, spread: 0.30 },
-    { id: 'elevator1', x: -7, z: 6, baseNoise: 25, spread: 0.40 }, 
-    { id: 'elevator2', x: 7, z: 6, baseNoise: 25, spread: 0.40 },
-    { id: 'stairs', x: 3.5, z: -3, baseNoise: 25, spread: 0.25}, 
-    { id: 'stairs2', x: -3.5, z: -3, baseNoise: 25, spread: 0.25 },  
-    { id: 'stairs3', x: -23, z: -26, baseNoise: 25, spread: 0.30 },  
+    { id: 'elevator1', x: -10.5, z: 5.5, baseNoise: 25, spread: 0.25 },
+    { id: 'elevator2', x: 9.5, z: 5.5, baseNoise: 25, spread: 0.25 },
+    { id: 'mid-deep-left', x: -5.5, z: -17, baseNoise: 15, spread: 0.20 },
+    { id: 'mid-deep-right', x: 5.3, z: -17, baseNoise: 15, spread: 0.20 },
+
+    { id: 'mid-left', x: -5.5, z: -7, baseNoise: 15, spread: 0.20 },
+    { id: 'mid-right', x: 5.3, z: -7, baseNoise: 15, spread: 0.20 },
+
+    { id: 'right-low', x: 33.5, z: 10.5, baseNoise: 20, spread: 0.30 },
+    { id: 'right-mid', x: 33.5, z: -1, baseNoise: 15, spread: 0.10 },
+    { id: 'right-mid-2', x: 33.5, z: -14, baseNoise: 15, spread: 0.10 },
+    { id: 'right-deep', x: 34, z: -35, baseNoise: 25, spread: 0.10 },
+
+    { id: 'entry', x: -0.8, z: 15, baseNoise: 25, spread: 0.20 },
   ],
   2: [
-    { id: 'stairs', x: 3.5, z: -4, baseNoise: 25, spread: 0.30 }, 
-    { id: 'stairs2', x: -3.5, z: -4, baseNoise: 25, spread: 0.30 }, 
-    { id: 'stairs3', x: -23, z: -26, baseNoise: 30, spread: 0.20 },  
-    { id: 'cafe_area', x: 0, z: 16.5, baseNoise: 45, spread: 0.10 }, 
-    { id: 'elevator1_F2', x: -6.8, z: 6, baseNoise: 15, spread: 0.60 }, 
-    { id: 'elevator2_F2', x: 6.8, z: 6, baseNoise: 15, spread: 0.60 },
-    { id: 'video_wall', x: 26, z: 11, baseNoise: 35, spread: 0.12 }, 
+    { id: 'stairs', x: 0.7, z: -1, baseNoise: 25, spread: 0.20 },
+    { id: 'elevator1', x: -9.7, z: 8.5, baseNoise: 10, spread: 0.25 },
+    { id: 'elevator2', x: 11, z: 8.5, baseNoise: 10, spread: 0.25 },
+    { id: 'cafe_area', x: 0.7, z: 20.5, baseNoise: 35, spread: 0.04 },
   ]
 }
 
@@ -258,7 +391,7 @@ export function getNoiseSources(timeOfDay, targetFloor, dayOfWeek) {
   });
 
   // 2. Filter Active Visitors for this Day and Floor
-  const activeVisitors = visitors.filter(v => 
+  const activeVisitors = visitors.filter(v =>
     v.daysVisiting.includes(dayOfWeek) && v.floor === targetFloor
   );
 
@@ -272,17 +405,17 @@ export function getNoiseSources(timeOfDay, targetFloor, dayOfWeek) {
     if (timeOfDay >= enterTime && timeOfDay <= exitTime) {
       let startIndex = 0;
       for (let j = 0; j < path.length - 1; j++) {
-        if (timeOfDay >= path[j].time && timeOfDay <= path[j+1].time) {
+        if (timeOfDay >= path[j].time && timeOfDay <= path[j + 1].time) {
           startIndex = j;
           break;
         }
       }
-      
+
       const startNode = path[startIndex];
       const endNode = path[startIndex + 1];
       const duration = endNode.time - startNode.time;
       const progress = duration === 0 ? 1 : (timeOfDay - startNode.time) / duration
-      
+
       // Simulating Three.js smootherstep interpolation natively
       const t = Math.max(0, Math.min(1, progress));
       const easedProgress = t * t * t * (t * (t * 6 - 15) + 10);
@@ -302,7 +435,7 @@ export function getNoiseSources(timeOfDay, targetFloor, dayOfWeek) {
   // 4. Calculate Proximity Compounding Factors (Crowd Buzz)
   visitorPositions.forEach((pos, i) => {
     let dynamicNoise = pos.volume;
-    
+
     visitorPositions.forEach((neighbor, j) => {
       if (i !== j) {
         const dist = Math.hypot(pos.x - neighbor.x, pos.z - neighbor.z);

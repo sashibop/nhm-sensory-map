@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import useAppStore from '../../../../store/useAppStore'
@@ -6,12 +6,11 @@ import { getNoiseSources } from '../../../../data/mockVisitorData'
 
 const MAX_SOURCES = 150 
 
-export default function NoiseLayer({ targetFloor = 1 }) {
+export default function NoiseLayer({ targetFloor = 1, geometry }) {
   const timeOfDay = useAppStore((state) => state.timeOfDay)
   const selectedDate = useAppStore((state) => state.selectedDate)
   const activeFloor = useAppStore((state) => state.activeFloor)
-  
-  // Custom heatmap shader configuration
+
   const heatmapMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       transparent: true,
@@ -20,7 +19,7 @@ export default function NoiseLayer({ targetFloor = 1 }) {
         uSources: { value: Array.from({ length: MAX_SOURCES }, () => new THREE.Vector4(0, 0, 0, 0)) },
         uSourceCount: { value: 0 },
         uTime: { value: 0 },
-        uFocus: { value: targetFloor === 1 ? 1.0 : 0.0 } 
+        uFocus: { value: targetFloor === activeFloor ? 1.0 : 0.0 } 
       },
       vertexShader: `
         varying vec3 vLocalPos;
@@ -30,6 +29,7 @@ export default function NoiseLayer({ targetFloor = 1 }) {
         }
       `,
       fragmentShader: `
+        // ... (Your exact same fragmentShader code) ...
         uniform vec4 uSources[${MAX_SOURCES}];
         uniform int uSourceCount;
         uniform float uTime;
@@ -45,7 +45,8 @@ export default function NoiseLayer({ targetFloor = 1 }) {
           for(int i = 0; i < ${MAX_SOURCES}; i++) {
             if (i >= uSourceCount) break;
             vec4 source = uSources[i];
-            float dist = distance(vLocalPos.xy, source.xy);
+            
+            float dist = distance(vLocalPos.xz, source.xy); 
             float heatContribution = source.z / (1.0 + pow(dist * source.w, 2.0));
             totalHeat += heatContribution;
           }
@@ -74,15 +75,15 @@ export default function NoiseLayer({ targetFloor = 1 }) {
           vec3 dullColor = vec3(lum) * 0.5 + vec3(0.28, 0.33, 0.41); 
           vec3 outColor = mix(dullColor, vibrantColor, uFocus);
 
-          float activeAlpha = mix(0.15, 0.90, smoothstep(0.1, 0.8, normalizedHeat)); 
-          float ghostedAlpha = mix(0.02, 0.15, smoothstep(0.1, 0.8, normalizedHeat)); 
+          float activeAlpha = mix(0.15, 0.70, smoothstep(0.1, 0.8, normalizedHeat)); 
+          float ghostedAlpha = mix(0.01, 0.10, smoothstep(0.1, 0.8, normalizedHeat)); 
           float alpha = mix(ghostedAlpha, activeAlpha, uFocus);
 
           gl_FragColor = vec4(outColor, alpha);
         }
       `
     })
-  }, [targetFloor])
+  }, [targetFloor, activeFloor])
 
   useFrame((_, delta) => {
     const isTargetFloor = activeFloor === targetFloor
@@ -97,18 +98,18 @@ export default function NoiseLayer({ targetFloor = 1 }) {
 
     if (!isTargetFloor) return
 
-    // 1. Query the Unified Data Function
     const dayOfWeek = selectedDate.getDay()
     const activeNoiseData = getNoiseSources(timeOfDay, targetFloor, dayOfWeek)
 
-    // 2. Map directly to shader uniform array
     const uniforms = heatmapMaterial.uniforms.uSources.value
     let count = 0
 
     activeNoiseData.forEach((source) => {
       if (count < MAX_SOURCES) {
-        // Shader expects flipped coordinates due to WebGL plane matrices
-        uniforms[count].set(source.x, -source.z, source.volume, source.spread)
+        // ⚠️ UN-ROTATE: Spin the coordinate backwards to map it onto the physical mesh
+
+        // .x and .y from the Vector2 represent the X and Z axes
+        uniforms[count].set(source.x, source.z, source.volume, source.spread)
         count++
       }
     })
@@ -117,27 +118,13 @@ export default function NoiseLayer({ targetFloor = 1 }) {
     heatmapMaterial.uniforms.uSources.needsUpdate = true
   })
 
-  const floorShapeGeo = useMemo(() => {
-    const shape = new THREE.Shape()
-    shape.moveTo(-28, -18); shape.lineTo(28, -18); shape.lineTo(28, 33);
-    shape.lineTo(18, 33); shape.lineTo(18, -6); shape.lineTo(9, -6);
-    shape.lineTo(9, 14); shape.lineTo(8.7, 14);
-    shape.absarc(0, 14, 8.7, 0, Math.PI, false);
-    shape.lineTo(-9, 14); shape.lineTo(-9, -6); shape.lineTo(-18, -6);
-    shape.lineTo(-18, 33); shape.lineTo(-28, 33);
-    shape.closePath()
-    return new THREE.ShapeGeometry(shape)
-  }, [])
+  if (!geometry) return null
 
   return (
-    <group>
-      <mesh 
-        geometry={floorShapeGeo} 
-        material={heatmapMaterial}
-        position={[0, 0.45, 0]} 
-        rotation={[-Math.PI / 2, 0, 0]} 
-        renderOrder={1} 
-      />
-    </group>
+    <mesh 
+      geometry={geometry} 
+      material={heatmapMaterial}
+      renderOrder={4} 
+    />
   )
 }
