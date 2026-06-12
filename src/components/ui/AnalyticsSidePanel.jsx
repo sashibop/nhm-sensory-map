@@ -7,7 +7,7 @@
 //   each selected room gets its own coloured line
 // – Cross-highlight: hovering a chart line ↔ hovering the map icon
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -22,6 +22,7 @@ import useAppStore from "../../store/useAppStore";
 import {
   getRoomCrowdHourlyData,
   getRoomNoiseHourlyData,
+  getMuseumOverviewData,
 } from "../../data/roomAnalytics";
 import styles from "./styles/AnalyticsSidePanel.module.css";
 
@@ -46,20 +47,6 @@ function getRoomBrightnessHourlyData(roomKey, dayOfWeek, _activeFloor) {
   });
 }
 
-// ─── museum-wide aggregated data ─────────────────────────────────────────────
-function getMuseumOverviewData(fn, dayOfWeek, activeFloor) {
-  const ROOM_KEYS = ["shark"]; // extend as you add rooms to ROOMS
-  const allData = ROOM_KEYS.map((k) => fn(k, dayOfWeek, activeFloor));
-  return Array.from({ length: 24 }, (_, hour) => ({
-    hour,
-    value:
-      Math.round(
-        (allData.reduce((sum, d) => sum + (d[hour]?.value ?? 0), 0) /
-          allData.length) *
-          10
-      ) / 10,
-  }));
-}
 
 // ─── label maps ──────────────────────────────────────────────────────────────
 const ROOM_LABELS = {
@@ -125,7 +112,7 @@ function AnalyticsChart({
   // build merged dataset [{hour, roomA, roomB, …}] or [{hour, Museum}]
   let data;
   if (isOverview) {
-    const raw = getMuseumOverviewData(chartCfg.dataFn, dayOfWeek, activeFloor);
+    const raw = getMuseumOverviewData(chartCfg.dataFn, dayOfWeek);
     data = raw.map((d) => ({ hour: d.hour, Museum: d.value }));
   } else {
     data = Array.from({ length: 24 }, (_, h) => ({ hour: h }));
@@ -211,18 +198,16 @@ function AnalyticsChart({
 
 // ─── main panel ──────────────────────────────────────────────────────────────
 export default function AnalyticsSidePanel() {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useAppStore((s) => s.isPanelOpen);
+  const setIsPanelOpen = useAppStore((s) => s.setIsPanelOpen);
   const [hoveredRoom, setHoveredRoom] = useState(null);
 
   // store: selectedRooms = Set<string>; setHoveredMapIcon = fn
-  // You'll need to add `selectedRooms`, `toggleSelectedRoom`,
-  // `hoveredMapIcon`, `setHoveredMapIcon` to your useAppStore.
-  // Below we gracefully fall back if they're absent.
   const selectedRooms = useAppStore((s) => s.selectedRooms ?? []);
   const selectedDate = useAppStore((s) => s.selectedDate);
   const activeFloor = useAppStore((s) => s.activeFloor);
   const setHoveredMapIcon = useAppStore(
-    (s) => s.setHoveredMapIcon ?? (() => {})
+    (s) => s.setHoveredMapIcon ?? (() => { })
   );
 
   const dayOfWeek = selectedDate?.getDay() ?? 1;
@@ -240,8 +225,8 @@ export default function AnalyticsSidePanel() {
     <>
       {/* ── toggle button ── */}
       <button
-        className={styles.toggleBtn}
-        onClick={() => setIsOpen((o) => !o)}
+        className={`${styles.toggleBtn} ${isOpen ? styles.toggleBtnOpen : ""}`}
+        onClick={() => setIsPanelOpen(!isOpen)}
         aria-label={isOpen ? "Close analytics" : "Open analytics"}
         title="Analytics"
       >
@@ -265,20 +250,20 @@ export default function AnalyticsSidePanel() {
               {roomList.length === 0
                 ? "Museum Overview"
                 : roomList.length === 1
-                ? (ROOM_LABELS[roomList[0]] ?? "Exhibition")
-                : `${roomList.length} Exhibitions`}
+                  ? (ROOM_LABELS[roomList[0]] ?? "Exhibition")
+                  : `${roomList.length} Exhibitions`}
             </div>
             <div className={styles.panelSub}>
               {roomList.length === 0
                 ? "All areas · today"
                 : roomList
-                    .map((r) => ROOM_LABELS[r] ?? r)
-                    .join(", ")}
+                  .map((r) => ROOM_LABELS[r] ?? r)
+                  .join(", ")}
             </div>
           </div>
           <button
             className={styles.closeBtn}
-            onClick={() => setIsOpen(false)}
+            onClick={() => setIsPanelOpen(false)}
             aria-label="Close"
           >
             ×
@@ -322,3 +307,4 @@ export default function AnalyticsSidePanel() {
     </>
   );
 }
+

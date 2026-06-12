@@ -15,6 +15,8 @@ const useAppStore = create((set, get) => ({
     cursorSize: 100,
   },
   selectedIcon: null,
+  isPanelOpen: false,
+  setIsPanelOpen: (open) => set({ isPanelOpen: !!open }),
 
   // Multi-select rooms
   selectedRooms: new Set(),

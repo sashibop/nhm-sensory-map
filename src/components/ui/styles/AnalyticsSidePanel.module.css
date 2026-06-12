@@ -27,7 +27,7 @@
 
   color: var(--text-main);
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, transform 0.2s, right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toggleBtn:hover {
@@ -35,8 +35,7 @@
 }
 
 /* push button left when panel is open */
-.panelOpen ~ .toggleBtn,        /* sibling if rendered outside */
-:has(.panelOpen) .toggleBtn {
+.toggleBtnOpen {
   right: 340px;
 }
 
@@ -54,9 +53,9 @@
   gap: 0;
   overflow: hidden;
 
-  background: var(--glass-bg-medium);
-  border-left: 1px solid var(--glass-border);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.25);
+  background: var(--glass-bg-strong);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
@@ -69,6 +68,19 @@
 .panelOpen {
   transform: translateX(0);
 }
+
+/* Reduce expensive visual effects while panel is animating to improve performance */
+/*html.panel-animating .panel {
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+html.panel-animating .toggleBtn,
+html.panel-animating .panelHeader,
+html.panel-animating .chartBlock {
+  transition-duration: 0.25s !important;
+}*/
 
 /* ── header ─────────────────────────────────────────────── */
 .panelHeader {

@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
+import ExhibitionsLayer from '../../layers/3d/ExhibitionsLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { Html } from '@react-three/drei'
 
@@ -280,104 +281,12 @@ export default function FloorOne({ isActive, focusRef }) {
     </group>
   )
 
-  const sharkTexture = useMemo(() => {
-    return new THREE.TextureLoader().load('src/assets/natureRoleModel.svg');
-  }, []);
-
-
-  const glowTexture = useMemo(() => {
-    const size = 256;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-
-    const ctx = canvas.getContext('2d');
-
-    const gradient = ctx.createRadialGradient(
-      size / 2,
-      size / 2,
-      0,
-      size / 2,
-      size / 2,
-      size / 2
-    );
-
-    gradient.addColorStop(0, 'rgba(0, 170, 255, 0.9)');
-    gradient.addColorStop(0.3, 'rgba(0, 170, 255, 0.4)');
-    gradient.addColorStop(1, 'rgba(0, 170, 255, 0)');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-
-    return texture;
-  }, []);
-
-  function Hotspot({ position, rotation, texture, onClick, onPointerEnter, onPointerLeave, isSelected, isHighlighted, size = 6 }) {
-    const [hovered, setHovered] = useState(false);
-    const active = hovered || isHighlighted;
-
-    return (
-      <group position={position} rotation={rotation}>
-        {/* Glow */}
-        <mesh position={[0, 0, -0.01]}>
-          <planeGeometry args={[size * 2.5, size * 2.5]} />
-          <meshBasicMaterial
-            map={glowTexture}
-            transparent
-            opacity={isSelected ? 0.9 : active ? 0.75 : 0.5}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Selection ring */}
-        {isSelected && (
-          <mesh position={[0, 0, -0.005]}>
-            <ringGeometry args={[size * 0.6, size * 0.72, 32]} />
-            <meshBasicMaterial
-              color="#6C8EFF"
-              transparent
-              opacity={0.9}
-              depthWrite={false}
-            />
-          </mesh>
-        )}
-
-        {/* Icon */}
-        <mesh
-          scale={active ? 1.15 : 1}
-          onPointerOver={(e) => {
-            setHovered(true);
-            document.body.style.cursor = 'pointer';
-            onPointerEnter?.(e);
-          }}
-          onPointerOut={(e) => {
-            setHovered(false);
-            document.body.style.cursor = 'default';
-            onPointerLeave?.(e);
-          }}
-          onClick={onClick}
-        >
-          <planeGeometry args={[size, size]} />
-          <meshBasicMaterial
-            map={texture}
-            transparent
-            side={THREE.DoubleSide}
-            opacity={isSelected ? 1 : active ? 0.95 : 0.75}
-          />
-        </mesh>
-      </group>
-    );
-  }
-
   return (
     <group>
 
       {layers.crowd && <CrowdLayer targetFloor={1} />}
       {layers.noise && <NoiseLayer targetFloor={1} />}
+      {<ExhibitionsLayer floorH={floorH} targetFloor={1} />}
       {/* <DebugNodes /> */}
 
       {/* ========================================================= */}
@@ -595,28 +504,6 @@ export default function FloorOne({ isActive, focusRef }) {
         <torusKnotGeometry args={[0.8, 0.25, 128, 16]} />
         <primitive object={materials.exhibit} attach="material" />
       </mesh>
-
-
-      <Hotspot
-        position={[23, floorH + 0.01, -18]}
-        rotation={[-Math.PI / 2, 0, -Math.PI / 4]}
-        texture={sharkTexture}
-        isSelected={useAppStore((s) => s.selectedRooms.has("shark"))}
-        isHighlighted={useAppStore((s) => s.hoveredMapIcon === "shark")}
-        onClick={(e) => {
-          e.stopPropagation();
-          useAppStore.getState().toggleSelectedRoom("shark");
-        }}
-        onPointerEnter={(e) => {
-          e.stopPropagation();
-          useAppStore.getState().setHoveredMapIcon("shark");
-        }}
-        onPointerLeave={(e) => {
-          e.stopPropagation();
-          useAppStore.getState().setHoveredMapIcon(null);
-        }}
-      />
-
 
     </group>
   )
