@@ -81,7 +81,6 @@ export default function App() {
         <ViewToggle />
         <GlobalSettings />
         <Disclaimer />
-        <IconAnalytics />
       </div>
 
       {/* RIGHT: PANEL */}

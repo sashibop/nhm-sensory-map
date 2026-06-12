@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF, Html } from '@react-three/drei'
 import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
+import ExhibitionsLayer from '../../layers/3d/ExhibitionsLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { N } from '../../../../data/mockVisitorData'
 
@@ -129,6 +130,7 @@ export default function Floor({ level = 1, isActive, focusRef }) {
     }
   })
 
+  
   return (
     <group ref={rootGroupRef} scale={[1, 1, 1]}>
       
@@ -159,6 +161,8 @@ export default function Floor({ level = 1, isActive, focusRef }) {
           <NoiseLayer targetFloor={level} geometry={nodes.floor.geometry} />
         </group>
       )}
+
+      <ExhibitionsLayer targetFloor={level} />
 
       {/* --- STANDARDIZED BLENDER MESHES --- */}
       {nodes.floor && <mesh geometry={nodes.floor.geometry} material={materials.floor} position={nodes.floor.position} rotation={nodes.floor.rotation} scale={nodes.floor.scale} renderOrder={1} receiveShadow onClick={handleFloorClick} />}

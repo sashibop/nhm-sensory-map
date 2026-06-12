@@ -138,28 +138,30 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
   return (
     <group>
       {/* Glow */}
-      <mesh position={[0, 0, -0.01]}>
+      <mesh position={[0, 0, -0.01]} renderOrder={10}>
         <planeGeometry args={[size * 2.5, size * 2.5]} />
         <meshBasicMaterial
           ref={glowRef}
           map={glowTexture}
           transparent
-          opacity={isSelected ? 0.9 : active ? 0.75 : 0.5}
+          depthTest={false}
           depthWrite={false}
+          opacity={isSelected ? 0.9 : active ? 0.75 : 0.5}
         />
       </mesh>
 
       {/* Selection ring */}
       {isSelected && (
-        <mesh position={[0, 0, -0.005]}>
+        <mesh position={[0, 0, -0.005]} renderOrder={11}>
           <ringGeometry args={[size * 0.6, size * 0.72, 32]} />
-          <meshBasicMaterial ref={ringRef} color="#6C8EFF" transparent opacity={0.9} depthWrite={false} />
+          <meshBasicMaterial ref={ringRef} color="#6C8EFF" transparent depthTest={false} depthWrite={false} opacity={0.9} />
         </mesh>
       )}
 
       {/* Icon */}
       <mesh
         scale={active ? 1.15 : 1}
+        renderOrder={12}
         onPointerOver={(e) => {
           setHovered(true)
           document.body.style.cursor = 'pointer'
@@ -177,6 +179,8 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
           ref={iconRef}
           map={texture}
           transparent
+          depthTest={false}
+          depthWrite={false}
           side={THREE.DoubleSide}
           opacity={isSelected ? 1 : active ? 0.95 : 0.75}
         />
@@ -272,7 +276,7 @@ export default function ExhibitionsLayer({ floorH = 0.4, targetFloor }) {
           texture={textures[roomKey]}
           glowTexture={glowTexture}
           focusRef={focusRef}
-          position={[position[0], floorH + position[1], position[2]]}
+          position={[position[0], position[1] + 0.05, position[2]]}
           rotation={rotation}
         />
       ))}
