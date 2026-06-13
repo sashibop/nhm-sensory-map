@@ -7,6 +7,7 @@ import NoiseLayer from '../../layers/3d/NoiseLayer'
 import ExhibitionsLayer from '../../layers/3d/ExhibitionsLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { N } from '../../../../data/mockVisitorData'
+import { ROOMS } from '../../../../data/roomAnalytics'
 
 export default function Floor({ level = 1, isActive, focusRef }) {
   const layers = useAppStore((state) => state.layers)
@@ -163,6 +164,31 @@ export default function Floor({ level = 1, isActive, focusRef }) {
       )}
 
       <ExhibitionsLayer targetFloor={level} />
+
+      {/* TEMP: Room bounds visualizer */}
+{Object.entries(ROOMS)
+  .filter(([, room]) => room.floor === level)
+  .map(([key, room]) => (
+    <mesh
+      key={key}
+      position={[
+        (room.minX + room.maxX) / 2,
+        0.05,
+        (room.minZ + room.maxZ) / 2,
+      ]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      renderOrder={20}
+    >
+      <planeGeometry args={[room.maxX - room.minX, room.maxZ - room.minZ]} />
+      <meshBasicMaterial
+        color="#6C8EFF"
+        transparent
+        opacity={0.3}
+        depthTest={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  ))}
 
       {/* --- STANDARDIZED BLENDER MESHES --- */}
       {nodes.floor && <mesh geometry={nodes.floor.geometry} material={materials.floor} position={nodes.floor.position} rotation={nodes.floor.rotation} scale={nodes.floor.scale} renderOrder={1} receiveShadow onClick={handleFloorClick} />}

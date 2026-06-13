@@ -9,33 +9,33 @@ export const ROOMS = {
     },
     vivarium: {
         floor: 1,
-        minX: 18,  maxX: 28,
-        minZ: -33, maxZ: -25,
+        minX: 12,  maxX: 26,
+        minZ: 3, maxZ: 16,
     },
     fossils: {
         floor: 1,
-        minX: -28, maxX: -18,
-        minZ: -25, maxZ: -10,
+        minX: -41, maxX: -28,
+        minZ: -52, maxZ: -39,
     },
     prehistoricTimes: {
         floor: 1,
-        minX: -28, maxX: -18,
-        minZ: -14, maxZ: -2,
+        minX: -40, maxX: -29,
+        minZ: -39, maxZ: 3,
     },
     minerals: {
         floor: 1,
-        minX: 18,  maxX: 28,
-        minZ: -14, maxZ: -2,
+        minX: -41,  maxX: -28,
+        minZ: 3, maxZ: 16,
     },
     geology: {
         floor: 1,
-        minX: -8,  maxX: 8,
-        minZ: -22, maxZ: -8,
+        minX: -28,  maxX: -14,
+        minZ: 3, maxZ: 16,
     },
     diorama: {
         floor: 1,
-        minX: -28, maxX: -18,
-        minZ: 4,   maxZ: 17,
+        minX: -5, maxX: 4,
+        minZ: -20,   maxZ: -1,
     },
 
     // ── Floor 2 ──────────────────────────────────────────────────────────────
