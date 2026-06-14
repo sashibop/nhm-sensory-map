@@ -7,7 +7,7 @@
 //   each selected room gets its own coloured line
 // – Cross-highlight: hovering a chart line ↔ hovering the map icon
 
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState, useEffect, Fragment } from "react";
 import {
   LineChart,
   Line,
@@ -22,30 +22,32 @@ import useAppStore from "../../store/useAppStore";
 import {
   getRoomCrowdHourlyData,
   getRoomNoiseHourlyData,
+  getRoomBrightnessHourlyData,
   getMuseumOverviewData,
+  getMuseumCrowdOverviewData,
+  getMuseumNoiseOverviewData,
+  getMuseumBrightnessOverviewData,
   HOURS,
 } from "../../data/roomAnalytics";
 import styles from "./styles/AnalyticsSidePanel.module.css";
 
 // ─── colour palette for multi-room lines ────────────────────────────────────
-const ROOM_COLORS = [
-  "#6C8EFF", // blue-violet
-  "#FF8C6B", // coral
-  "#4DD9AC", // mint
-  "#F7C948", // amber
-  "#C084FC", // purple
-  "#34D1BF", // teal
-];
-
-// ─── mock brightness (replace with real data fn when available) ───────────────
-function getRoomBrightnessHourlyData(roomKey, dayOfWeek) {
-  // Placeholder: sinusoidal daylight curve ± per-room jitter
-  const seed = roomKey.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  return HOURS.map((hour) => {
-    const base = Math.max(0, Math.sin(((hour - 6) / 12) * Math.PI));
-    const jitter = ((seed * (hour + 1)) % 17) / 100;
-    return { hour, value: Math.round((base + jitter) * 1000) / 10 };
-  });
+const ROOM_COLORS = {
+  natureRoleModel: "#6C8EFF", // blue-violet
+  vivarium: "#4DD9AC", // mint
+  fossils: "#F7C948", // amber
+  prehistoricTimes: "#FF8C6B", // coral
+  minerals: "#C084FC", // purple
+  geology: "#34D1BF", // teal
+  diorama: "#F97316", // orange
+  specialExhibition: "#E879F9", // pink
+  atrium: "#A3E635", // lime
+  nativeNature: "#38BDF8", // sky
+  africanNature: "#FB923C", // warm orange
+  insects: "#4ADE80", // green
+  rotary: "#FACC15", // yellow
+  specialExhibitionBig: "#F43F5E", // rose
+  Museum: "var(--color-primary)",
 }
 
 
@@ -75,18 +77,21 @@ const CHARTS = [
     label: "Crowd Density",
     unit: "visitors",
     dataFn: getRoomCrowdHourlyData,
+    overviewFn: getMuseumCrowdOverviewData,
   },
   {
     key: "noise",
     label: "Noise Level",
     unit: "dB",
     dataFn: getRoomNoiseHourlyData,
+    overviewFn: getMuseumNoiseOverviewData,
   },
   {
     key: "brightness",
     label: "Brightness",
     unit: "lux",
     dataFn: getRoomBrightnessHourlyData,
+    overviewFn: getMuseumBrightnessOverviewData,
   },
 ];
 
@@ -125,7 +130,9 @@ function AnalyticsChart({
   // build merged dataset [{hour, roomA, roomB, …}] or [{hour, Museum}]
   let data;
   if (isOverview) {
-    const raw = getMuseumOverviewData(chartCfg.dataFn, dayOfWeek);
+    const raw = chartCfg.overviewFn
+      ? chartCfg.overviewFn(dayOfWeek)
+      : getMuseumOverviewData(chartCfg.dataFn, dayOfWeek);
     data = raw.map((d) => ({ hour: d.hour, Museum: d.value }));
   } else {
     data = HOURS.map(h => ({ hour: h }));
@@ -156,52 +163,66 @@ function AnalyticsChart({
             tick={{ fill: "var(--text-muted)", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
-            interval={3}
+            interval={2}
           />
           <YAxis
             tick={{ fill: "var(--text-muted)", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
-            width={32}
+            width={42}
+            label={{
+              value: chartCfg.unit,
+              angle: -90,
+              position: "insideLeft",
+              offset: 10,
+              style: { fill: "var(--text-muted)", fontSize: 10 }
+            }}
           />
           <Tooltip
             content={<CustomTooltip unit={chartCfg.unit} />}
             cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
+            position={{ y: 0 }}
           />
-          {lineKeys.length > 1 && (
+          {/* {lineKeys.length > 1 && (
             <Legend
               iconType="circle"
               iconSize={7}
               wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
               formatter={(v) => ROOM_LABELS[v] ?? v}
             />
-          )}
+          )} */}
           {lineKeys.map((room, idx) => {
-            const color = isOverview
-              ? "var(--color-primary)"
-              : ROOM_COLORS[idx % ROOM_COLORS.length];
+            const color = ROOM_COLORS[room] ?? "var(--color-primary)";
             const isHovered = hoveredRoom === room;
             const anyHovered = hoveredRoom !== null;
             return (
-              <Line
-                key={room}
-                type="monotone"
-                dataKey={room}
-                name={ROOM_LABELS[room] ?? room}
-                stroke={color}
-                strokeWidth={isHovered ? 2.5 : anyHovered ? 1 : 1.8}
-                dot={false}
-                activeDot={{
-                  r: 4,
-                  fill: color,
-                  stroke: "var(--bg-base)",
-                  strokeWidth: 1.5,
-                }}
-                opacity={anyHovered && !isHovered ? 0.3 : 1}
-                style={{ transition: "opacity 0.2s, stroke-width 0.2s" }}
-                onMouseEnter={() => onHoverRoom(room)}
-                onMouseLeave={() => onHoverRoom(null)}
-              />
+              <Fragment key={room}>
+                {/* visible line */}
+                <Line
+                  type="monotone"
+                  dataKey={room}
+                  name={ROOM_LABELS[room] ?? room}
+                  stroke={color}
+                  strokeWidth={isHovered ? 2.5 : anyHovered ? 1 : 1.8}
+                  dot={false}
+                  activeDot={{ r: 4, fill: color, stroke: "var(--bg-base)", strokeWidth: 1.5 }}
+                  opacity={anyHovered && !isHovered ? 0.3 : 1}
+                  style={{ transition: "opacity 0.2s, stroke-width 0.2s" }}
+                />
+                {/* invisible hover zone */}
+                <Line
+                  type="monotone"
+                  dataKey={`__hover_${room}`}
+                  stroke="transparent"
+                  strokeWidth={12}
+                  dot={false}
+                  activeDot={false}
+                  legendType="none"
+                  tooltipType="none"
+                  onMouseEnter={() => onHoverRoom(room)}
+                  onMouseLeave={() => onHoverRoom(null)}
+                />
+              </Fragment>
             );
           })}
         </LineChart>
@@ -216,13 +237,16 @@ export default function AnalyticsSidePanel() {
   const setIsPanelOpen = useAppStore((s) => s.setIsPanelOpen);
   const [hoveredRoom, setHoveredRoom] = useState(null);
 
-  // store: selectedRooms = Set<string>; setHoveredMapIcon = fn
+  //store: selectedRooms = Set<string>; setHoveredMapIcon = fn
   const selectedRooms = useAppStore((s) => s.selectedRooms ?? []);
   const selectedDate = useAppStore((s) => s.selectedDate);
   const activeFloor = useAppStore((s) => s.activeFloor);
   const setHoveredMapIcon = useAppStore(
     (s) => s.setHoveredMapIcon ?? (() => { })
   );
+  const hoveredMapIcon = useAppStore((s) => s.hoveredMapIcon)
+  const effectiveHoveredRoom = hoveredRoom ?? hoveredMapIcon
+
 
   const dayOfWeek = selectedDate?.getDay() ?? 1;
   const roomList = Array.from(selectedRooms); // supports both Set and Array
@@ -293,7 +317,7 @@ export default function AnalyticsSidePanel() {
               selectedRooms={roomList}
               dayOfWeek={dayOfWeek}
               activeFloor={activeFloor}
-              hoveredRoom={hoveredRoom}
+              hoveredRoom={effectiveHoveredRoom}
               onHoverRoom={handleHoverRoom}
             />
           ))}
@@ -301,13 +325,11 @@ export default function AnalyticsSidePanel() {
 
         {roomList.length > 0 && (
           <div className={styles.legend}>
-            {roomList.map((room, idx) => (
+            {roomList.map((room) => (
               <span
                 key={room}
                 className={styles.legendItem}
-                style={{
-                  "--dot-color": ROOM_COLORS[idx % ROOM_COLORS.length],
-                }}
+                style={{ "--dot-color": ROOM_COLORS[room] ?? "var(--color-primary)" }}
                 onMouseEnter={() => handleHoverRoom(room)}
                 onMouseLeave={() => handleHoverRoom(null)}
               >

@@ -1,82 +1,81 @@
 import { visitors, getNoiseSources } from "./mockVisitorData";
+import {getBrightnessSources} from "./mockBrightnessData";
 
 export const ROOMS = {
-    // ── Floor 1 ──────────────────────────────────────────────────────────────
-    natureRoleModel: {
-        floor: 1,
-        minX: 27,  maxX: 39,
-        minZ: -50, maxZ: 14,
-    },
-    vivarium: {
-        floor: 1,
-        minX: 12,  maxX: 26,
-        minZ: 3, maxZ: 16,
-    },
-    fossils: {
-        floor: 1,
-        minX: -41, maxX: -28,
-        minZ: -52, maxZ: -39,
-    },
-    prehistoricTimes: {
-        floor: 1,
-        minX: -40, maxX: -29,
-        minZ: -39, maxZ: 3,
-    },
-    minerals: {
-        floor: 1,
-        minX: -41,  maxX: -28,
-        minZ: 3, maxZ: 16,
-    },
-    geology: {
-        floor: 1,
-        minX: -28,  maxX: -14,
-        minZ: 3, maxZ: 16,
-    },
-    diorama: {
-        floor: 1,
-        minX: -5, maxX: 4,
-        minZ: -20,   maxZ: -1,
-    },
+  // ── Floor 1 ──────────────────────────────────────────────────────────────
+  natureRoleModel: {
+    floor: 1,
+    minX: 27,  maxX: 39,  minZ: -51.8, maxZ: 15.5,
+    minX2D: 26.7,  maxX2D: 38.6,  minZ2D: -53.7, maxZ2D: 14.5,
+  },
+  vivarium: {
+    floor: 1,
+    minX: 12,  maxX: 26,  minZ: 2.5,   maxZ: 15.5,
+    minX2D: 12.2,  maxX2D: 26,  minZ2D: 1.5,   maxZ2D: 14.5,
+  },
+  fossils: {
+    floor: 1,
+    minX: -40.7, maxX: -27.5, minZ: -51.8, maxZ: -38.6,
+    minX2D: -41, maxX2D: -27.5, minZ2D: -53.7, maxZ2D: -39.7,
+  },
+  prehistoricTimes: {
+    floor: 1,
+    minX: -40, maxX: -28.7, minZ: -38.6, maxZ: 2.5,
+    minX2D: -40, maxX2D: -28.7, minZ2D: -39.7, maxZ2D: 1.5,
+  },
+  minerals: {
+    floor: 1,
+    minX: -40.7, maxX: -27.5, minZ: 2.5,   maxZ: 15.5,
+    minX2D: -41, maxX2D: -27.8, minZ2D: 1.5,   maxZ2D: 14.5,
+  },
+  geology: {
+    floor: 1,
+    minX: -27.5, maxX: -14, minZ: 2.5,   maxZ: 15.5,
+    minX2D: -27.8, maxX2D: -13.8, minZ2D: 1.5,   maxZ2D: 14.5,
+  },
+  diorama: {
+    floor: 1,
+    minX: -5,  maxX: 4,   minZ: -20, maxZ: -1,
+    minX2D: -5.2,  maxX2D: 3.8,   minZ2D: -20.8, maxZ2D: -2,
+  },
 
-    // ── Floor 2 ──────────────────────────────────────────────────────────────
-    specialExhibition: {
-        floor: 2,
-        minX: -39, maxX: -26,
-        minZ: -48, maxZ: -35,
-    },
-    atrium: {
-        floor: 2,
-        minX: -3, maxX: 6,
-        minZ: -16,   maxZ: 3,
-    },
-    nativeNature: {
-        floor: 2,
-        minX: -38, maxX: -27,
-        minZ: -35, maxZ: 7,
-    },
-    africanNature: {
-        floor: 2,
-        minX: -39,  maxX: -26,
-        minZ: 7, maxZ: 20,
-    },
-    insects: {
-        floor: 2,
-        minX: -26,  maxX: -12,
-        minZ: 7, maxZ: 20,
-    },
-    rotary: {
-        floor: 2,
-        minX: 14,  maxX: 28,
-        minZ: 7, maxZ: 20,
-    },
-    specialExhibitionBig: {
-        floor: 2,
-        minX: 29,  maxX: 41,
-        minZ: -46, maxZ: 18,
-    },
-
-};
-
+  // ── Floor 2 ──────────────────────────────────────────────────────────────
+  specialExhibition: {
+    floor: 2,
+    minX: -39, maxX: -26, minZ: -48.5, maxZ: -35,
+    minX2D: -38.6, maxX2D: -25.4, minZ2D: -48.6, maxZ2D: -34.6,
+  },
+  atrium: {
+    floor: 2,
+    minX: -6.2,  maxX: 7.7,   minZ: -13.2, maxZ: 6.8,
+    minX2D: -5.5,  maxX2D: 7.9,   minZ2D: -13, maxZ2D: 6.7,
+  },
+  nativeNature: {
+    floor: 2,
+    minX: -38, maxX: -27, minZ: -35, maxZ: 7,
+    minX2D: -37.8, maxX2D: -26.6, minZ2D: -34.6, maxZ2D: 6.6,
+  },
+  africanNature: {
+    floor: 2,
+    minX: -39, maxX: -26, minZ: 6.5,   maxZ: 20,
+    minX2D: -38.6, maxX2D: -25.6, minZ2D: 6.6,   maxZ2D: 19.6,
+  },
+  insects: {
+    floor: 2,
+    minX: -26, maxX: -12, minZ: 6.5,   maxZ: 20,
+    minX2D: -25.6, maxX2D: -11.7, minZ2D: 6.6,   maxZ2D: 19.6,
+  },
+  rotary: {
+    floor: 2,
+    minX: 14,  maxX: 28,  minZ: 6.5,   maxZ: 20,
+    minX2D: 14.4,  maxX2D: 28.1,  minZ2D: 6.6,   maxZ2D: 19.6,
+  },
+  specialExhibitionBig: {
+    floor: 2,
+    minX: 29,  maxX: 40.5,  minZ: -48.5, maxZ: 20,
+    minX2D: 29.1,  maxX2D: 40.5,  minZ2D: -48.6, maxZ2D: 19.6,
+  },
+}
 
 export const OPEN = { start: 9, end: 18 }
 export const HOURS = Array.from({ length: OPEN.end - OPEN.start + 1 }, (_, i) => i + OPEN.start)
@@ -127,10 +126,17 @@ export function getRoomCrowdHourlyData(roomKey, dayOfWeek) {
     )
 
     relevantVisitors.forEach(visitor => {
+        const countedHours = new Set()
         visitor.path.forEach(p => {
             const hour = Math.floor(p.time)
-            if (hour >= OPEN.start && hour < OPEN.end && isInsideRoom(p.x, p.z, room)) {
+            if (
+                hour >= OPEN.start &&
+                hour < OPEN.end &&
+                !countedHours.has(hour) &&
+                isInsideRoom(p.x, p.z, room)
+            ) {
                 hours[hour] += 1
+                countedHours.add(hour)
             }
         })
     })
@@ -162,6 +168,28 @@ export function getRoomNoiseHourlyData(roomKey, dayOfWeek) {
     })
 }
 
+// ─── Brightness ───────────────────────────────────────────────────────────────
+export function getRoomBrightnessHourlyData(roomKey, dayOfWeek) {
+    const room = ROOMS[roomKey]
+    if (!room) return HOURS.map(hour => ({ hour, value: 0 }))
+
+    const samplePoints = generateSamplePoints(room, 4, 0.15)
+
+    return HOURS.map(hour => {
+        const sources = getBrightnessSources(hour, room.floor, dayOfWeek)
+        let energy = 0
+        samplePoints.forEach(([sx, sz]) => {
+            sources.forEach(s => {
+                const dx = sx - s.x
+                const dz = sz - s.z
+                const dist = Math.hypot(dx, dz)
+                energy += s.volume / (1 + dist * s.spread)
+            })
+        })
+        return { hour, value: Math.round(energy / samplePoints.length) }
+    })
+}
+
 // ─── Museum-wide overview (aggregates all rooms across all floors) ────────────
 
 export function getMuseumOverviewData(dataFn, dayOfWeek) {
@@ -179,4 +207,40 @@ export function getMuseumOverviewData(dataFn, dayOfWeek) {
                 }, 0) / allData.length) * 10
             ) / 10,
     }))
+}
+
+export function getMuseumCrowdOverviewData(dayOfWeek) {
+    return HOURS.map(hour => {
+        const total = visitors.filter(v =>
+            v.daysVisiting.includes(dayOfWeek) &&
+            v.path[0].time <= hour &&
+            v.path[v.path.length - 1].time >= hour
+        ).length
+        return { hour, value: total }
+    })
+}
+
+export function getMuseumNoiseOverviewData(dayOfWeek) {
+    return HOURS.map(hour => {
+        const total = visitors.filter(v =>
+            v.daysVisiting.includes(dayOfWeek) &&
+            v.path[0].time <= hour &&
+            v.path[v.path.length - 1].time >= hour
+        ).length
+        const baseline = 30
+        const db = total === 0 ? baseline : Math.min(65, baseline + total * 0.35)
+        return { hour, value: Math.round(db * 10) / 10 }
+    })
+}
+
+export function getMuseumBrightnessOverviewData(dayOfWeek) {
+    const allKeys = Object.keys(ROOMS)
+    return HOURS.map(hour => {
+        const values = allKeys.map(k => {
+            const data = getRoomBrightnessHourlyData(k, dayOfWeek)
+            return data.find(d => d.hour === hour)?.value ?? 0
+        })
+        const avg = values.reduce((sum, v) => sum + v, 0) / values.length
+        return { hour, value: Math.round(avg) }
+    })
 }

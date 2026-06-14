@@ -10,49 +10,49 @@ const EXHIBITIONS = [
     floor: 1,
     roomKey: 'natureRoleModel',
     asset: 'src/assets/natureRoleModel.svg',
-    position: [32, 3.01, -8],
+    //position: [32, 3.01, -8],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'vivarium',
     asset: 'src/assets/vivarium.svg',
-    position: [20, 3.01, 10],
+    //position: [20, 3.01, 10],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'fossils',
     asset: 'src/assets/fossils.svg',
-    position: [-34, 3.01, -44],
+    //position: [-34, 3.01, -44],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'prehistoricTimes',
     asset: 'src/assets/prehistoricTimes.svg',
-    position: [-34, 3.01, -16],
+    //position: [-34, 3.01, -16],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'minerals',
     asset: 'src/assets/minerals.svg',
-    position: [-34, 3.01, 9],
+    //position: [-34, 3.01, 9],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'geology',
     asset: 'src/assets/geology.svg',
-    position: [-20, 3.01, 9],
+    //position: [-20, 3.01, 9],
     rotation: [-Math.PI / 2, 0, 0],
   },
   {
     floor: 1,
     roomKey: 'diorama',
     asset: 'src/assets/diorama.svg',
-    position: [0, 3.01, -10],
+    //position: [0, 3.01, -10],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
 
@@ -61,49 +61,49 @@ const EXHIBITIONS = [
     floor: 2,
     roomKey: 'specialExhibition',
     asset: 'src/assets/specialExhibition.svg',
-    position: [-33, 3.01, -42],
+    //position: [-33, 3.01, -42],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'atrium',
     asset: 'src/assets/atrium.svg',
-    position: [0, 3.01, -10],
+    //position: [0, 3.01, -10],
     rotation: [-Math.PI / 2, 0, 0],
   },
   {
     floor: 2,
     roomKey: 'nativeNature',
     asset: 'src/assets/nativeNature.svg',
-    position: [-33, 3.01, -15],
+    //position: [-33, 3.01, -15],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'africanNature',
     asset: 'src/assets/africanNature.svg',
-    position: [-33, 3.01, 13],
+    //position: [-33, 3.01, 13],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'insects',
     asset: 'src/assets/insects.svg',
-    position: [-19, 3.01, 12],
+    //position: [-19, 3.01, 12],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'rotary',
     asset: 'src/assets/rotary.svg',
-    position: [21, 3.01, 13],
+    //position: [21, 3.01, 13],
     rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'specialExhibitionBig',
     asset: 'src/assets/specialExhibition.svg',
-    position: [34, 3.01, -12],
+    //position: [34, 3.01, -12],
     rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
 ]
@@ -130,11 +130,11 @@ function RoomPlane({ room, roomKey, focusRef, initialFocus }) {
 
   return (
     <mesh
-      position={[(room.minX + room.maxX) / 2, 0.5, (room.minZ + room.maxZ) / 2]}
+      position={[(room.minX + room.maxX) / 2, 3, (room.minZ + room.maxZ) / 2]}
       rotation={[-Math.PI / 2, 0, 0]}
       renderOrder={5}
     >
-      <planeGeometry args={[w * 1.4, d * 1.4]} />
+      <planeGeometry args={[w, d]} />
       <shaderMaterial
         ref={matRef}
         transparent
@@ -158,7 +158,7 @@ function RoomPlane({ room, roomKey, focusRef, initialFocus }) {
           void main() {
             vec2 center = abs(vUv - 0.5) * 2.0;
             float dist = max(center.x, center.y);
-            float alpha = smoothstep(1.0, 0.3, dist) * 0.5 * uFocus * uSelected;
+float alpha = 0.5 * uFocus * uSelected;
             gl_FragColor = vec4(0.424, 0.557, 1.0, alpha);
           }
         `}
@@ -172,24 +172,24 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
   const [hovered, setHovered] = useState(false)
   const active = hovered || isHighlighted
 
-  const glowRef = useRef()
-  const ringRef = useRef()
+  /*const glowRef = useRef()
+  const ringRef = useRef()*/
   const iconRef = useRef()
 
   useFrame((_, delta) => {
     const focus = focusRef?.current ?? 1
     const targetOpacity = {
-      glow: isSelected ? 0.9 : active ? 0.75 : 0.5,
+      //glow: isSelected ? 0.9 : active ? 0.75 : 0.5,
       icon: isSelected ? 1 : active ? 0.95 : 0.75,
     }
 
-    if (glowRef.current) {
+    /*if (glowRef.current) {
       glowRef.current.opacity = THREE.MathUtils.lerp(
         glowRef.current.opacity,
         targetOpacity.glow * focus,
         delta * 4
       )
-    }
+    }*/
     if (iconRef.current) {
       iconRef.current.opacity = THREE.MathUtils.lerp(
         iconRef.current.opacity,
@@ -201,8 +201,7 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
 
   return (
     <group>
-      {/* Glow */}
-      <mesh position={[0, 0, -0.01]} renderOrder={10}>
+      {/* <mesh position={[0, 0, -0.01]} renderOrder={10}>
         <planeGeometry args={[size * 2.5, size * 2.5]} />
         <meshBasicMaterial
           ref={glowRef}
@@ -212,10 +211,8 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
           depthWrite={false}
           opacity={isSelected ? 0.9 : active ? 0.75 : 0.5}
         />
-      </mesh>
-
-      {/* Selection ring */}
-      {isSelected && (
+      </mesh> */}
+      {/* {isSelected && (
         <mesh position={[0, 0, -0.005]} renderOrder={11}>
           <ringGeometry args={[size * 0.6, size * 0.72, 32]} />
           <meshBasicMaterial
@@ -227,7 +224,7 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
             opacity={0.9}
           />
         </mesh>
-      )}
+      )} */}
 
       {/* Icon */}
       <mesh
@@ -264,12 +261,15 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
 function ExhibitHotspot({ roomKey, texture, glowTexture, position, rotation, focusRef }) {
   const isSelected = useAppStore((s) => s.selectedRooms.has(roomKey))
   const isHighlighted = useAppStore((s) => s.hoveredMapIcon === roomKey)
+  const room = ROOMS[roomKey]
+  const cx = (room.minX + room.maxX) / 2
+  const cz = (room.minZ + room.maxZ) / 2
 
   return (
-    <group position={position} rotation={rotation}>
+    <group position={[cx, 3.0, cz]} rotation={rotation}>
       <Hotspot
         texture={texture}
-        glowTexture={glowTexture}
+        //glowTexture={glowTexture}
         isSelected={isSelected}
         isHighlighted={isHighlighted}
         focusRef={focusRef}
@@ -321,7 +321,7 @@ export default function ExhibitionsLayer({ targetFloor }) {
     )
   }, [floorExhibitions])
 
-  const glowTexture = useMemo(() => {
+  /*const glowTexture = useMemo(() => {
     const size = 256
     const canvas = document.createElement('canvas')
     canvas.width = size
@@ -336,7 +336,7 @@ export default function ExhibitionsLayer({ targetFloor }) {
     const texture = new THREE.CanvasTexture(canvas)
     texture.needsUpdate = true
     return texture
-  }, [])
+  }, [])*/
 
   return (
     <group>
@@ -361,7 +361,7 @@ export default function ExhibitionsLayer({ targetFloor }) {
           key={roomKey}
           roomKey={roomKey}
           texture={textures[roomKey]}
-          glowTexture={glowTexture}
+          //glowTexture={glowTexture}
           focusRef={focusRef}
           position={position}
           rotation={rotation}

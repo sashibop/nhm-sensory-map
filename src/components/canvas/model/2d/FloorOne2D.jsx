@@ -2,7 +2,9 @@ import useAppStore from '../../../../store/useAppStore'
 import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
 import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
+import ExhibitionsLayer2D from '../../layers/2d/ExhibitionsLayer2D'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+
 
 export default function FloorOne2D() {
   const layers = useAppStore((state) => state.layers)
@@ -435,6 +437,8 @@ export default function FloorOne2D() {
             {layers.crowd && (
               <CrowdLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
             )}
+
+            <ExhibitionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
 
             {layers.dimensions && (
               <g transform="translate(-31, -30.7) scale(0.025)">
