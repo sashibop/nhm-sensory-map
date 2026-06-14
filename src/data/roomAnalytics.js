@@ -4,8 +4,8 @@ export const ROOMS = {
     // ── Floor 1 ──────────────────────────────────────────────────────────────
     natureRoleModel: {
         floor: 1,
-        minX: 18,  maxX: 28,
-        minZ: -25, maxZ: -10,
+        minX: 27,  maxX: 39,
+        minZ: -50, maxZ: 14,
     },
     vivarium: {
         floor: 1,
@@ -41,35 +41,45 @@ export const ROOMS = {
     // ── Floor 2 ──────────────────────────────────────────────────────────────
     specialExhibition: {
         floor: 2,
-        minX: 18,  maxX: 28,
-        minZ: -25, maxZ: -10,
+        minX: -39, maxX: -26,
+        minZ: -48, maxZ: -35,
     },
     atrium: {
         floor: 2,
-        minX: -8,  maxX: 8,
-        minZ: -22, maxZ: -8,
+        minX: -3, maxX: 6,
+        minZ: -16,   maxZ: 3,
     },
     nativeNature: {
         floor: 2,
-        minX: -28, maxX: -18,
-        minZ: -25, maxZ: -10,
+        minX: -38, maxX: -27,
+        minZ: -35, maxZ: 7,
     },
     africanNature: {
         floor: 2,
-        minX: -28, maxX: -18,
-        minZ: -14, maxZ: -2,
+        minX: -39,  maxX: -26,
+        minZ: 7, maxZ: 20,
     },
     insects: {
         floor: 2,
-        minX: 18,  maxX: 28,
-        minZ: -33, maxZ: -25,
+        minX: -26,  maxX: -12,
+        minZ: 7, maxZ: 20,
     },
     rotary: {
         floor: 2,
-        minX: -28, maxX: -18,
-        minZ: 4,   maxZ: 17,
+        minX: 14,  maxX: 28,
+        minZ: 7, maxZ: 20,
     },
+    specialExhibitionBig: {
+        floor: 2,
+        minX: 29,  maxX: 41,
+        minZ: -46, maxZ: 18,
+    },
+
 };
+
+
+export const OPEN = { start: 9, end: 18 }
+export const HOURS = Array.from({ length: OPEN.end - OPEN.start + 1 }, (_, i) => i + OPEN.start)
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -105,60 +115,51 @@ function generateSamplePoints(room, cells = 4, inset = 0.15) {
 
 // ─── Crowd ────────────────────────────────────────────────────────────────────
 
-export function getRoomCrowdHourlyData(roomKey, dayOfWeek, activeFloor) {
-    const room = ROOMS[roomKey];
-    if (!room) return Array.from({ length: 24 }, (_, hour) => ({ hour, value: 0 }));
+export function getRoomCrowdHourlyData(roomKey, dayOfWeek) {
+    const room = ROOMS[roomKey]
+    if (!room) return HOURS.map(hour => ({ hour, value: 0 }))
 
-    const hours = Array.from({ length: 24 }, () => 0);
+    const hours = Object.fromEntries(HOURS.map(h => [h, 0]))
 
     const relevantVisitors = visitors.filter(v =>
         v.daysVisiting.includes(dayOfWeek) &&
-        v.floor === activeFloor
-    );
+        v.floor === room.floor
+    )
 
     relevantVisitors.forEach(visitor => {
         visitor.path.forEach(p => {
-            const hour = Math.floor(p.time);
-            if (isInsideRoom(p.x, p.z, room)) {
-                hours[hour] += 1;
+            const hour = Math.floor(p.time)
+            if (hour >= OPEN.start && hour < OPEN.end && isInsideRoom(p.x, p.z, room)) {
+                hours[hour] += 1
             }
-        });
-    });
+        })
+    })
 
-    return hours.map((value, hour) => ({ hour, value }));
+    return HOURS.map(hour => ({ hour, value: hours[hour] }))
 }
 
 // ─── Noise ────────────────────────────────────────────────────────────────────
 
-export function getRoomNoiseHourlyData(roomKey, dayOfWeek, activeFloor) {
-    const room = ROOMS[roomKey];
-    if (!room) return Array.from({ length: 24 }, (_, hour) => ({ hour, value: 0 }));
+export function getRoomNoiseHourlyData(roomKey, dayOfWeek) {
+    const room = ROOMS[roomKey]
+    if (!room) return HOURS.map(hour => ({ hour, value: 0 }))
 
-    const result = Array.from({ length: 24 }, () => 0);
-    const samplePoints = generateSamplePoints(room, 4, 0.15);
+    const samplePoints = generateSamplePoints(room, 4, 0.15)
 
-    for (let hour = 0; hour < 24; hour++) {
-        const sources = getNoiseSources(hour, activeFloor, dayOfWeek);
-        let energy = 0;
-
+    return HOURS.map(hour => {
+        const sources = getNoiseSources(hour, room.floor, dayOfWeek)
+        let energy = 0
         samplePoints.forEach(([sx, sz]) => {
             sources.forEach(s => {
-                const dx   = sx - s.x;
-                const dz   = sz - s.z;
-                const dist = Math.hypot(dx, dz);
-                const weight = 1 / (1 + dist * 0.35);
-                energy += s.volume * weight;
-            });
-        });
-
-        energy = Math.max(energy, 0.0001);
-        result[hour] = Math.log10(energy) * 20;
-    }
-
-    return result.map((value, hour) => ({
-        hour,
-        value: Math.round(value * 10) / 10,
-    }));
+                const dx = sx - s.x
+                const dz = sz - s.z
+                const dist = Math.hypot(dx, dz)
+                energy += s.volume / (1 + dist * 0.35)
+            })
+        })
+        energy = Math.max(energy, 0.0001)
+        return { hour, value: Math.round(Math.log10(energy) * 200) / 10 }
+    })
 }
 
 // ─── Museum-wide overview (aggregates all rooms across all floors) ────────────
@@ -166,15 +167,16 @@ export function getRoomNoiseHourlyData(roomKey, dayOfWeek, activeFloor) {
 export function getMuseumOverviewData(dataFn, dayOfWeek) {
     const allKeys = Object.keys(ROOMS);
 
-    const allData = allKeys.map((k) => dataFn(k, dayOfWeek, ROOMS[k].floor));
+    const allData = allKeys.map((k) => dataFn(k, dayOfWeek));
 
-    return Array.from({ length: 24 }, (_, hour) => ({
+    return HOURS.map((hour) => ({
         hour,
         value:
             Math.round(
-                (allData.reduce((sum, d) => sum + (d[hour]?.value ?? 0), 0) /
-                    allData.length) *
-                    10
+                (allData.reduce((sum, d) => {
+                    const entry = d.find(e => e.hour === hour)
+                    return sum + (entry?.value ?? 0)
+                }, 0) / allData.length) * 10
             ) / 10,
-    }));
+    }))
 }

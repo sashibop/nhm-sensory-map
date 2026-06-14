@@ -16,7 +16,10 @@ const useAppStore = create((set, get) => ({
   },
   selectedIcon: null,
   isPanelOpen: false,
-  setIsPanelOpen: (open) => set({ isPanelOpen: !!open }),
+  setIsPanelOpen: (val) => set({
+    isPanelOpen: val,
+    selectedRooms: val ? get().selectedRooms : new Set(), // beim Schließen leeren
+  }),
 
   // Multi-select rooms
   selectedRooms: new Set(),

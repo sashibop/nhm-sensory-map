@@ -69,19 +69,6 @@
   transform: translateX(0);
 }
 
-/* Reduce expensive visual effects while panel is animating to improve performance */
-/*html.panel-animating .panel {
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-html.panel-animating .toggleBtn,
-html.panel-animating .panelHeader,
-html.panel-animating .chartBlock {
-  transition-duration: 0.25s !important;
-}*/
-
 /* ── header ─────────────────────────────────────────────── */
 .panelHeader {
   display: flex;

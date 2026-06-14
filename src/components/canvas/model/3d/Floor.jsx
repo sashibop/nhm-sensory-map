@@ -7,11 +7,10 @@ import NoiseLayer from '../../layers/3d/NoiseLayer'
 import ExhibitionsLayer from '../../layers/3d/ExhibitionsLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { N } from '../../../../data/mockVisitorData'
-import { ROOMS } from '../../../../data/roomAnalytics'
 
 export default function Floor({ level = 1, isActive, focusRef }) {
   const layers = useAppStore((state) => state.layers)
-  
+
   // Dynamically load the model based on the level prop
   const { nodes } = useGLTF(`/models/museum_${level}f.glb`)
 
@@ -23,8 +22,8 @@ export default function Floor({ level = 1, isActive, focusRef }) {
   const [enableMapping, setEnableMapping] = useState(false)
   const [routeSequence, setRouteSequence] = useState([])
   const [debugMarkers, setDebugMarkers] = useState([])
-  
-  const [panelPos, setPanelPos] = useState({ x: 50, y: -200 }) 
+
+  const [panelPos, setPanelPos] = useState({ x: 50, y: -200 })
   const [isDragging, setIsDragging] = useState(false)
   const dragOffset = useRef({ x: 0, y: 0 })
 
@@ -33,9 +32,9 @@ export default function Floor({ level = 1, isActive, focusRef }) {
   const rootGroupRef = useRef()
 
   useEffect(() => {
-    if (!isActive) return 
+    if (!isActive) return
     const handleGlobalClick = () => {
-      if (isDebugMode) return 
+      if (isDebugMode) return
       clickCountRef.current += 1
       clearTimeout(clickTimerRef.current)
       if (clickCountRef.current >= 8) { setIsDebugMode(true); clickCountRef.current = 0 }
@@ -65,10 +64,10 @@ export default function Floor({ level = 1, isActive, focusRef }) {
 
   const handleFloorClick = (e) => {
     if (!isDebugMode || !enableMapping || !isActive) return
-    e.stopPropagation() 
+    e.stopPropagation()
     const localHit = rootGroupRef.current.worldToLocal(e.point.clone())
     const niceX = parseFloat(localHit.x.toFixed(2))
-    const niceY = parseFloat(localHit.y.toFixed(2)) 
+    const niceY = parseFloat(localHit.y.toFixed(2))
     const niceZ = parseFloat(localHit.z.toFixed(2))
     console.log(`Node mapped (F${level}): { x: ${niceX}, y: ${niceY}, z: ${niceZ} }`)
     setDebugMarkers(prev => [...prev, { id: Date.now(), x: niceX, y: niceY + 0.5, z: niceZ }])
@@ -76,7 +75,7 @@ export default function Floor({ level = 1, isActive, focusRef }) {
 
   const handleMarkerClick = (markerId, e) => {
     if (!isDebugMode || !enableMapping || !isActive) return
-    e.stopPropagation() 
+    e.stopPropagation()
     setDebugMarkers(prev => prev.filter(marker => marker.id !== markerId))
   }
 
@@ -131,10 +130,10 @@ export default function Floor({ level = 1, isActive, focusRef }) {
     }
   })
 
-  
+
   return (
     <group ref={rootGroupRef} scale={[1, 1, 1]}>
-      
+
       {isDebugMode && isActive && (
         <Html portal={{ current: document.body }}>
           <div style={{ position: 'fixed', left: `${panelPos.x}px`, top: `${panelPos.y}px`, background: 'rgba(15, 23, 42, 0.95)', color: '#fff', borderRadius: '8px', fontFamily: 'monospace', fontSize: '13px', zIndex: 999999, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.3)', border: '1px solid #334155', width: '280px' }}>
@@ -165,30 +164,6 @@ export default function Floor({ level = 1, isActive, focusRef }) {
 
       <ExhibitionsLayer targetFloor={level} />
 
-      {/* TEMP: Room bounds visualizer */}
-{Object.entries(ROOMS)
-  .filter(([, room]) => room.floor === level)
-  .map(([key, room]) => (
-    <mesh
-      key={key}
-      position={[
-        (room.minX + room.maxX) / 2,
-        0.05,
-        (room.minZ + room.maxZ) / 2,
-      ]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      renderOrder={20}
-    >
-      <planeGeometry args={[room.maxX - room.minX, room.maxZ - room.minZ]} />
-      <meshBasicMaterial
-        color="#6C8EFF"
-        transparent
-        opacity={0.3}
-        depthTest={false}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  ))}
 
       {/* --- STANDARDIZED BLENDER MESHES --- */}
       {nodes.floor && <mesh geometry={nodes.floor.geometry} material={materials.floor} position={nodes.floor.position} rotation={nodes.floor.rotation} scale={nodes.floor.scale} renderOrder={1} receiveShadow onClick={handleFloorClick} />}
@@ -198,7 +173,7 @@ export default function Floor({ level = 1, isActive, focusRef }) {
       {nodes['stairs-and-platforms'] && <mesh geometry={nodes['stairs-and-platforms'].geometry} material={layers.dimensions ? materials.stairsHighlight : materials.stairs} position={nodes['stairs-and-platforms'].position} rotation={nodes['stairs-and-platforms'].rotation} scale={nodes['stairs-and-platforms'].scale} renderOrder={2} receiveShadow castShadow onClick={handleFloorClick} />}
       {nodes.exhibits && <mesh geometry={nodes.exhibits.geometry} material={materials.exhibits} position={nodes.exhibits.position} rotation={nodes.exhibits.rotation} scale={nodes.exhibits.scale} renderOrder={2} castShadow receiveShadow />}
       {nodes.windows && <mesh geometry={nodes.windows.geometry} material={materials.windows} position={nodes.windows.position} rotation={nodes.windows.rotation} scale={nodes.windows.scale} renderOrder={3} />}
-      
+
 
 
       {/* Node Mapping Overlay */}
@@ -220,7 +195,7 @@ export default function Floor({ level = 1, isActive, focusRef }) {
       {isDebugMode && enableMapping && isActive && debugMarkers.map((marker) => (
         <mesh key={marker.id} position={[marker.x, marker.y, marker.z]} renderOrder={9999} onClick={(e) => handleMarkerClick(marker.id, e)} >
           <sphereGeometry args={[0.3, 16, 16]} />
-          <meshBasicMaterial color="#ef4444" depthTest={false} depthWrite={false} transparent={true} /> 
+          <meshBasicMaterial color="#ef4444" depthTest={false} depthWrite={false} transparent={true} />
         </mesh>
       ))}
 

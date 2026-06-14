@@ -23,6 +23,7 @@ import {
   getRoomCrowdHourlyData,
   getRoomNoiseHourlyData,
   getMuseumOverviewData,
+  HOURS,
 } from "../../data/roomAnalytics";
 import styles from "./styles/AnalyticsSidePanel.module.css";
 
@@ -37,10 +38,10 @@ const ROOM_COLORS = [
 ];
 
 // ─── mock brightness (replace with real data fn when available) ───────────────
-function getRoomBrightnessHourlyData(roomKey, dayOfWeek, _activeFloor) {
+function getRoomBrightnessHourlyData(roomKey, dayOfWeek) {
   // Placeholder: sinusoidal daylight curve ± per-room jitter
   const seed = roomKey.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  return Array.from({ length: 24 }, (_, hour) => {
+  return HOURS.map((hour) => {
     const base = Math.max(0, Math.sin(((hour - 6) / 12) * Math.PI));
     const jitter = ((seed * (hour + 1)) % 17) / 100;
     return { hour, value: Math.round((base + jitter) * 1000) / 10 };
@@ -50,7 +51,20 @@ function getRoomBrightnessHourlyData(roomKey, dayOfWeek, _activeFloor) {
 
 // ─── label maps ──────────────────────────────────────────────────────────────
 const ROOM_LABELS = {
-  shark: "Vivarium",
+  vivarium: "Climates and habitats - Vivarium",
+  africanNature: "African habitats",
+  atrium: "Atrium",
+  diorama: "Dioramas",
+  fossils: "Fossils found in southern Baden",
+  geology: "Geology on the Upper Rhine",
+  insects: "The world of insects",
+  minerals: "The realm of minerals",
+  nativeNature: "Native flora and fauna",
+  natureRoleModel: "Form and function - inspired by nature",
+  prehistoricTimes: "Life in prehistoric times",
+  rotary: "Rotary Room of Nature",
+  specialExhibition: "Special exhibition (small)",
+  specialExhibitionBig: "Special exhibition (big)",
   default: "Exhibition",
 };
 
@@ -108,18 +122,18 @@ function AnalyticsChart({
   onHoverRoom,
 }) {
   const isOverview = selectedRooms.length === 0;
-
   // build merged dataset [{hour, roomA, roomB, …}] or [{hour, Museum}]
   let data;
   if (isOverview) {
     const raw = getMuseumOverviewData(chartCfg.dataFn, dayOfWeek);
     data = raw.map((d) => ({ hour: d.hour, Museum: d.value }));
   } else {
-    data = Array.from({ length: 24 }, (_, h) => ({ hour: h }));
+    data = HOURS.map(h => ({ hour: h }));
     selectedRooms.forEach((room) => {
-      const raw = chartCfg.dataFn(room, dayOfWeek, activeFloor);
+      const raw = chartCfg.dataFn(room, dayOfWeek);
       raw.forEach((d) => {
-        data[d.hour][room] = d.value;
+        const entry = data.find(entry => entry.hour === d.hour)
+        if (entry) entry[room] = d.value
       });
     });
   }
