@@ -1,6 +1,7 @@
 import useAppStore from '../../../../store/useAppStore'
 import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
+import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
 export default function FloorOne2D() {
@@ -424,6 +425,9 @@ export default function FloorOne2D() {
 
             </g>
 
+            {layers.brightness && (
+              <BrightnessLayer2D targetFloor={1} mapScale={0.9} offsetX={1.6} offsetZ={14.6} />
+            )}
             {layers.noise && (
               <NoiseLayer2D targetFloor={1} mapScale={0.9} offsetX={1.6} offsetZ={14.6} />
             )}

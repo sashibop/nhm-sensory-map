@@ -7,6 +7,7 @@ import NoiseLayer from '../../layers/3d/NoiseLayer'
 import ExhibitionsLayer from '../../layers/3d/ExhibitionsLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { N } from '../../../../data/mockVisitorData'
+import BrightnessLayer from '../../layers/3d/BrightnessLayer'
 
 export default function Floor({ level = 1, isActive, focusRef }) {
   const layers = useAppStore((state) => state.layers)
@@ -161,6 +162,12 @@ export default function Floor({ level = 1, isActive, focusRef }) {
           <NoiseLayer targetFloor={level} geometry={nodes.floor.geometry} />
         </group>
       )}
+      {layers.brightness && nodes.floor && (
+        <group position={[nodes.floor.position.x, nodes.floor.position.y + 0.02, nodes.floor.position.z]} rotation={nodes.floor.rotation} scale={nodes.floor.scale}>
+          <BrightnessLayer targetFloor={level} geometry={nodes.floor.geometry} />
+        </group>
+      )}
+  
 
       <ExhibitionsLayer targetFloor={level} />
 
