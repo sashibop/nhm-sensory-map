@@ -46,6 +46,14 @@ export default function ViewToggle() {
           <span className={styles.label}>2D Plan</span>
         </button>
 
+         <button 
+          className={`${styles.row} ${activeView === 'EXPLORE' ? styles.active : ''}`}
+          onClick={() => handleToggle('EXPLORE')}
+        >
+          <div className={styles.indicator} />
+          <span className={styles.label}>Explore</span>
+        </button>
+
       </div>
     </div>
   )
