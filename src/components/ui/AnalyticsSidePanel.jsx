@@ -197,7 +197,6 @@ function AnalyticsChart({
             const anyHovered = hoveredRoom !== null;
             return (
               <Fragment key={room}>
-                {/* visible line */}
                 <Line
                   type="monotone"
                   dataKey={room}
@@ -208,19 +207,6 @@ function AnalyticsChart({
                   activeDot={{ r: 4, fill: color, stroke: "var(--bg-base)", strokeWidth: 1.5 }}
                   opacity={anyHovered && !isHovered ? 0.3 : 1}
                   style={{ transition: "opacity 0.2s, stroke-width 0.2s" }}
-                />
-                {/* invisible hover zone */}
-                <Line
-                  type="monotone"
-                  dataKey={`__hover_${room}`}
-                  stroke="transparent"
-                  strokeWidth={12}
-                  dot={false}
-                  activeDot={false}
-                  legendType="none"
-                  tooltipType="none"
-                  onMouseEnter={() => onHoverRoom(room)}
-                  onMouseLeave={() => onHoverRoom(null)}
                 />
               </Fragment>
             );

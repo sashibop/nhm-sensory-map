@@ -15,17 +15,13 @@ export default function GlobalSettings() {
   // Data States
   //const [activeLang, setActiveLang] = useState('EN')
   //const [highContrast, setHighContrast] = useState(false)
-  const [plainLang, setPlainLang] = useState(false)
   //const [textSize, setTextSize] = useState(100)
-  //const [cursorSize, setCursorSize] = useState(100)
   const settings = useAppStore((state) => state.settings)
   const setLanguage = useAppStore((state) => state.setLanguage)
   const toggleHighContrast = useAppStore((state) => state.toggleHighContrast)
   const setTextSize = useAppStore((state) => state.setTextSize)
-  const setCursorSize = useAppStore((state) => state.setCursorSize)
 
   const textProgress = ((settings.textSize - 50) / 100) * 100;
-  const cursorProgress = ((settings.cursorSize - 50) / 100) * 100;
 
   const settingsOptions = [
     ...(activeView === '3D' ? [{ id: 'help', label: t("controls.controls") }] : []),
@@ -121,21 +117,8 @@ export default function GlobalSettings() {
                     />
                   </div>
 
-                  <div className={styles.sliderRow}>
-                    <span className={styles.subLabel}>{t("accessibility.cursorSize")}</span>
-                    <input
-                      type="range" className={styles.ghostSlider} style={{ '--progress': `${cursorProgress}%` }}
-                      min="50" max="150" step="1" value={settings.cursorSize} onChange={(e) => setCursorSize(Number(e.target.value))}
-                    />
-                  </div>
-
                   <div className={`${styles.subRow} ${settings.highContrast ? styles.subActive : ''}`} aria-selected={settings.highContrast} onClick={() => toggleHighContrast()}>
                     <span className={styles.subLabel}>{t("accessibility.highContrast")}</span>
-                    <div className={styles.subIndicator} />
-                  </div>
-
-                  <div className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`} aria-selected={plainLang} onClick={() => setPlainLang(!plainLang)}>
-                    <span className={styles.subLabel}>{t("accessibility.plainLanguage")}</span>
                     <div className={styles.subIndicator} />
                   </div>
                 </div>

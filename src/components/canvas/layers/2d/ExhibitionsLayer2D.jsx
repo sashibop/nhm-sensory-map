@@ -77,7 +77,7 @@ function ExhibitionRoom({ roomKey, room, mapScale, offsetX, offsetZ }) {
         height={iconSize}
         style={{
           opacity: active || isSelected ? 1 : 0.7,
-          transform: active ? `scale(1.1)` : 'scale(1)',
+          transform: active ? `scale(1.5)` : 'scale(1)',
           transformOrigin: `${cx}px ${cy}px`,
           transition: 'opacity 0.2s, transform 0.2s',
         }}

@@ -11,49 +11,49 @@ const EXHIBITIONS = [
     roomKey: 'natureRoleModel',
     asset: 'src/assets/natureRoleModel.svg',
     //position: [32, 3.01, -8],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'vivarium',
     asset: 'src/assets/vivarium.svg',
     //position: [20, 3.01, 10],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'fossils',
     asset: 'src/assets/fossils.svg',
     //position: [-34, 3.01, -44],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'prehistoricTimes',
     asset: 'src/assets/prehistoricTimes.svg',
     //position: [-34, 3.01, -16],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'minerals',
     asset: 'src/assets/minerals.svg',
     //position: [-34, 3.01, 9],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'geology',
     asset: 'src/assets/geology.svg',
     //position: [-20, 3.01, 9],
-    rotation: [-Math.PI / 2, 0, 0],
+    //rotation: [-Math.PI / 2, 0, 0],
   },
   {
     floor: 1,
     roomKey: 'diorama',
     asset: 'src/assets/diorama.svg',
     //position: [0, 3.01, -10],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
 
   // ── Floor 2 ──────────────────────────────────────────────────────────────
@@ -62,49 +62,49 @@ const EXHIBITIONS = [
     roomKey: 'specialExhibition',
     asset: 'src/assets/specialExhibition.svg',
     //position: [-33, 3.01, -42],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'atrium',
     asset: 'src/assets/atrium.svg',
     //position: [0, 3.01, -10],
-    rotation: [-Math.PI / 2, 0, 0],
+    //rotation: [-Math.PI / 2, 0, 0],
   },
   {
     floor: 2,
     roomKey: 'nativeNature',
     asset: 'src/assets/nativeNature.svg',
     //position: [-33, 3.01, -15],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'africanNature',
     asset: 'src/assets/africanNature.svg',
     //position: [-33, 3.01, 13],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'insects',
     asset: 'src/assets/insects.svg',
     //position: [-19, 3.01, 12],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'rotary',
     asset: 'src/assets/rotary.svg',
     //position: [21, 3.01, 13],
-    rotation: [-Math.PI / 2, 0, Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, Math.PI / 4],
   },
   {
     floor: 2,
     roomKey: 'specialExhibitionBig',
     asset: 'src/assets/specialExhibition.svg',
     //position: [34, 3.01, -12],
-    rotation: [-Math.PI / 2, 0, -Math.PI / 4],
+    //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
 ]
 
@@ -168,7 +168,7 @@ float alpha = 0.5 * uFocus * uSelected;
 }
 
 // ─── Hotspot ──────────────────────────────────────────────────────────────────
-function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onPointerEnter, onPointerLeave, size = 6, focusRef }) {
+function Hotspot({ texture, /*glowTexture,*/ isSelected, isHighlighted, onClick, onPointerEnter, onPointerLeave, size, focusRef }) {
   const [hovered, setHovered] = useState(false)
   const active = hovered || isHighlighted
 
@@ -228,7 +228,7 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
 
       {/* Icon */}
       <mesh
-        scale={active ? 1.15 : 1}
+        scale={active ? 1.5 : 1}
         renderOrder={12}
         onPointerOver={(e) => {
           setHovered(true)
@@ -258,21 +258,25 @@ function Hotspot({ texture, glowTexture, isSelected, isHighlighted, onClick, onP
 }
 
 // ─── Single exhibition entry with store wiring ────────────────────────────────
-function ExhibitHotspot({ roomKey, texture, glowTexture, position, rotation, focusRef }) {
+function ExhibitHotspot({ roomKey, texture, /*glowTexture, position, rotation,*/ focusRef }) {
   const isSelected = useAppStore((s) => s.selectedRooms.has(roomKey))
   const isHighlighted = useAppStore((s) => s.hoveredMapIcon === roomKey)
   const room = ROOMS[roomKey]
   const cx = (room.minX + room.maxX) / 2
   const cz = (room.minZ + room.maxZ) / 2
+  const w = room.maxX - room.minX
+  const d = room.maxZ - room.minZ
+  const size = Math.min(w, d) * 0.45
 
   return (
-    <group position={[cx, 3.0, cz]} rotation={rotation}>
+    <group position={[cx, 3.0, cz]} rotation={[-Math.PI / 2, 0, 0]}>
       <Hotspot
         texture={texture}
         //glowTexture={glowTexture}
         isSelected={isSelected}
         isHighlighted={isHighlighted}
         focusRef={focusRef}
+        size={size}
         onClick={(e) => {
           e.stopPropagation()
           useAppStore.getState().toggleSelectedRoom(roomKey)
@@ -356,15 +360,15 @@ export default function ExhibitionsLayer({ targetFloor }) {
       })}
 
       {/* Exhibition hotspots */}
-      {floorExhibitions.map(({ roomKey, position, rotation }) => (
+      {floorExhibitions.map(({ roomKey/*, position, rotation*/ }) => (
         <ExhibitHotspot
           key={roomKey}
           roomKey={roomKey}
           texture={textures[roomKey]}
           //glowTexture={glowTexture}
           focusRef={focusRef}
-          position={position}
-          rotation={rotation}
+          //position={position}
+          //rotation={rotation}
         />
       ))}
     </group>

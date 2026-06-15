@@ -438,7 +438,7 @@ export default function FloorOne2D() {
               <CrowdLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
             )}
 
-            <ExhibitionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
+            <ExhibitionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />  
 
             {layers.dimensions && (
               <g transform="translate(-31, -30.7) scale(0.025)">
@@ -580,7 +580,6 @@ export default function FloorOne2D() {
               <path d="M1071 2417H1073V2464H1071V2417ZM1066 2412H1055C1052.24 2412 1050 2414.24 1050 2417V2464C1050 2466.76 1052.24 2469 1055 2469H1066C1068.76 2469 1071 2466.76 1071 2464H1073L1072.99 2464.36C1072.8 2468.06 1069.75 2471 1066 2471H1055C1051.13 2471 1048 2467.87 1048 2464V2417C1048 2413.13 1051.13 2410 1055 2410H1066C1069.87 2410 1073 2413.13 1073 2417H1071C1071 2414.24 1068.76 2412 1066 2412Z" fill="black" />
             </g>
             )}
-            
 
             {/* Walls */}
             <g transform="translate(-35, -33) scale(0.025)">
@@ -746,7 +745,8 @@ export default function FloorOne2D() {
 
             </g>
 
-
+            
+            <ExhibitionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />  
           </svg>
 
         </TransformComponent>

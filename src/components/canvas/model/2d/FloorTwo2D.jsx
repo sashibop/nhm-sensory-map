@@ -576,7 +576,6 @@ export default function FloorTwo2D() {
               <CrowdLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
             )}
 
-            <ExhibitionsLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
 
             {layers.dimensions && (
               <g transform="translate(-31.1, -31.5) scale(0.025)">
@@ -880,6 +879,8 @@ export default function FloorTwo2D() {
               <path d="M1294 1008.02L1305.93 973" stroke="white" strokeWidth="13" />
 
             </g>
+
+            <ExhibitionsLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
 
           </svg>
 

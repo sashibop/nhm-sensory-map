@@ -12,7 +12,6 @@ const useAppStore = create((set, get) => ({
     language: "EN",
     highContrast: false,
     textSize: 100,
-    cursorSize: 100,
   },
   selectedIcon: null,
   isPanelOpen: false,
@@ -112,14 +111,7 @@ const useAppStore = create((set, get) => ({
         textSize: size,
       },
     })),
-
-  setCursorSize: (size) =>
-    set((state) => ({
-      settings: {
-        ...state.settings,
-        cursorSize: size,
-      },
-    })),
+    
 
   // --- LAYER STATE ---
   layers: { crowd: true, noise: false, brightness: false, dimensions: false },
