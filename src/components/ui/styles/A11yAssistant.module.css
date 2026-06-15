@@ -1,0 +1,124 @@
+.fab {
+    position: relative;
+    top: auto;
+    right: auto;
+    z-index: 5;
+
+    width: 100px;
+    height: 35px;
+    border-radius: 50%;
+    color: #515151;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+}
+
+.fab:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(9, 9, 11, 0.05);
+}
+
+.fab:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Add a spinning animation while the API is processing */
+.processing .icon {
+    animation: spin 1.5s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fabInputContainer {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.keyInput {
+    flex: 1;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(9, 9, 11, 0.1);
+    border-radius: 16px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    outline: none;
+}
+
+.keySaveBtn {
+    height: 30px;
+    width: 30px;
+    font-size: 20px;
+    font-weight: 500;
+    padding-bottom: 5px;
+    /* ⚠️ NEW: Make it square/circular for icon balance */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+}
+
+.keySaveBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 850px),
+(max-height: 500px) {
+    .fab {
+        top: auto;
+        bottom: 220px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        padding: 0;
+    }
+
+    .fab span {
+        display: none;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
+    }
+}

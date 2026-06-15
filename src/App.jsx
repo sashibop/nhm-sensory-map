@@ -25,7 +25,7 @@ export default function App() {
       {/* 2. THE VIEWPORT ROUTER */}
       {activeView === '3D' ? (
         // The WebGL Engine
-        <Canvas gl={{ alpha: true }} camera={{ position: [0, 80, 80], fov: 50 }}>
+        <Canvas gl={{ alpha: true, preserveDrawingBuffer: true }} camera={{ position: [0, 80, 80], fov: 50 }}>
           <Scene />
         </Canvas>
       ) : (
@@ -42,11 +42,13 @@ export default function App() {
       {/* 4. The Ghost UI Layer */}
       <WeekPicker />
       <FloorSelector />
+
       <LayerPanel />
       <Timeline />
       
       <ViewToggle />
       <GlobalSettings />
+
       <LayerLegend />
       <Disclaimer />
     </div>
