@@ -3,6 +3,7 @@ import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
 import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import DimensionsLayer2D from '../../layers/2d/DimensionsLayer2D'
 
 export default function FloorOne2D() {
   const layers = useAppStore((state) => state.layers)
@@ -435,6 +436,9 @@ export default function FloorOne2D() {
             {layers.crowd && (
               <CrowdLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
             )}
+            {/* {layers.dimensions && (
+              <DimensionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
+            )} */}
 
             {layers.dimensions && (
               <g transform="translate(-31, -30.7) scale(0.025)">
@@ -739,8 +743,13 @@ export default function FloorOne2D() {
               <path d="M1758.5 2453H1721.5" stroke="white" strokeWidth="11" />
               <path d="M1860.5 2453H1823.5" stroke="white" strokeWidth="11" />
               <path d="M2599.21 2344.71C2599.6 2344.32 2599.6 2343.68 2599.21 2343.29L2592.84 2336.93C2592.45 2336.54 2591.82 2336.54 2591.43 2336.93C2591.04 2337.32 2591.04 2337.95 2591.43 2338.34L2597.09 2344L2591.43 2349.66C2591.04 2350.05 2591.04 2350.68 2591.43 2351.07C2591.82 2351.46 2592.45 2351.46 2592.84 2351.07L2599.21 2344.71ZM2581.5 2344V2345H2598.5V2344V2343H2581.5V2344Z" fill="white" fillOpacity="0.5" />
-
+            
+            
             </g>
+            {layers.dimensions && (
+              <DimensionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
+            )}
+            
 
 
           </svg>
