@@ -7,6 +7,7 @@ const DOOR_COLOR        = '#40E0D0'
 const LINE_COLOR        = '#000000'
 const LABEL_OFFSET_Z    = 2.5
 const REVEAL_DURATION   = 3000
+const FADE_DURATION     = 250   // ms — must match the CSS transition below
 const HIT_BOX_PADDING_W = 0.6
 const HIT_BOX_PADDING_H = 0.6
 
@@ -19,17 +20,39 @@ export default function DimensionsLayer2D({
   const layers      = useAppStore((state) => state.layers)
   const activeFloor = useAppStore((state) => state.activeFloor)
 
-  const [revealActive, setRevealActive] = useState(true)
-  const [hoveredId,    setHoveredId]    = useState(null)
-  const [pinnedIds,    setPinnedIds]    = useState(() => new Set())  // ← NEW
-  const revealTimer = useRef(null)
+  // revealOpacity drives the CSS transition for the auto-reveal animation (0 → 1 → 0)
+  const [revealOpacity, setRevealOpacity] = useState(0)
+  const [revealActive,  setRevealActive]  = useState(true)
+  const [hoveredId,     setHoveredId]     = useState(null)
+  const [pinnedIds,     setPinnedIds]     = useState(() => new Set())
+  const revealTimer  = useRef(null)
+  const fadeOutTimer = useRef(null)
+  const rafRef       = useRef(null)
 
   useEffect(() => {
-    revealTimer.current = setTimeout(() => setRevealActive(false), REVEAL_DURATION)
-    return () => clearTimeout(revealTimer.current)
+    // Fade IN: push opacity to 1 on the next frame so the CSS transition fires
+    rafRef.current = requestAnimationFrame(() => setRevealOpacity(1))
+
+    // After REVEAL_DURATION, begin fade OUT by dropping opacity back to 0
+    revealTimer.current = setTimeout(() => {
+      setRevealOpacity(0)
+
+      // Once the fade-out transition completes, mark the reveal as fully done
+      // so the hover/pin logic takes over clean with its own transition
+      fadeOutTimer.current = setTimeout(
+        () => setRevealActive(false),
+        FADE_DURATION,
+      )
+    }, REVEAL_DURATION)
+
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      clearTimeout(revealTimer.current)
+      clearTimeout(fadeOutTimer.current)
+    }
   }, [])
 
-  const togglePin = useCallback((id) => {   // ← NEW
+  const togglePin = useCallback((id) => {
     setPinnedIds((prev) => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
@@ -75,21 +98,34 @@ export default function DimensionsLayer2D({
     const halfT    = DOOR_THICKNESS / 2
     const labelZ   = mz - LABEL_OFFSET_Z
 
-    const slabVisible  = true
-    const labelVisible = revealActive || hoveredId === door.id || pinnedIds.has(door.id)  // ← UPDATED
+    const slabVisible = true
 
-    const hitW  = len + HIT_BOX_PADDING_W * 2
-    const hitH  = DOOR_THICKNESS + HIT_BOX_PADDING_H * 2
+    // During the reveal phase the opacity is driven by revealOpacity (0→1→0).
+    // After the reveal phase, hover and pin take over via a normal 0/1 opacity.
+    const isHoveredOrPinned = hoveredId === door.id || pinnedIds.has(door.id)
+    const labelOpacity = revealActive
+      ? revealOpacity                          // animated reveal value
+      : isHoveredOrPinned ? 1 : 0             // hover / pin value
+
+    const hitW   = len + HIT_BOX_PADDING_W * 2
+    const hitH   = DOOR_THICKNESS + HIT_BOX_PADDING_H * 2
     const labelW = 1.6
     const labelH = 0.88
 
-    return { door, mx, mz, len, angleDeg, halfLen, halfT, labelZ, slabVisible, labelVisible, hitW, hitH, labelW, labelH }
+    return {
+      door, mx, mz, len, angleDeg, halfLen, halfT, labelZ,
+      slabVisible, labelOpacity, hitW, hitH, labelW, labelH,
+    }
   })
+
+  // Transition string reused across elements
+  const fadeTransition = `opacity ${FADE_DURATION}ms ease`
 
   return (
     <g style={{ pointerEvents: 'all' }}>
-      {doorGeometry.map(({ door, mx, mz, len, angleDeg, halfLen, halfT, labelZ, labelVisible, hitW, hitH }) => (
+      {doorGeometry.map(({ door, mx, mz, len, angleDeg, halfLen, halfT, labelZ, labelOpacity, hitW, hitH }) => (
         <g key={door.id}>
+          {/* Invisible hit area */}
           <rect
             x={mx - hitW / 2}
             y={mz - hitH / 2}
@@ -98,12 +134,13 @@ export default function DimensionsLayer2D({
             fill="transparent"
             stroke="none"
             transform={`rotate(${angleDeg}, ${mx}, ${mz})`}
-            style={{ cursor: pinnedIds.has(door.id) ? 'cell' : 'crosshair' }}  // ← UPDATED cursor
+            style={{ cursor: pinnedIds.has(door.id) ? 'cell' : 'crosshair' }}
             onMouseEnter={() => setHoveredId(door.id)}
             onMouseLeave={() => setHoveredId(null)}
-            onClick={() => togglePin(door.id)}  // ← NEW
+            onClick={() => togglePin(door.id)}
           />
 
+          {/* Door slab */}
           <rect
             x={mx - halfLen}
             y={mz - halfT}
@@ -115,22 +152,24 @@ export default function DimensionsLayer2D({
             style={{ pointerEvents: 'none' }}
           />
 
+          {/* Leader line */}
           <line
             x1={mx}  y1={mz}
             x2={mx}  y2={labelZ + 0.15}
             stroke={LINE_COLOR}
             strokeWidth={0.05}
-            opacity={labelVisible ? 0.6 : 0}
-            style={{ transition: 'opacity 0.25s ease', pointerEvents: 'none' }}
+            opacity={labelOpacity * 0.6}
+            style={{ transition: fadeTransition, pointerEvents: 'none' }}
           />
         </g>
       ))}
 
-      {doorGeometry.map(({ door, mx, labelZ, labelVisible, labelW, labelH }) => (
+      {/* Labels rendered in a second pass so they always sit on top */}
+      {doorGeometry.map(({ door, mx, labelZ, labelOpacity, labelW, labelH }) => (
         <g
           key={`label-${door.id}`}
-          opacity={labelVisible ? 1 : 0}
-          style={{ transition: 'opacity 0.25s ease', pointerEvents: 'none' }}
+          opacity={labelOpacity}
+          style={{ transition: fadeTransition, pointerEvents: 'none' }}
         >
           <rect
             x={mx - (labelW + 2.8) / 2}

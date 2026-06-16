@@ -11,23 +11,18 @@ const DOOR_Y         = 2.03
 const DOOR_THICKNESS = 0.15
 const DOOR_VISUAL_H  = 1.05   // depth of door slab
 const LABEL_LIFT     = 3.0
-const DOOR_COLOR     = '#40E0D0' //'#0F1E37'
+const DOOR_COLOR     = '#40E0D0'
 const LINE_COLOR     = '#000000'
 
 // Hitbox padding around each door (world units)
-const HITBOX_W_PAD = 0.4   // extra width on each side
-const HITBOX_H_PAD = 0.6   // extra height on each side
+const HITBOX_W_PAD = 0.4
+const HITBOX_H_PAD = 0.6
 
 // How long (ms) to show everything before switching to hover mode
 const INTRO_DURATION_MS = 3000
 
-// Pyramid dimensions (placed on the floor in front of each door)
-const PYRAMID_BASE   = 0.65   // width/depth of the pyramid base
-const PYRAMID_HEIGHT = 0.85   // height of the pyramid
-// How far in front of the door centre the pyramid sits (along the door normal)
-const PYRAMID_OFFSET = 0.
-// Vertical position: sits on the floor (y = 0), apex points up
-const PYRAMID_Y      = 2    // base flush with floor
+// Lerp speed for per-door label/line fade (higher = faster)
+const LABEL_FADE_SPEED = 6.5
 
 export default function DimensionsLayer({ targetFloor = 1, geometry }) {
   const layers      = useAppStore((state) => state.layers)
@@ -48,12 +43,18 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
   // set of door ids that are "pinned" (clicked to stay visible)
   const [pinnedIds, setPinnedIds] = useState(new Set())
 
+  // Per-door label/line opacity: Map<doorId, number 0–1>
+  // Stored in a ref so useFrame can mutate without re-renders.
+  const doorOpacityRef = useRef({})
+
+  // Mirror of doorOpacityRef that triggers re-renders for React elements (Html/Line).
+  const [doorOpacities, setDoorOpacities] = useState({})
+
   const isActive = layers.dimensions && activeFloor === targetFloor
 
   // Start/reset intro whenever the layer becomes active
   useEffect(() => {
     if (isActive) {
-      // Clear any running timer
       if (introTimerRef.current) clearTimeout(introTimerRef.current)
       setIntroActive(true)
       setHoveredId(null)
@@ -72,7 +73,10 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
     }
   }, [isActive])
 
+  const doors = useMemo(() => getDoors(targetFloor), [targetFloor])
+
   useFrame((_, delta) => {
+    // ── Layer-level opacity (existing logic) ──────────────────────────────
     focusRef.current = THREE.MathUtils.lerp(
       focusRef.current,
       isActive ? 1.0 : 0.0,
@@ -82,18 +86,61 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
     setVisible(op > 0.001)
     setOpacity(op)
 
-    if (!groupRef.current) return
-    groupRef.current.traverse((obj) => {
-      if (obj.material && obj.userData.layerManaged) {
-        obj.material.opacity     = op
-        obj.material.transparent = true
-        obj.material.needsUpdate = true
-        obj.visible              = op > 0.001
+    if (groupRef.current) {
+      groupRef.current.traverse((obj) => {
+        if (obj.material && obj.userData.layerManaged) {
+          obj.material.opacity     = op
+          obj.material.transparent = true
+          obj.material.needsUpdate = true
+          obj.visible              = op > 0.001
+        }
+      })
+    }
+
+    // ── Per-door label/line opacity ───────────────────────────────────────
+    if (!doors.length) return
+
+    // Read latest React state from refs to avoid stale closures in useFrame.
+    // We pass the "should show" decision as a plain object keyed by door id.
+    let anyChanged = false
+    const prev = doorOpacityRef.current
+
+    doors.forEach((door) => {
+      const target = isDoorShownImmediate(
+        door.id,
+        op > 0.001,           // visible
+        introActiveRef.current,
+        hoveredIdRef.current,
+        pinnedIdsRef.current
+      )
+        ? 1
+        : 0
+
+      const current = prev[door.id] ?? 0
+      const next = THREE.MathUtils.lerp(current, target, delta * LABEL_FADE_SPEED)
+      const snapped = Math.abs(next - current) < 0.001 ? target : next
+
+      if (Math.abs(snapped - current) > 0.0005) {
+        prev[door.id] = snapped
+        anyChanged = true
       }
     })
+
+    // Only trigger a re-render when values actually changed
+    if (anyChanged) {
+      setDoorOpacities({ ...prev })
+    }
   })
 
-  const doors = useMemo(() => getDoors(targetFloor), [targetFloor])
+  // ── Refs that mirror state so useFrame can read without stale closures ──
+  const introActiveRef = useRef(introActive)
+  const hoveredIdRef   = useRef(hoveredId)
+  const pinnedIdsRef   = useRef(pinnedIds)
+
+  useEffect(() => { introActiveRef.current = introActive }, [introActive])
+  useEffect(() => { hoveredIdRef.current   = hoveredId   }, [hoveredId])
+  useEffect(() => { pinnedIdsRef.current   = pinnedIds   }, [pinnedIds])
+
   if (!doors.length) return null
 
   // Toggle pin state for a door
@@ -110,18 +157,6 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
     })
   }, [])
 
-  // Determines whether a specific door's decoration (line + label) is visible
-  const isDoorShown = useCallback(
-    (doorId) => {
-      if (!visible) return false
-      if (introActive) return true          // show all during intro
-      if (introActive === null) return false // layer not active yet
-      // hover mode: show if hovered OR pinned
-      return hoveredId === doorId || pinnedIds.has(doorId)
-    },
-    [visible, introActive, hoveredId, pinnedIds]
-  )
-
   return (
     <group ref={groupRef}>
       {doors.map((door) => {
@@ -137,7 +172,6 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
         const boxDepth  = DOOR_THICKNESS
         const boxY      = door.y ?? (DOOR_Y - boxHeight / 2)
 
-        // Hitbox is larger than the door so it's easy to hover
         const hitW = boxWidth  + HITBOX_W_PAD * 2
         const hitH = boxHeight + HITBOX_H_PAD * 2
 
@@ -145,17 +179,11 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
         const lineKnee  = new THREE.Vector3(mx, DOOR_Y + LABEL_LIFT,  mz)
         const labelPos  = new THREE.Vector3(mx, DOOR_Y + LABEL_LIFT + 0.1, mz)
 
-        const shown   = isDoorShown(door.id)
-        const isPinned = pinnedIds.has(door.id)
+        const isPinned   = pinnedIds.has(door.id)
 
-        // Pyramid sits on the floor, offset in front of the door along its normal.
-        // The door normal (outward face) is perpendicular to (dx, dz), i.e. (-dz, dx) normalised.
-        const nx = -dz / len 
-        const nz =  dx / len
-        const pyramidX = mx + nx * PYRAMID_OFFSET
-        const pyramidZ = mz + nz * PYRAMID_OFFSET
-        // Apex sits at PYRAMID_HEIGHT, base at 0 – the cone helper points up by default.
-        const pyramidY = PYRAMID_Y + PYRAMID_HEIGHT / 2
+        // Per-door label opacity driven by useFrame lerp
+        const labelOp = doorOpacities[door.id] ?? 0
+        const labelVisible = labelOp > 0.005   // mount/unmount threshold
 
         return (
           <group key={door.id}>
@@ -171,16 +199,19 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
                 e.stopPropagation()
                 setHoveredId((prev) => (prev === door.id ? null : prev))
               }}
+              onClick={(e) => handlePyramidClick(e, door.id)}
             >
               <boxGeometry args={[hitW, hitH, boxDepth + 0.3]} />
               <meshStandardMaterial
                 transparent
                 opacity={0}
                 depthWrite={false}
+                emissive={isPinned ? DOOR_COLOR : '#000000'}
+                emissiveIntensity={isPinned ? 0.45 : 0}
               />
             </mesh>
 
-            {/* ── Visible door slab — always shown when layer is visible ── */}
+            {/* ── Visible door slab ── */}
             {visible && (
               <mesh
                 position={[mx, boxY, mz]}
@@ -206,45 +237,19 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
               </mesh>
             )}
 
-            {/* ── Floor pyramid ── */}
-            {/* {visible && (
-              <mesh
-                position={[pyramidX, pyramidY, pyramidZ]}
-                rotation={[0, angle, 0]}
-                onClick={(e) => handlePyramidClick(e, door.id)}
-                onPointerEnter={(e) => {
-                  e.stopPropagation()
-                  document.body.style.cursor = 'pointer'
-                }}
-                onPointerLeave={(e) => {
-                  e.stopPropagation()
-                  document.body.style.cursor = 'auto'
-                }}
-              >
-                <coneGeometry args={[PYRAMID_BASE, PYRAMID_HEIGHT, 4, 1]} />
-                <meshStandardMaterial
-                  color={DOOR_COLOR}
-                  transparent
-                  opacity={opacity}
-                  emissive={isPinned ? DOOR_COLOR : '#000000'}
-                  emissiveIntensity={isPinned ? 0.45 : 0}
-                />
-              </mesh>
-            )}  */}
-
-            {/* ── Leader line ── */}
-            {shown && (
+            {/* ── Leader line — fades per-door ── */}
+            {labelVisible && (
               <Line
                 points={[lineStart, lineKnee]}
                 color={LINE_COLOR}
                 lineWidth={1}
                 transparent
-                opacity={opacity}
+                opacity={labelOp}
               />
             )}
 
-            {/* ── Label ── */}
-            {shown && (
+            {/* ── Label — fades per-door ── */}
+            {labelVisible && (
               <Html
                 position={labelPos.toArray()}
                 center
@@ -260,8 +265,8 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
                     borderRadius: '4px',
                     border:       isPinned ? '1px solid #40E0D0' : '1px solid #4FC3F7',
                     whiteSpace:   'nowrap',
-                    opacity,
-                    transition:   'opacity 0.25s ease',
+                    opacity:      labelOp,
+                    transition:   'border-color 0.2s ease',
                   }}
                 >
                   {isPinned ? ' ' : ''}{door.labelLen.toFixed(2)} m
@@ -273,4 +278,14 @@ export default function DimensionsLayer({ targetFloor = 1, geometry }) {
       })}
     </group>
   )
+}
+
+// ── Pure helper (no hooks) used inside useFrame ───────────────────────────────
+// Mirrors the isDoorShown logic but reads from plain values, not state,
+// so it's safe to call every frame without stale-closure issues.
+function isDoorShownImmediate(doorId, visible, introActive, hoveredId, pinnedIds) {
+  if (!visible) return false
+  if (introActive) return true
+  if (introActive === null) return false
+  return hoveredId === doorId || pinnedIds.has(doorId)
 }
