@@ -57,13 +57,12 @@ html, body, #root {
 }
 
 /* The Vignette Overlay */
-.vignette-overlay {
+/* .vignette-overlay {
   position: absolute;
   inset: 0;
-  pointer-events: none; /* Crucial: Allows clicks to pass through to UI and 3D */
-  z-index: 5; /* Above Canvas (z-index 0), below UI (z-index 10+) */
-  
-  /* Radial gradient: Transparent center, soft falloff, solid edge */
+  pointer-events: none; 
+  z-index: 5; 
+
   background: radial-gradient(
     circle at center, 
     transparent 30%, 
@@ -71,9 +70,8 @@ html, body, #root {
     var(--text-muted) 200%
   );
   
-  /* Subtle inward depth shadow */
   box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.05);
-}
+} */
 
 /* ========================================= */
 /* --- 2. BROWSER RESETS & BASE LAYOUT ---   */

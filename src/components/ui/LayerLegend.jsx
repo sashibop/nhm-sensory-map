@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import useAppStore from '../../store/useAppStore'
-import { visitors, getNoiseSources } from '../../data/mockVisitorData'
+import { visitors } from '../../data/mockVisitorData'
 import styles from './styles/LayerLegend.module.css'
 
 const getNoiseColor = (percent) => {
@@ -34,6 +34,21 @@ const getNoiseColor = (percent) => {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+const getCrowdColor = (count) => {
+  const maxCapacity = 50; 
+  const percent = Math.min(100, (count / maxCapacity) * 100);
+  
+  const start = [200, 200, 200]; // Light Gray
+  const end = [242, 102, 26];    // Orange
+  
+  const t = percent / 100;
+  const r = Math.round(start[0] + (end[0] - start[0]) * t);
+  const g = Math.round(start[1] + (end[1] - start[1]) * t);
+  const b = Math.round(start[2] + (end[2] - start[2]) * t);
+  
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
 export default function LayerLegend() {
   const layers = useAppStore((state) => state.layers)
   const timeOfDay = useAppStore((state) => state.timeOfDay)
@@ -63,9 +78,14 @@ export default function LayerLegend() {
     return Math.min(65, emptyRoomBaseline + crowdMurmur);
   }, [layers.noise, activeFloor, stats.total])
 
+  // Noise Calculations
   const noisePercent = Math.max(0, Math.min(100, ((averageNoise - 15) / 50) * 100))
-
   const dynamicNoiseColor = getNoiseColor(noisePercent)
+
+  // Crowd Calculations (assuming 80 is max capacity for the visual scale)
+  const maxCrowdScale = 90;
+  const crowdPercent = Math.min(100, (stats.total / maxCrowdScale) * 100);
+  const dynamicCrowdColor = getCrowdColor(stats.total);
 
   if (!layers.noise && !layers.crowd) return null
 
@@ -77,28 +97,34 @@ export default function LayerLegend() {
         <div className={styles.ghostBlock}>
           <div className={`${styles.heading} ${styles.desktopOnly}`}>Crowd</div>
           
-          <div className={styles.statsRow}>
-            {/* Desktop Only Stats */}
-            <div className={`${styles.statItem} ${styles.desktopOnly}`}>
-              <span className={styles.statLabel}>Individuals</span>
-              <span className={styles.statValue}>{stats.individuals}</span>
+          {/* DESKTOP: Crowd Gliding Track */}
+          <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>
+            <div className={styles.liveNeedle} style={{ left: `${crowdPercent}%` }}>
+              <div className={styles.needleLabel}>
+                {stats.total}<span>/{maxCrowdScale}</span>
+              </div>
+              <div 
+                className={styles.dynamicNeedleDot} 
+                style={{ '--glow-color': dynamicCrowdColor }} 
+              />
             </div>
-            <div className={`${styles.divider} ${styles.desktopOnly}`} />
-            <div className={`${styles.statItem} ${styles.desktopOnly}`}>
-              <span className={styles.statLabel}>Groups</span>
-              <span className={styles.statValue}>{stats.groups}</span>
-            </div>
-            <div className={`${styles.divider} ${styles.desktopOnly}`} />
             
-            {/* Universal Stat (Scales down on Mobile) */}
-            <div className={`${styles.statItem} ${styles.desktopOnly}`}>
-              <span className={styles.statLabel}>Total</span>
-              <span className={`${styles.statValue} ${styles.highlight}`}>{stats.total}</span>
+            <div className={`${styles.gradientTrack} ${styles.crowdTrack}`} />
+            <div className={styles.ticksContainer}>
+              <div className={styles.tickGroup} style={{ left: '0%' }}><div className={styles.tick} /><span className={styles.tickLabel}>0</span></div>
+              <div className={styles.tickGroup} style={{ left: '50%' }}><div className={styles.tick} /><span className={styles.tickLabel}>{maxCrowdScale / 2}</span></div>
+              <div className={styles.tickGroup} style={{ left: '100%' }}><div className={styles.tick} /><span className={styles.tickLabel}>{maxCrowdScale}+</span></div>
             </div>
+          </div>
 
-            <div className={`${styles.statItem} ${styles.mobileOnly}`}>
-              <span className={styles.statLabel}>Visitors</span>
-              <span className={`${styles.statValue} ${styles.highlight}`}>{stats.total}</span>
+          {/* MOBILE: Minimalist Crowd Stat Block */}
+          <div className={`${styles.mobileStatBlock} ${styles.mobileOnly}`}>
+            <div 
+              className={styles.dynamicNeedleDot} 
+              style={{ '--glow-color': dynamicCrowdColor, position: 'relative' }} 
+            />
+            <div className={styles.mobileStatValue}>
+              {stats.total}<span> pax</span>
             </div>
           </div>
         </div>
@@ -109,16 +135,19 @@ export default function LayerLegend() {
         <div className={styles.ghostBlock}>
           <div className={`${styles.heading} ${styles.desktopOnly}`}>Noise</div>
           
-          {/* DESKTOP: The Gliding Track */}
+          {/* DESKTOP: Noise Gliding Track */}
           <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>
             <div className={styles.liveNeedle} style={{ left: `${noisePercent}%` }}>
               <div className={styles.needleLabel}>
                 {Math.round(averageNoise)}<span>dB</span>
               </div>
-              <div className={styles.dynamicNeedleDot} />
+              <div 
+                className={styles.dynamicNeedleDot} 
+                style={{ '--glow-color': dynamicNoiseColor }} 
+              />
             </div>
             
-            <div className={styles.gradientTrack} />
+            <div className={`${styles.gradientTrack} ${styles.noiseTrack}`} />
             <div className={styles.ticksContainer}>
               <div className={styles.tickGroup} style={{ left: '0%' }}><div className={styles.tick} /><span className={styles.tickLabel}>15dB</span></div>
               <div className={styles.tickGroup} style={{ left: '50%' }}><div className={styles.tick} /><span className={styles.tickLabel}>40dB</span></div>
@@ -126,17 +155,16 @@ export default function LayerLegend() {
             </div>
           </div>
 
-          {/* MOBILE: The Minimalist Stat Block */}
-          <div className={`${styles.mobileNoiseBlock} ${styles.mobileOnly}`}>
+          {/* MOBILE: Minimalist Noise Stat Block */}
+          <div className={`${styles.mobileStatBlock} ${styles.mobileOnly}`}>
             <div 
               className={styles.dynamicNeedleDot} 
               style={{ '--glow-color': dynamicNoiseColor, position: 'relative' }} 
             />
-            <div className={styles.mobileNoiseValue}>
+            <div className={styles.mobileStatValue}>
               {Math.round(averageNoise)}<span>dB</span>
             </div>
           </div>
-
         </div>
       )}
 

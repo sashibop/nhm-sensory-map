@@ -13,6 +13,19 @@
   white-space: nowrap;
 }
 
+.container::before {
+  content: '';
+  position: absolute;
+  inset: -4px -20px; 
+  z-index: -1;
+  border-radius: var(--radius-pill);
+  
+  background: rgba(228, 228, 231, 0.95);
+  box-shadow: 0 0 24px 24px rgba(228, 228, 231, 0.95);
+  
+  pointer-events: none;
+}
+
 @media (max-width: 850px), (max-height: 500px) {
   .container {
     display: none; /* Instantly reclaims the bottom edge for the Timeline */

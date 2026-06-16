@@ -41,9 +41,6 @@ export default function App() {
       
       {/* 4. The Ghost UI Layer */}
       <WeekPicker />
-      <FloorSelector />
-
-      <LayerPanel />
       <Timeline />
 
       <LayerPanel />
