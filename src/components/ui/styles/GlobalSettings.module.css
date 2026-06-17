@@ -281,6 +281,39 @@
   box-shadow: 0 0 16px var(--color-primary);
 }
 
+/* --- ICON WRAPPER --- */
+.row:hover .iconWrapper {
+  color: var(--text-dark);
+}
+
+.row.active .iconWrapper {
+  color: var(--text-dark); 
+}
+
+.subHeaderFlex {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subRow:hover .iconWrapper,
+.infoRow:hover .iconWrapper {
+  color: var(--text-dark);
+}
+
+.subActive .iconWrapper {
+  color: var(--text-dark); 
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint); 
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
 /* ========================================= */
 /* 5. MOBILE HUD CRUNCH RESPONSIVENESS       */
 /* ========================================= */

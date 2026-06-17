@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import useAppStore from '../../store/useAppStore'
 import { visitors } from '../../data/mockVisitorData'
 import styles from './styles/LayerLegend.module.css'
+import { Users, AudioWaveform } from 'lucide-react'
 
 const getNoiseColor = (percent) => {
   const stops = [
@@ -95,7 +96,11 @@ export default function LayerLegend() {
       {/* --- CROWD LEGEND --- */}
       {layers.crowd && (
         <div className={styles.ghostBlock}>
-          <div className={`${styles.heading} ${styles.desktopOnly}`}>Crowd</div>
+          {/* 2. Update the Heading */}
+          <div className={`${styles.heading} ${styles.desktopOnly}`}>
+            <Users size={12} strokeWidth={1.5} />
+            Crowd
+          </div>
           
           {/* DESKTOP: Crowd Gliding Track */}
           <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>
@@ -133,7 +138,11 @@ export default function LayerLegend() {
       {/* --- NOISE LEGEND --- */}
       {layers.noise && (
         <div className={styles.ghostBlock}>
-          <div className={`${styles.heading} ${styles.desktopOnly}`}>Noise</div>
+          {/* 3. Update the Heading */}
+          <div className={`${styles.heading} ${styles.desktopOnly}`}>
+            <AudioWaveform size={12} strokeWidth={1.5} />
+            Noise
+          </div>
           
           {/* DESKTOP: Noise Gliding Track */}
           <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>

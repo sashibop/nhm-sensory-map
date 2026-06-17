@@ -92,6 +92,24 @@
   box-shadow: var(--shadow-glow);
 }
 
+/* --- ICON WRAPPER --- */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  color: var(--text-muted); 
+  transition: all 0.25s ease;
+}
+
+.row:hover .iconWrapper {
+  color: var(--text-dark);
+}
+
+.row.active .iconWrapper {
+  color: var(--text-dark); 
+}
+
 /* ========================================= */
 /* --- MOBILE RESPONSIVENESS ---             */
 /* ========================================= */

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, X, Info } from 'lucide-react'
 import useAppStore from '../../store/useAppStore'
 import styles from './styles/MonthCalendar.module.css'
 
@@ -59,17 +60,20 @@ export default function MonthCalendar() {
 
   return (
     <div className={styles.container}>
-      {/* 1. Refined GHOST ACTION PILL (Trigger Button) */}
-      {/* 1. GHOST TYPOGRAPHIC TRIGGER */}
+      
+      {/* 1. GHOST TYPOGRAPHIC TRIGGER (Icon -> Label -> Chevron) */}
       <button 
         className={`${styles.triggerBtn} ${isOpen ? styles.active : ''}`}
         onClick={() => setIsOpen(true)}
         aria-label="Open month overview"
       >
+        <div className={styles.iconWrapper} aria-hidden="true">
+          <CalendarDays size={16} strokeWidth={1.5} />
+        </div>
+        
         <span className={styles.btnMonth}>{displayMonth}</span>
-        <svg className={styles.chevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        
+        <ChevronDown className={styles.chevron} size={14} strokeWidth={2} />
       </button>
 
       {/* 2. THE SPATIAL MODAL PORTAL */}
@@ -81,17 +85,17 @@ export default function MonthCalendar() {
             <div className={styles.header}>
               <div className={styles.monthNav}>
                 <button onClick={handlePrevMonth} className={styles.navBtn}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  <ChevronLeft size={20} strokeWidth={2} />
                 </button>
                 <div className={styles.monthTitle}>
                   {viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </div>
                 <button onClick={handleNextMonth} className={styles.navBtn}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  <ChevronRight size={20} strokeWidth={2} />
                 </button>
               </div>
               <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>
-                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                 <X size={20} strokeWidth={2} />
               </button>
             </div>
             
@@ -133,9 +137,8 @@ export default function MonthCalendar() {
             </div>
             
             <div className={styles.disclaimer}>
-              <span className={styles.disclaimerIcon}>ℹ</span>
-                Predictive data visualization. <br></br>
-                Real-world conditions may vary.
+              <Info size={12} strokeWidth={2} className={styles.disclaimerIcon} />
+              <span>Predictive data visualization. Real-world conditions may vary.</span>
             </div>
 
           </div>

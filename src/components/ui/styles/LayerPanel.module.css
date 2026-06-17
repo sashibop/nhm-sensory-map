@@ -104,6 +104,24 @@
   /* Glows softly to signify active status */
 }
 
+/* --- ICON WRAPPER --- */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  color: var(--text-faint); 
+  transition: all 0.25s ease;
+}
+
+.row:hover .iconWrapper {
+  color: var(--text-dark);
+}
+
+.row.active .iconWrapper {
+  color: var(--text-dark); 
+}
+
 /* ========================================= */
 /* --- MOBILE RESPONSIVENESS ---             */
 /* ========================================= */
