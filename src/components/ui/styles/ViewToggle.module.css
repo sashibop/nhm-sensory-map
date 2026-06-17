@@ -13,6 +13,37 @@
   pointer-events: none;
 }
 
+.container::before {
+  content: '';
+  position: absolute;
+  inset: -10px -24px;
+  z-index: -1;
+  border-radius: var(--radius-md, 14px);
+  
+  background: rgba(246, 246, 248, 0.95);
+  box-shadow: 0 0 50px 40px rgba(246, 246, 248, 0.95); 
+  
+  pointer-events: none;
+}
+
+/* --- ICON WRAPPER --- */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  color: var(--text-muted); 
+  transition: all 0.25s ease;
+}
+
+.row:hover .iconWrapper {
+  color: var(--text-dark);
+}
+
+.row.active .iconWrapper {
+  color: var(--text-dark); 
+}
+
 /* ========================================= */
 /* 2. BASE GHOST UI                          */
 /* ========================================= */

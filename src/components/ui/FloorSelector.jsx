@@ -1,29 +1,43 @@
 import useAppStore from '../../store/useAppStore'
+import { ArrowUp, ArrowDown } from 'lucide-react'
 import styles from './styles/FloorSelector.module.css'
 
 export default function FloorSelector() {
   const activeFloor = useAppStore((state) => state.activeFloor)
   const setActiveFloor = useAppStore((state) => state.setActiveFloor)
 
+  // Map the floor options with directional icons
+  const floorOptions = [
+    { id: 2, label: '2F', icon: ArrowUp },
+    { id: 1, label: '1F', icon: ArrowDown },
+  ]
+
   return (
     <div className={styles.container}>
       <div className={styles.heading}>Switch Floors</div>
       <div className={styles.list}>
-        <button 
-          className={`${styles.row} ${activeFloor === 2 ? styles.active : ''}`}
-          onClick={() => setActiveFloor(2)}
-        >
-          <div className={styles.indicator} />
-          <span className={styles.label}>2F / 1. OG</span>
-        </button>
         
-        <button 
-          className={`${styles.row} ${activeFloor === 1 ? styles.active : ''}`}
-          onClick={() => setActiveFloor(1)}
-        >
-          <div className={styles.indicator} />
-          <span className={styles.label}>1F / EG</span>
-        </button>
+        {floorOptions.map((option) => {
+          const IconComponent = option.icon;
+
+          return (
+            <button 
+              key={option.id}
+              className={`${styles.row} ${activeFloor === option.id ? styles.active : ''}`}
+              onClick={() => setActiveFloor(option.id)}
+            >
+              <div className={styles.indicator} aria-hidden="true" />
+
+              <div className={styles.iconWrapper} aria-hidden="true">
+                <IconComponent size={14} strokeWidth={1.5} />
+              </div>
+              
+              <span className={styles.label}>{option.label}</span>
+             
+            </button>
+          )
+        })}
+
       </div>
     </div>
   )

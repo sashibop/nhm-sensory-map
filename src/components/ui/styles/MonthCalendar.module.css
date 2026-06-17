@@ -6,6 +6,29 @@
   pointer-events: none; 
 }
 
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.triggerBtn:hover .iconWrapper,
+.triggerBtn.active .iconWrapper {
+  color: var(--text-dark);
+}
+
+.chevron {
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.triggerBtn:hover .chevron,
+.triggerBtn.active .chevron {
+  color: var(--text-dark);
+}
+
 .triggerBtn {
   pointer-events: auto;
   background: transparent;

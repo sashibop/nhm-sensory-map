@@ -168,7 +168,9 @@ export default function Floor({ level = 1, isActive, focusRef }) {
       {nodes['stairs-and-platforms'] && <mesh geometry={nodes['stairs-and-platforms'].geometry} material={layers.dimensions ? materials.stairsHighlight : materials.stairs} position={nodes['stairs-and-platforms'].position} rotation={nodes['stairs-and-platforms'].rotation} scale={nodes['stairs-and-platforms'].scale} renderOrder={2} receiveShadow castShadow onClick={handleFloorClick} />}
       {nodes.exhibits && <mesh geometry={nodes.exhibits.geometry} material={materials.exhibits} position={nodes.exhibits.position} rotation={nodes.exhibits.rotation} scale={nodes.exhibits.scale} renderOrder={2} castShadow receiveShadow />}
       {nodes.windows && <mesh geometry={nodes.windows.geometry} material={materials.windows} position={nodes.windows.position} rotation={nodes.windows.rotation} scale={nodes.windows.scale} renderOrder={3} />}
-      
+      {nodes.labels && <mesh geometry={nodes.labels.geometry} material={materials.labels} position={nodes.labels.position} rotation={nodes.labels.rotation} scale={nodes.labels.scale} renderOrder={2} castShadow receiveShadow />}
+      {nodes.accessibility && <mesh geometry={nodes.accessibility.geometry} material={materials.accessibility} position={nodes.accessibility.position} rotation={nodes.accessibility.rotation} scale={nodes.accessibility.scale} renderOrder={3} />}
+    
 
 
       {/* Node Mapping Overlay */}
@@ -195,9 +197,7 @@ export default function Floor({ level = 1, isActive, focusRef }) {
       ))}
 
       {nodes.columns && <mesh geometry={nodes.columns.geometry} material={materials.columns} position={nodes.columns.position} rotation={nodes.columns.rotation} scale={nodes.columns.scale} renderOrder={2} castShadow receiveShadow visible={layers.dimensions} />}
-      {nodes.labels && <mesh geometry={nodes.labels.geometry} material={materials.labels} position={nodes.labels.position} rotation={nodes.labels.rotation} scale={nodes.labels.scale} renderOrder={2} castShadow receiveShadow visible={layers.dimensions} />}
-      {nodes.accessibility && <mesh geometry={nodes.accessibility.geometry} material={materials.accessibility} position={nodes.accessibility.position} rotation={nodes.accessibility.rotation} scale={nodes.accessibility.scale} renderOrder={3} visible={layers.dimensions} />}
-    </group>
+      </group>
   )
 }
 
