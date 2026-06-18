@@ -6,6 +6,8 @@ import CrowdLayer from '../../layers/3d/CrowdLayer'
 import NoiseLayer from '../../layers/3d/NoiseLayer'
 import useAppStore from '../../../../store/useAppStore'
 import { N } from '../../../../data/mockVisitorData'
+import BrightnessLayer from '../../layers/3d/BrightnessLayer'
+import DimensionsLayer from '../../layers/3d/DimensionsLayer'
 
 export default function Floor({ level = 1, isActive, focusRef }) {
   const layers = useAppStore((state) => state.layers)
@@ -159,6 +161,18 @@ export default function Floor({ level = 1, isActive, focusRef }) {
           <NoiseLayer targetFloor={level} geometry={nodes.floor.geometry} />
         </group>
       )}
+      {layers.brightness && nodes.floor && (
+        <group position={[nodes.floor.position.x, nodes.floor.position.y + 0.02, nodes.floor.position.z]} rotation={nodes.floor.rotation} scale={nodes.floor.scale}>
+          <BrightnessLayer targetFloor={level} geometry={nodes.floor.geometry} />
+        </group>
+      )}
+      {layers.dimensions && nodes.floor && (
+        <group position={[nodes.floor.position.x, nodes.floor.position.y + 0.02, nodes.floor.position.z]} rotation={nodes.floor.rotation} scale={nodes.floor.scale}>
+          <DimensionsLayer targetFloor={level} geometry={nodes.floor.geometry} />
+        </group>
+      )}
+  
+  
 
       {/* --- STANDARDIZED BLENDER MESHES --- */}
       {nodes.floor && <mesh geometry={nodes.floor.geometry} material={materials.floor} position={nodes.floor.position} rotation={nodes.floor.rotation} scale={nodes.floor.scale} renderOrder={1} receiveShadow onClick={handleFloorClick} />}
