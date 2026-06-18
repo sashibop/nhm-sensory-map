@@ -14,7 +14,6 @@ import Disclaimer from './components/ui/Disclaimer'
 import LayerLegend from './components/ui/LayerLegend'
 import FloorOne2D from './components/canvas/model/2d/FloorOne2D'
 import FloorTwo2D from './components/canvas/model/2d/FloorTwo2D'
-import IconAnalytics from './components/ui/IconAnalytics'
 import AnalyticsSidePanel from './components/ui/AnalyticsSidePanel'
 
 const PANEL_WIDTH = 340

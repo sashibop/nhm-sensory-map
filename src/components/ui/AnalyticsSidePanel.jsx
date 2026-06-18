@@ -184,13 +184,13 @@ function AnalyticsChart({
           <XAxis
             dataKey="hour"
             tickFormatter={(h) => `${h}h`}
-            tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+            tick={{ fill: "var(--text-muted)"}}
             axisLine={false}
             tickLine={false}
             interval={2}
           />
           <YAxis
-            tick={{ fill: "var(--text-muted)", fontSize: 10 }}
+            tick={{ fill: "var(--text-muted)"}}
             axisLine={false}
             tickLine={false}
             width={42}
@@ -199,7 +199,7 @@ function AnalyticsChart({
               angle: -90,
               position: "insideLeft",
               offset: 10,
-              style: { fill: "var(--text-muted)", fontSize: 10 }
+              style: { fill: "var(--text-muted)"}
             }}
           />
           <Tooltip
