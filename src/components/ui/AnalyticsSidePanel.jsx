@@ -1,25 +1,10 @@
-// AnalyticsSidePanel.jsx
-// Drop-in replacement for IconAnalytics.
-// – Slides in from the right when the user clicks the chart icon
-// – Three stacked LineCharts: Crowd · Noise · Brightness
-// – Default view = museum-wide overview (all rooms aggregated)
-// – Multi-select: clicking an exhibition icon on the map adds / removes it;
-//   each selected room gets its own coloured line
-// – Cross-highlight: hovering a chart line ↔ hovering the map icon
-
-import { useCallback, useRef, useState, useEffect, Fragment } from "react";
+import { useCallback, useRef, useState, useEffect, Fragment, useMemo } from "react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-  ReferenceLine,
-  ReferenceDot,
+  LineChart, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid, Legend,
+  ReferenceLine, ReferenceDot,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 import useAppStore from "../../store/useAppStore";
 import {
   getRoomCrowdHourlyData,
@@ -33,69 +18,72 @@ import {
 } from "../../data/roomAnalytics";
 import styles from "./styles/AnalyticsSidePanel.module.css";
 
-// ─── colour palette for multi-room lines ────────────────────────────────────
+// ─── colour palette (statisch – kein t nötig) ────────────────────────────────
 const ROOM_COLORS = {
-  natureRoleModel: "#6C8EFF", // blue-violet
-  vivarium: "#4DD9AC", // mint
-  fossils: "#F7C948", // amber
-  prehistoricTimes: "#FF8C6B", // coral
-  minerals: "#C084FC", // purple
-  geology: "#34D1BF", // teal
-  diorama: "#F97316", // orange
-  specialExhibition: "#E879F9", // pink
-  atrium: "#A3E635", // lime
-  nativeNature: "#38BDF8", // sky
-  africanNature: "#FB923C", // warm orange
-  insects: "#4ADE80", // green
-  rotary: "#FACC15", // yellow
-  specialExhibitionBig: "#F43F5E", // rose
-  Museum: "var(--color-primary)",
-}
-
-
-// ─── label maps ──────────────────────────────────────────────────────────────
-const ROOM_LABELS = {
-  vivarium: "Climates and habitats - Vivarium",
-  africanNature: "African habitats",
-  atrium: "Atrium",
-  diorama: "Dioramas",
-  fossils: "Fossils found in southern Baden",
-  geology: "Geology on the Upper Rhine",
-  insects: "The world of insects",
-  minerals: "The realm of minerals",
-  nativeNature: "Native flora and fauna",
-  natureRoleModel: "Form and function - inspired by nature",
-  prehistoricTimes: "Life in prehistoric times",
-  rotary: "Rotary Room of Nature",
-  specialExhibition: "Special exhibition (small)",
-  specialExhibitionBig: "Special exhibition (big)",
-  default: "Exhibition",
+  natureRoleModel:    "#6C8EFF",
+  vivarium:           "#4DD9AC",
+  fossils:            "#F7C948",
+  prehistoricTimes:   "#FF8C6B",
+  minerals:           "#C084FC",
+  geology:            "#34D1BF",
+  diorama:            "#F97316",
+  specialExhibition:  "#E879F9",
+  atrium:             "#A3E635",
+  nativeNature:       "#38BDF8",
+  africanNature:      "#FB923C",
+  insects:            "#4ADE80",
+  rotary:             "#FACC15",
+  specialExhibitionBig: "#F43F5E",
+  Museum:             "var(--color-primary)",
 };
 
-// ─── chart config ─────────────────────────────────────────────────────────────
-const CHARTS = [
-  {
-    key: "crowd",
-    label: "Crowd Density",
-    unit: "visitors",
-    dataFn: getRoomCrowdHourlyData,
-    overviewFn: getMuseumCrowdOverviewData,
-  },
-  {
-    key: "noise",
-    label: "Noise Level",
-    unit: "dB",
-    dataFn: getRoomNoiseHourlyData,
-    overviewFn: getMuseumNoiseOverviewData,
-  },
-  {
-    key: "brightness",
-    label: "Brightness",
-    unit: "lux",
-    dataFn: getRoomBrightnessHourlyData,
-    overviewFn: getMuseumBrightnessOverviewData,
-  },
-];
+// ─── Factory: gibt ROOM_LABELS-Objekt zurück (einmalig pro Sprache) ──────────
+function makeRoomLabels(t) {
+  return {
+    vivarium:            t("analytics.rooms.vivarium"),
+    africanNature:       t("analytics.rooms.africanNature"),
+    atrium:              t("analytics.rooms.atrium"),
+    diorama:             t("analytics.rooms.diorama"),
+    fossils:             t("analytics.rooms.fossils"),
+    geology:             t("analytics.rooms.geology"),
+    insects:             t("analytics.rooms.insects"),
+    minerals:            t("analytics.rooms.minerals"),
+    nativeNature:        t("analytics.rooms.nativeNature"),
+    natureRoleModel:     t("analytics.rooms.natureRoleModel"),
+    prehistoricTimes:    t("analytics.rooms.prehistoricTimes"),
+    rotary:              t("analytics.rooms.rotary"),
+    specialExhibition:   t("analytics.rooms.specialExhibition"),
+    specialExhibitionBig:t("analytics.rooms.specialExhibitionBig"),
+    default:             t("analytics.rooms.default"),
+  };
+}
+
+// ─── Factory: gibt CHARTS-Array zurück ───────────────────────────────────────
+function makeCharts(t) {
+  return [
+    {
+      key: "crowd",
+      label:    t("analytics.charts.crowd"),
+      unit:     t("analytics.units.visitors"),
+      dataFn:   getRoomCrowdHourlyData,
+      overviewFn: getMuseumCrowdOverviewData,
+    },
+    {
+      key: "noise",
+      label:    t("analytics.charts.noise"),
+      unit:     t("analytics.units.db"),
+      dataFn:   getRoomNoiseHourlyData,
+      overviewFn: getMuseumNoiseOverviewData,
+    },
+    {
+      key: "brightness",
+      label:    t("analytics.charts.brightness"),
+      unit:     t("analytics.units.lux"),
+      dataFn:   getRoomBrightnessHourlyData,
+      overviewFn: getMuseumBrightnessOverviewData,
+    },
+  ];
+}
 
 // ─── custom tooltip ──────────────────────────────────────────────────────────
 function CustomTooltip({ active, payload, label, unit }) {
@@ -105,29 +93,21 @@ function CustomTooltip({ active, payload, label, unit }) {
       <span className={styles.tooltipHour}>{label}:00</span>
       {payload.map((p) => (
         <div key={p.dataKey} className={styles.tooltipRow}>
-          <span
-            className={styles.tooltipDot}
-            style={{ background: p.color }}
-          />
+          <span className={styles.tooltipDot} style={{ background: p.color }} />
           <span className={styles.tooltipName}>{p.name}</span>
-          <span className={styles.tooltipValue}>
-            {p.value} {unit}
-          </span>
+          <span className={styles.tooltipValue}>{p.value} {unit}</span>
         </div>
       ))}
     </div>
   );
 }
 
-// dot that follows the timeline
-
+// ─── Timeline-Dot ────────────────────────────────────────────────────────────
 function TimelineDot({ data, room, color }) {
-  const timeOfDay = useAppStore((s) => Math.floor(s.timeOfDay))
-  const currentEntry = data.find(d => d.hour === timeOfDay)
-  const currentValue = currentEntry?.[room]
-
-  if (currentValue === undefined) return null
-
+  const timeOfDay = useAppStore((s) => Math.floor(s.timeOfDay));
+  const currentEntry = data.find((d) => d.hour === timeOfDay);
+  const currentValue = currentEntry?.[room];
+  if (currentValue === undefined) return null;
   return (
     <ReferenceDot
       x={timeOfDay}
@@ -137,21 +117,16 @@ function TimelineDot({ data, room, color }) {
       stroke="var(--bg-base)"
       strokeWidth={1.5}
     />
-  )
+  );
 }
 
-
-// ─── single stacked chart ────────────────────────────────────────────────────
+// ─── einzelnes Chart ─────────────────────────────────────────────────────────
 function AnalyticsChart({
-  chartCfg,
-  selectedRooms,
-  dayOfWeek,
-  activeFloor,
-  hoveredRoom,
-  onHoverRoom,
+  chartCfg, selectedRooms, dayOfWeek,
+  activeFloor, hoveredRoom, onHoverRoom, roomLabels,
 }) {
   const isOverview = selectedRooms.length === 0;
-  // build merged dataset [{hour, roomA, roomB, …}] or [{hour, Museum}]
+
   let data;
   if (isOverview) {
     const raw = chartCfg.overviewFn
@@ -159,12 +134,12 @@ function AnalyticsChart({
       : getMuseumOverviewData(chartCfg.dataFn, dayOfWeek);
     data = raw.map((d) => ({ hour: d.hour, Museum: d.value }));
   } else {
-    data = HOURS.map(h => ({ hour: h }));
+    data = HOURS.map((h) => ({ hour: h }));
     selectedRooms.forEach((room) => {
       const raw = chartCfg.dataFn(room, dayOfWeek);
       raw.forEach((d) => {
-        const entry = data.find(entry => entry.hour === d.hour)
-        if (entry) entry[room] = d.value
+        const entry = data.find((e) => e.hour === d.hour);
+        if (entry) entry[room] = d.value;
       });
     });
   }
@@ -184,13 +159,13 @@ function AnalyticsChart({
           <XAxis
             dataKey="hour"
             tickFormatter={(h) => `${h}h`}
-            tick={{ fill: "var(--text-muted)"}}
+            tick={{ fill: "var(--text-muted)" }}
             axisLine={false}
             tickLine={false}
             interval={2}
           />
           <YAxis
-            tick={{ fill: "var(--text-muted)"}}
+            tick={{ fill: "var(--text-muted)" }}
             axisLine={false}
             tickLine={false}
             width={42}
@@ -199,7 +174,7 @@ function AnalyticsChart({
               angle: -90,
               position: "insideLeft",
               offset: 10,
-              style: { fill: "var(--text-muted)"}
+              style: { fill: "var(--text-muted)" },
             }}
           />
           <Tooltip
@@ -207,16 +182,8 @@ function AnalyticsChart({
             cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
             position={{ y: 0 }}
           />
-          {/* {lineKeys.length > 1 && (
-            <Legend
-              iconType="circle"
-              iconSize={7}
-              wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
-              formatter={(v) => ROOM_LABELS[v] ?? v}
-            />
-          )} */}
-          {lineKeys.map((room, idx) => {
-            const color = ROOM_COLORS[room] ?? "var(--color-primary)";
+          {lineKeys.map((room) => {
+            const color     = ROOM_COLORS[room] ?? "var(--color-primary)";
             const isHovered = hoveredRoom === room;
             const anyHovered = hoveredRoom !== null;
             return (
@@ -224,7 +191,7 @@ function AnalyticsChart({
                 <Line
                   type="monotone"
                   dataKey={room}
-                  name={ROOM_LABELS[room] ?? room}
+                  name={roomLabels[room] ?? room}
                   stroke={color}
                   strokeWidth={isHovered ? 2.5 : anyHovered ? 1 : 1.8}
                   dot={false}
@@ -242,86 +209,80 @@ function AnalyticsChart({
   );
 }
 
-// ─── main panel ──────────────────────────────────────────────────────────────
+// ─── Haupt-Panel ─────────────────────────────────────────────────────────────
 export default function AnalyticsSidePanel() {
-  const isOpen = useAppStore((s) => s.isPanelOpen);
+  const { t } = useTranslation();
+
+  const roomLabels = useMemo(() => makeRoomLabels(t), [t]);
+  const charts     = useMemo(() => makeCharts(t),     [t]);
+
+  const isOpen         = useAppStore((s) => s.isPanelOpen);
   const setIsPanelOpen = useAppStore((s) => s.setIsPanelOpen);
   const [hoveredRoom, setHoveredRoom] = useState(null);
 
-  //store: selectedRooms = Set<string>; setHoveredMapIcon = fn
-  const selectedRooms = useAppStore((s) => s.selectedRooms ?? []);
-  const selectedDate = useAppStore((s) => s.selectedDate);
-  const activeFloor = useAppStore((s) => s.activeFloor);
-  const setHoveredMapIcon = useAppStore(
-    (s) => s.setHoveredMapIcon ?? (() => { })
-  );
-  const hoveredMapIcon = useAppStore((s) => s.hoveredMapIcon)
-  const effectiveHoveredRoom = hoveredRoom ?? hoveredMapIcon
-
+  const selectedRooms  = useAppStore((s) => s.selectedRooms ?? []);
+  const selectedDate   = useAppStore((s) => s.selectedDate);
+  const activeFloor    = useAppStore((s) => s.activeFloor);
+  const setHoveredMapIcon = useAppStore((s) => s.setHoveredMapIcon ?? (() => {}));
+  const hoveredMapIcon    = useAppStore((s) => s.hoveredMapIcon);
+  const effectiveHoveredRoom = hoveredRoom ?? hoveredMapIcon;
 
   const dayOfWeek = selectedDate?.getDay() ?? 1;
-  const roomList = Array.from(selectedRooms); // supports both Set and Array
+  const roomList  = Array.from(selectedRooms);
 
   const handleHoverRoom = useCallback(
     (room) => {
       setHoveredRoom(room);
-      setHoveredMapIcon(room); // notifies map layer
+      setHoveredMapIcon(room);
     },
     [setHoveredMapIcon]
   );
 
   return (
     <>
-      {/* ── toggle button ── */}
       <button
         className={`${styles.toggleBtn} ${isOpen ? styles.toggleBtnOpen : ""}`}
         onClick={() => setIsPanelOpen(!isOpen)}
-        aria-label={isOpen ? "Close analytics" : "Open analytics"}
+        aria-label={isOpen ? t("analytics.closePanel") : t("analytics.openPanel")}
         title="Analytics"
       >
-        {/* simple bar-chart icon */}
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="11" width="3" height="7" rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.5} />
-          <rect x="8.5" y="6" width="3" height="12" rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.65} />
-          <rect x="15" y="2" width="3" height="16" rx="1" fill="currentColor" />
+          <rect x="2"    y="11" width="3" height="7"  rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.5}  />
+          <rect x="8.5"  y="6"  width="3" height="12" rx="1" fill="currentColor" opacity={isOpen ? 1 : 0.65} />
+          <rect x="15"   y="2"  width="3" height="16" rx="1" fill="currentColor" />
         </svg>
       </button>
 
-      {/* ── panel ── */}
       <aside
         className={`${styles.panel} ${isOpen ? styles.panelOpen : ""}`}
         aria-hidden={!isOpen}
       >
-        {/* header */}
         <div className={styles.panelHeader}>
           <div>
             <div className={styles.panelTitle}>
               {roomList.length === 0
-                ? "Museum Overview"
+                ? t("analytics.museumOverview")
                 : roomList.length === 1
-                  ? (ROOM_LABELS[roomList[0]] ?? "Exhibition")
-                  : `${roomList.length} Exhibitions`}
+                  ? (roomLabels[roomList[0]] ?? t("analytics.rooms.default"))
+                  : t("analytics.exhibitions", { count: roomList.length })}
             </div>
             <div className={styles.panelSub}>
               {roomList.length === 0
-                ? "All areas · today"
-                : roomList
-                  .map((r) => ROOM_LABELS[r] ?? r)
-                  .join(", ")}
+                ? t("analytics.allAreas")
+                : roomList.map((r) => roomLabels[r] ?? r).join(", ")}
             </div>
           </div>
           <button
             className={styles.closeBtn}
             onClick={() => setIsPanelOpen(false)}
-            aria-label="Close"
+            aria-label={t("analytics.close")}
           >
             ×
           </button>
         </div>
 
-        {/* stacked charts */}
         <div className={styles.chartsWrapper}>
-          {CHARTS.map((cfg) => (
+          {charts.map((cfg) => (
             <AnalyticsChart
               key={cfg.key}
               chartCfg={cfg}
@@ -330,6 +291,7 @@ export default function AnalyticsSidePanel() {
               activeFloor={activeFloor}
               hoveredRoom={effectiveHoveredRoom}
               onHoverRoom={handleHoverRoom}
+              roomLabels={roomLabels}
             />
           ))}
         </div>
@@ -345,7 +307,7 @@ export default function AnalyticsSidePanel() {
                 onMouseLeave={() => handleHoverRoom(null)}
               >
                 <span className={styles.legendDot} />
-                {ROOM_LABELS[room] ?? room}
+                {roomLabels[room] ?? room}
               </span>
             ))}
           </div>
@@ -354,4 +316,3 @@ export default function AnalyticsSidePanel() {
     </>
   );
 }
-

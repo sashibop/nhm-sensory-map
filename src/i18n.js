@@ -83,8 +83,56 @@ i18n
                         6: "Weekend Workshop: Bookbinding basics taking place in Room 85.",
                         default: "Welcome to the library."
                     },
+
+                    legend: {
+                        dark: "Dark",
+                        indoor: "Indoor",
+                        bright: "Bright",
+                        pax: "pax",
+                    },
+
+
+                    analytics: {
+                        openPanel: "Open analytics",
+                        closePanel: "Close analytics",
+                        museumOverview: "Museum Overview",
+                        allAreas: "All areas",
+                        exhibitions: "{{count}} Exhibitions",
+                        close: "Close",
+
+                        charts: {
+                            crowd: "Crowd Density",
+                            noise: "Noise Level",
+                            brightness: "Brightness",
+                        },
+
+                        units: {
+                            visitors: "visitors",
+                            db: "dB",
+                            lux: "lux",
+                        },
+
+                        rooms: {
+                            vivarium: "Climates and habitats – Vivarium",
+                            africanNature: "African habitats",
+                            atrium: "Atrium",
+                            diorama: "Dioramas",
+                            fossils: "Fossils found in southern Baden",
+                            geology: "Geology on the Upper Rhine",
+                            insects: "The world of insects",
+                            minerals: "The realm of minerals",
+                            nativeNature: "Native flora and fauna",
+                            natureRoleModel: "Form and function – inspired by nature",
+                            prehistoricTimes: "Life in prehistoric times",
+                            rotary: "Rotary Room of Nature",
+                            specialExhibition: "Special exhibition (small)",
+                            specialExhibitionBig: "Special exhibition (big)",
+                            default: "Exhibition",
+                        },
+                    },
                 },
             },
+
             DE: {
                 translation: {
                     ui: {
@@ -163,11 +211,57 @@ i18n
                         6: "Wochenend-Workshop: Grundlagen der Buchbinderei in Raum 85.",
                         default: "Willkommen in der Bibliothek."
                     },
+
+                    legend: {
+                        dark: "Dunkel",
+                        indoor: "Innen",
+                        bright: "Hell",
+                        pax: "Pers.",
+                    },
+
+                    analytics: {
+                        openPanel: "Analyse öffnen",
+                        closePanel: "Analyse schließen",
+                        museumOverview: "Museumsübersicht",
+                        allAreas: "Alle Bereiche",
+                        exhibitions: "{{count}} Ausstellungen",
+                        close: "Schließen",
+
+                        charts: {
+                            crowd: "Besucherdichte",
+                            noise: "Lärmpegel",
+                            brightness: "Helligkeit",
+                        },
+
+                        units: {
+                            visitors: "Besucher",
+                            db: "dB",
+                            lux: "lux",
+                        },
+
+                        rooms: {
+                            vivarium: "Klimata und Lebensräume – Vivarium",
+                            africanNature: "Afrikanische Lebensräume",
+                            atrium: "Atrium",
+                            diorama: "Dioramen",
+                            fossils: "Fossilien aus dem südbadischen Raum",
+                            geology: "Geologie am Oberrhein",
+                            insects: "Die Welt der Insekten",
+                            minerals: "Das Reich der Mineralien",
+                            nativeNature: "Heimische Flora und Fauna",
+                            natureRoleModel: "Form und Funktion – Vorbild Natur",
+                            prehistoricTimes: "Leben in der Urzeit",
+                            rotary: "Rotary-Naturkabinett",
+                            specialExhibition: "Sonderausstellung (klein)",
+                            specialExhibitionBig: "Sonderausstellung (groß)",
+                            default: "Ausstellung",
+                        },
+                    },
                 },
-            }
+            },
         },
 
-        lng: "EN", // default Sprache
+        lng: "EN",
         fallbackLng: "EN",
 
         interpolation: {
@@ -176,3 +270,4 @@ i18n
     })
 
 export default i18n
+

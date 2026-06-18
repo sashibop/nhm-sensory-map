@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import useAppStore from '../../store/useAppStore'
 import { visitors } from '../../data/mockVisitorData'
 import styles from './styles/LayerLegend.module.css'
@@ -77,6 +78,7 @@ const getBrightnessColor = (percent) => {
 }
 
 export default function LayerLegend() {
+  const { t } = useTranslation()
   const layers = useAppStore((state) => state.layers)
   const timeOfDay = useAppStore((state) => state.timeOfDay)
   const selectedDate = useAppStore((state) => state.selectedDate)
@@ -148,7 +150,7 @@ export default function LayerLegend() {
           {/* 2. Update the Heading */}
           <div className={`${styles.heading} ${styles.desktopOnly}`}>
             <Users size={12} strokeWidth={1.5} />
-            Crowd
+            {t('layers.crowd')}
           </div>
           
           {/* DESKTOP: Crowd Gliding Track */}
@@ -178,7 +180,7 @@ export default function LayerLegend() {
               style={{ '--glow-color': dynamicCrowdColor, position: 'relative' }} 
             />
             <div className={styles.mobileStatValue}>
-              {stats.total}<span> pax</span>
+              {stats.total}<span> {t('legend.pax')}</span>
             </div>
           </div>
         </div>
@@ -190,14 +192,14 @@ export default function LayerLegend() {
           {/* 3. Update the Heading */}
           <div className={`${styles.heading} ${styles.desktopOnly}`}>
             <AudioWaveform size={12} strokeWidth={1.5} />
-            Noise
+            {t('layers.noise')}
           </div>
           
           {/* DESKTOP: Noise Gliding Track */}
           <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>
             <div className={styles.liveNeedle} style={{ left: `${noisePercent}%` }}>
               <div className={styles.needleLabel}>
-                {Math.round(averageNoise)}<span>dB</span>
+                {Math.round(averageNoise)}<span>{t('analytics.units.db')}</span>
               </div>
               <div 
                 className={styles.dynamicNeedleDot} 
@@ -220,7 +222,7 @@ export default function LayerLegend() {
               style={{ '--glow-color': dynamicNoiseColor, position: 'relative' }} 
             />
             <div className={styles.mobileStatValue}>
-              {Math.round(averageNoise)}<span>dB</span>
+              {Math.round(averageNoise)}<span>{t('analytics.units.db')}</span>
             </div>
           </div>
         </div>
@@ -231,13 +233,15 @@ export default function LayerLegend() {
       {/* --- BRIGHTNESS LEGEND --- */}
       {layers.brightness && (
           <div className={styles.ghostBlock}>
-          <div className={`${styles.heading} ${styles.desktopOnly}`}>Brightness</div>
+          <div className={`${styles.heading} ${styles.desktopOnly}`}>
+            {t('layers.brightness')}
+          </div>
 
           {/* ── DESKTOP: gliding track ── */}
           <div className={`${styles.trackWrapper} ${styles.desktopOnly}`}>
             <div className={styles.liveNeedle} style={{ left: `${brightnessPercent}%` }}>
               <div className={styles.needleLabel}>
-                {Math.round(avgBrightness)}<span>lx</span>
+                {Math.round(avgBrightness)}<span>{t('analytics.units.lux')}</span>
               </div>
               <div
                 className={styles.dynamicNeedleDot}
@@ -249,15 +253,15 @@ export default function LayerLegend() {
             <div className={styles.ticksContainer}>
               <div className={styles.tickGroup} style={{ left: '0%' }}>
                 <div className={styles.tick} />
-                <span className={styles.tickLabel}>Dark</span>
+                <span className={styles.tickLabel}>{t('legend.dark')}</span>
               </div>
               <div className={styles.tickGroup} style={{ left: '50%' }}>
                 <div className={styles.tick} />
-                <span className={styles.tickLabel}>Indoor</span>
+                <span className={styles.tickLabel}>{t('legend.indoor')}</span>
               </div>
               <div className={styles.tickGroup} style={{ left: '100%' }}>
                 <div className={styles.tick} />
-                <span className={styles.tickLabel}>Bright</span>
+                <span className={styles.tickLabel}>{t('legend.bright')}</span>
               </div>
             </div>
           </div>
@@ -269,7 +273,7 @@ export default function LayerLegend() {
               style={{ '--glow-color': dynamicColor, position: 'relative' }}
             />
             <div className={styles.mobileBrightnessValue}>
-              {Math.round(avgBrightness)}<span>lx</span>
+              {Math.round(avgBrightness)}<span>{t('analytics.units.lux')}</span>
             </div>
           </div>
         </div>
