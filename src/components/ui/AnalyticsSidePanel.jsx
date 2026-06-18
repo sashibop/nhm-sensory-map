@@ -17,6 +17,8 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
+  ReferenceLine,
+  ReferenceDot,
 } from "recharts";
 import useAppStore from "../../store/useAppStore";
 import {
@@ -117,6 +119,28 @@ function CustomTooltip({ active, payload, label, unit }) {
   );
 }
 
+// dot that follows the timeline
+
+function TimelineDot({ data, room, color }) {
+  const timeOfDay = useAppStore((s) => Math.floor(s.timeOfDay))
+  const currentEntry = data.find(d => d.hour === timeOfDay)
+  const currentValue = currentEntry?.[room]
+
+  if (currentValue === undefined) return null
+
+  return (
+    <ReferenceDot
+      x={timeOfDay}
+      y={currentValue}
+      r={4}
+      fill={color}
+      stroke="var(--bg-base)"
+      strokeWidth={1.5}
+    />
+  )
+}
+
+
 // ─── single stacked chart ────────────────────────────────────────────────────
 function AnalyticsChart({
   chartCfg,
@@ -208,6 +232,7 @@ function AnalyticsChart({
                   opacity={anyHovered && !isHovered ? 0.3 : 1}
                   style={{ transition: "opacity 0.2s, stroke-width 0.2s" }}
                 />
+                <TimelineDot data={data} room={room} color={color} />
               </Fragment>
             );
           })}
