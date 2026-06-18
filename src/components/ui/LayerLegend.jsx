@@ -231,7 +231,6 @@ export default function LayerLegend() {
               </div>
               <div
                 className={styles.dynamicNeedleDot}
-                style={{ '--glow-color': dynamicColor }}
               />
             </div>
 
