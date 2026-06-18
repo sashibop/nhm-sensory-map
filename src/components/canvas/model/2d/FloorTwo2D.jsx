@@ -5,6 +5,8 @@ import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
 import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
 import ExhibitionsLayer2D from '../../layers/2d/ExhibitionsLayer2D'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import DimensionsLayer2D from '../../layers/2d/DimensionsLayer2D'
+
 
 export default function FloorTwo2D() {
   const layers = useAppStore((state) => state.layers)
@@ -575,6 +577,10 @@ export default function FloorTwo2D() {
             {layers.crowd && (
               <CrowdLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
             )}
+            {/* {layers.dimensions && (
+              <DimensionsLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
+            )} */}
+
 
             <g transform="translate(-31.1, -31.5) scale(0.025)">
 
@@ -876,6 +882,10 @@ export default function FloorTwo2D() {
               <path d="M1294 1008.02L1305.93 973" stroke="white" strokeWidth="13" />
 
             </g>
+            {layers.dimensions && (
+              <DimensionsLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
+            )}
+
 
             <ExhibitionsLayer2D targetFloor={2} mapScale={0.9} offsetX={0} offsetZ={10.6} />
 
