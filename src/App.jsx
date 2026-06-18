@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
+
 import useAppStore from './store/useAppStore'
 
 import WeekPicker from './components/ui/WeekPicker'
@@ -7,96 +8,85 @@ import LayerPanel from './components/ui/LayerPanel'
 import Timeline from './components/ui/Timeline'
 import Scene from './components/canvas/Scene'
 import FloorSelector from './components/ui/FloorSelector'
-
 import ViewToggle from './components/ui/ViewToggle'
 import GlobalSettings from './components/ui/GlobalSettings'
 import Disclaimer from './components/ui/Disclaimer'
 import LayerLegend from './components/ui/LayerLegend'
 import FloorOne2D from './components/canvas/model/2d/FloorOne2D'
 import FloorTwo2D from './components/canvas/model/2d/FloorTwo2D'
+import AnalyticsSidePanel from './components/ui/AnalyticsSidePanel'
+
+const PANEL_WIDTH = 340
 
 export default function App() {
-  // 1. Pull BOTH activeView and activeFloor from the store
-  const activeView = useAppStore((state) => state.activeView)
-  const activeFloor = useAppStore((state) => state.activeFloor)
-  const textSize = useAppStore((state) => state.settings.textSize)
-  const highContrast = useAppStore((state) => state.settings.highContrast)
+  const activeView = useAppStore((s) => s.activeView)
+  const activeFloor = useAppStore((s) => s.activeFloor)
+  const textSize = useAppStore((s) => s.settings.textSize)
+  const highContrast = useAppStore((s) => s.settings.highContrast)
+  const isPanelOpen = useAppStore((s) => s.isPanelOpen)
 
-
-  /*const cursorSize = useAppStore((state) => state.settings.cursorSize)
-  const [mouse, setMouse] = useState({ x: 0, y: 0 })
-
-
-    useEffect(() => {
-      document.documentElement.style.setProperty(
-        "--cursor-size",
-        cursorSize / 100
-      )
-    }, [cursorSize])
-
-    useEffect(() => {
-    const move = (e) => {
-      setMouse({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", move)
-
-    return () => window.removeEventListener("mousemove", move)
-  }, [])
-*/
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--text-size',
-      textSize / 100
-    )
+    document.documentElement.style.setProperty('--text-size', textSize / 100)
   }, [textSize])
 
   useEffect(() => {
     document.documentElement.setAttribute(
-      "data-contrast",
-      highContrast ? "high" : "normal"
+      'data-contrast',
+      highContrast ? 'high' : 'normal'
     )
   }, [highContrast])
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
+  <div style={{
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+    display: 'flex',
+    position: 'relative',
+  }}>
 
-      {/* <div
-        className="custom-cursor"
-        style={{
-          transform: `translate(${mouse.x}px, ${mouse.y}px)`
-        }}
-      />
-
-      {/* 2. THE VIEWPORT ROUTER */}
+    {/* LEFT: APP AREA */}
+    <div style={{
+      flex: 1,
+      minWidth: 0,
+      height: '100vh',
+      position: 'relative',
+      transition: 'flex-basis 0.35s cubic-bezier(0.4,0,0.2,1)',
+    }}>
       {activeView === '3D' ? (
-        // The WebGL Engine
         <Canvas gl={{ alpha: true, preserveDrawingBuffer: true }} camera={{ position: [0, 80, 80], fov: 50 }}>
           <Scene />
         </Canvas>
       ) : (
-        // The 2D Engine: Switch based on activeFloor
         <>
           {activeFloor === 1 && <FloorOne2D />}
           {activeFloor === 2 && <FloorTwo2D />}
         </>
       )}
 
-      {/* 3. The Vignette Layer */}
       <div className="vignette-overlay" />
 
-      {/* 4. The Ghost UI Layer */}
       <WeekPicker />
       <Timeline />
-
       <LayerPanel />
       <FloorSelector />
-      
       <ViewToggle />
       <GlobalSettings />
-
       <LayerLegend />
       <Disclaimer />
     </div>
-  )
+
+    {/* RIGHT: PANEL */}
+    <div style={{
+      width: isPanelOpen ? PANEL_WIDTH : 0,
+      flexShrink: 0,
+      overflow: 'hidden',
+      height: '100vh',
+      transition: 'width 0.35s cubic-bezier(0.4,0,0.2,1)',
+    }}>
+      <AnalyticsSidePanel />
+    </div>
+
+  </div>
+)
 }

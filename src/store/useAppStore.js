@@ -12,8 +12,36 @@ const useAppStore = create((set, get) => ({
     language: "EN",
     highContrast: false,
     textSize: 100,
-    cursorSize: 100,
   },
+  selectedIcon: null,
+  isPanelOpen: false,
+  setIsPanelOpen: (val) => set({
+    isPanelOpen: val,
+    selectedRooms: val ? get().selectedRooms : new Set(), // beim Schließen leeren
+  }),
+
+  // Multi-select rooms
+  selectedRooms: new Set(),
+
+  toggleSelectedRoom: (key) =>
+    set((state) => {
+      const next = new Set(state.selectedRooms);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return { selectedRooms: next };
+    }),
+
+  clearSelectedRooms: () => set({ selectedRooms: new Set() }),
+
+  // Hover sync (chart line ↔ map icon)
+  hoveredMapIcon: null,
+  setHoveredMapIcon: (key) => set({ hoveredMapIcon: key }),
+
+  setSelectedIcon: (id) => set({ selectedIcon: id }),
+  clearSelectedIcon: () => set({ selectedIcon: null }),
 
   setActiveView: (view) => set({ activeView: view }),
 
@@ -83,14 +111,7 @@ const useAppStore = create((set, get) => ({
         textSize: size,
       },
     })),
-
-  setCursorSize: (size) =>
-    set((state) => ({
-      settings: {
-        ...state.settings,
-        cursorSize: size,
-      },
-    })),
+    
 
   // --- LAYER STATE ---
   layers: { crowd: true, noise: false, brightness: false, dimensions: false },

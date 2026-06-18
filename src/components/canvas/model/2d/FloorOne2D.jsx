@@ -1,7 +1,10 @@
 import useAppStore from '../../../../store/useAppStore'
 import CrowdLayer2D from '../../layers/2d/CrowdLayer2D'
 import NoiseLayer2D from '../../layers/2d/NoiseLayer2D'
+import BrightnessLayer2D from '../../layers/2d/BrightnessLayer2D'
+import ExhibitionsLayer2D from '../../layers/2d/ExhibitionsLayer2D'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+
 
 export default function FloorOne2D() {
   const layers = useAppStore((state) => state.layers)
@@ -424,6 +427,9 @@ export default function FloorOne2D() {
 
             </g>
 
+            {layers.brightness && (
+              <BrightnessLayer2D targetFloor={1} mapScale={0.9} offsetX={1.6} offsetZ={14.6} />
+            )}
             {layers.noise && (
               <NoiseLayer2D targetFloor={1} mapScale={0.9} offsetX={1.6} offsetZ={14.6} />
             )}
@@ -431,7 +437,7 @@ export default function FloorOne2D() {
             {layers.crowd && (
               <CrowdLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />
             )}
-
+            
             <g transform="translate(-31, -30.7) scale(0.025)">
 
               <path d="M2205 321V206H2241V321H2205Z" fill="#C0E5C9" />
@@ -573,7 +579,7 @@ export default function FloorOne2D() {
 
 
 
-            {/* Walls */}
+  {/* Walls */ }
             <g transform="translate(-35, -33) scale(0.025)">
 
               <path d="M2721.5 1926L2702 1986.5L2857.5 1992.5L2859.5 1232L2827 1263V1420L2814.5 1428.5V1441H2827V1622.5L2814.5 1633V1854.5L2788 1867V1887L2814.5 1879.5V1957H2733L2741.5 1926H2721.5Z" fill="#CDCDCD" />
@@ -737,11 +743,12 @@ export default function FloorOne2D() {
 
             </g>
 
+            
+            <ExhibitionsLayer2D targetFloor={1} mapScale={0.9} offsetX={1.9} offsetZ={15.3} />  
+          </svg >
 
-          </svg>
-
-        </TransformComponent>
-      </TransformWrapper>
-    </div>
+        </TransformComponent >
+      </TransformWrapper >
+    </div >
   )
 }

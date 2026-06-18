@@ -23,7 +23,6 @@ export default function GlobalSettings() {
   const setLanguage = useAppStore((state) => state.setLanguage)
   const toggleHighContrast = useAppStore((state) => state.toggleHighContrast)
   const setTextSize = useAppStore((state) => state.setTextSize)
-  const setCursorSize = useAppStore((state) => state.setCursorSize)
 
   const textProgress = ((settings.textSize - 50) / 100) * 100
   const cursorProgress = ((settings.cursorSize - 50) / 100) * 100

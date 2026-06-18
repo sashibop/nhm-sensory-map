@@ -1,0 +1,145 @@
+import { useEffect, useRef } from 'react'
+import useAppStore from '../../../../store/useAppStore'
+import { getBrightnessSources } from '../../../../data/mockBrightnessData'
+
+export default function BrightnessLayer2D({ 
+  targetFloor = 1, 
+  mapScale = 1, 
+  offsetX = 0, 
+  offsetZ = 0 
+}) {
+  const selectedDate = useAppStore((state) => state.selectedDate)
+  const activeFloor  = useAppStore((state) => state.activeFloor)
+  const timeOfDay    = useAppStore((state) => state.timeOfDay)
+
+  const canvasRef  = useRef()
+  const requestRef = useRef()
+
+  // ✅ REMOVED: svgX/Y/W/H computed from mapScale — foreignObject is now fixed like NoiseLayer
+
+  useEffect(() => {
+    if (activeFloor !== targetFloor) return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const w = canvas.width
+    const h = canvas.height
+
+    const renderLoop = () => {
+      const state = useAppStore.getState()
+      const dayOfWeek = selectedDate.getDay()
+      const rawSources = getBrightnessSources(state.timeOfDay, targetFloor, dayOfWeek)
+
+      const sources = rawSources.map(src => ({
+        ...src,
+        x: src.x * mapScale + offsetX,
+        z: src.z * mapScale + offsetZ,
+        spread: src.spread / mapScale,
+      }))
+
+      const imgData = ctx.createImageData(w, h)
+      const data = imgData.data
+
+      const WORLD_X_MIN = -40, WORLD_X_MAX = 40
+      const WORLD_Z_MIN = -45, WORLD_Z_MAX = 35
+
+      const c1 = [0.0,  0.0,  0.3]
+      const c2 = [0.0,  0.1,  0.5]
+      const c3 = [0.0,  0.3,  0.7]
+      const c4 = [0.6,  0.3,  0.8]
+      const c5 = [0.9,  0.7,  0.2]
+      const c6 = [0.95, 0.85, 0.3]
+      const c7 = [1.0,  1.0,  1.0]
+
+      const mix = (from, to, weight) => (1 - weight) * from + weight * to
+
+      for (let py = 0; py < h; py++) {
+        const currentZ = WORLD_Z_MIN + (py / h) * (WORLD_Z_MAX - WORLD_Z_MIN)
+
+        for (let px = 0; px < w; px++) {
+          const currentX = WORLD_X_MIN + (px / w) * (WORLD_X_MAX - WORLD_X_MIN)
+
+          let totalHeat = 0.0
+
+          for (let i = 0; i < sources.length; i++) {
+            const src = sources[i]
+            const dx = currentX - src.x
+            const dz = currentZ - src.z
+            const dist = Math.sqrt(dx * dx + dz * dz)
+            totalHeat += src.volume / (1.0 + Math.pow(dist * src.spread, 2.0))
+          }
+
+          const pixelIndex = (px + py * w) * 4
+
+          if (totalHeat < 15.0) {
+            data[pixelIndex]     = Math.floor(c1[0] * 255)
+            data[pixelIndex + 1] = Math.floor(c1[1] * 255)
+            data[pixelIndex + 2] = Math.floor(c1[2] * 255)
+            data[pixelIndex + 3] = Math.floor(0.13  * 255)
+            continue
+          }
+
+          let norm = (totalHeat - 15.0) / (65.0 - 15.0)
+          norm = Math.max(0.0, Math.min(1.0, norm))
+
+          let r = c1[0], g = c1[1], b = c1[2]
+
+          if (norm < 0.20) {
+            const t = Math.max(0, Math.min(1, (norm - 0.05) / 0.15))
+            r = mix(c1[0], c2[0], t); g = mix(c1[1], c2[1], t); b = mix(c1[2], c2[2], t)
+          } else if (norm < 0.35) {
+            const t = (norm - 0.20) / 0.15
+            r = mix(c2[0], c3[0], t); g = mix(c2[1], c3[1], t); b = mix(c2[2], c3[2], t)
+          } else if (norm < 0.50) {
+            const t = (norm - 0.35) / 0.15
+            r = mix(c3[0], c4[0], t); g = mix(c3[1], c4[1], t); b = mix(c3[2], c4[2], t)
+          } else if (norm < 0.65) {
+            const t = (norm - 0.50) / 0.15
+            r = mix(c4[0], c5[0], t); g = mix(c4[1], c5[1], t); b = mix(c4[2], c5[2], t)
+          } else if (norm < 0.85) {
+            const t = (norm - 0.65) / 0.20
+            r = mix(c5[0], c6[0], t); g = mix(c5[1], c6[1], t); b = mix(c5[2], c6[2], t)
+          } else {
+            const t = (norm - 0.85) / 0.15
+            r = mix(c6[0], c7[0], t); g = mix(c6[1], c7[1], t); b = mix(c6[2], c7[2], t)
+          }
+
+          const alpha = 0.15 + (norm * 0.75)
+
+          data[pixelIndex]     = Math.floor(r * 255)
+          data[pixelIndex + 1] = Math.floor(g * 255)
+          data[pixelIndex + 2] = Math.floor(b * 255)
+          data[pixelIndex + 3] = Math.floor(alpha * 255)
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0)
+      requestRef.current = requestAnimationFrame(renderLoop)
+    }
+
+    requestRef.current = requestAnimationFrame(renderLoop)
+    return () => cancelAnimationFrame(requestRef.current)
+  }, [selectedDate, activeFloor, targetFloor])
+  
+
+  if (activeFloor !== targetFloor) return null
+
+  return (
+    <foreignObject
+      x="-40"
+      y="-45"
+      width="80"
+      height="80"
+      style={{ pointerEvents: 'none', clipPath: 'url(#museum-floor-mask)' }}
+    >
+      <canvas
+        ref={canvasRef}
+        width="140"
+        height="160"
+        // ✅ MATCHED: canvas resolution matches NoiseLayer (140×160 for -40→40 / -45→35 aspect)
+        style={{ width: '100%', height: '100%', display: 'block', filter: 'blur(0.2px)' }}
+      />
+    </foreignObject>
+  )
+}
