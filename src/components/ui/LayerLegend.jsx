@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react'
 import useAppStore from '../../store/useAppStore'
 import { visitors } from '../../data/mockVisitorData'
-import { staticBrightnessSources, applyTimeBasedSpread } from '../../data/mockBrightnessData'
 import styles from './styles/LayerLegend.module.css'
 import { Users, AudioWaveform } from 'lucide-react'
+import {getMuseumBrightnessOverviewData } from '../../data/roomAnalytics' 
 
 const getNoiseColor = (percent) => {
   const stops = [
@@ -56,13 +56,9 @@ const getCrowdColor = (count) => {
 // Mirrors the gradient track: dark-blue → purple → amber → white
 const getBrightnessColor = (percent) => {
   const stops = [
-    { p: 0,   c: [0, 0, 77] },
-    { p: 15,  c: [0, 26, 128] },
-    { p: 30,  c: [0, 77, 179] },
-    { p: 45,  c: [153, 77, 204] },
-    { p: 60,  c: [230, 179, 51] },
-    { p: 78,  c: [242, 217, 77] },
-    { p: 100, c: [255, 255, 255] },
+    { p: 0,   c: [230, 179, 51]  },  // warm indoor (your minimum)
+    { p: 50,  c: [242, 217, 77]  },  // bright indoor (midpoint)
+    { p: 100, c: [255, 255, 255] },  // full bright (your maximum)
   ]
 
   let lower = stops[0], upper = stops[stops.length - 1]
@@ -79,39 +75,6 @@ const getBrightnessColor = (percent) => {
   const b = Math.round(lower.c[2] + (upper.c[2] - lower.c[2]) * t)
   return `rgb(${r},${g},${b})`
 }
-
-// ─── Average brightness computation ──────────────────────────────────────────
-// Pulls static sources, runs applyTimeBasedSpread to modulate window volumes,
-// then returns a weighted average (larger spread = wider influence = more weight).
-function computeAverageBrightness(timeOfDay, floor, dayOfWeek) {
-  const rawSources = staticBrightnessSources[floor] || []
-
-  // Deep-clone so applyTimeBasedSpread mutations don't affect original data
-  const sources = rawSources.map(s => ({
-    id: s.id,
-    x: s.x,
-    z: s.z,
-    volume: s.baseBrightness,
-    spread: s.spread,
-  }))
-
-  // Modulates spread AND volume on window_east / window_west sources by time+day
-  applyTimeBasedSpread(sources, timeOfDay, dayOfWeek)
-
-  if (sources.length === 0) return 0
-
-  // Weighted average: sources that cover more area (higher spread) contribute more
-  let totalWeight = 0
-  let weightedSum = 0
-  sources.forEach(s => {
-    const weight = s.spread   // spread ∈ [0, 1] acts as spatial influence radius
-    weightedSum += s.volume * weight
-    totalWeight += weight
-  })
-
-  return totalWeight > 0 ? weightedSum / totalWeight : 0
-}
-
 
 export default function LayerLegend() {
   const layers = useAppStore((state) => state.layers)
@@ -155,14 +118,22 @@ export default function LayerLegend() {
 // ─── BRIGHTNESS Component ────────────────────────────────────────────────────────────────
   const avgBrightness = useMemo(() => {
     const dayOfWeek = selectedDate.getDay()
-    return computeAverageBrightness(timeOfDay, activeFloor, dayOfWeek)
-  }, [timeOfDay, activeFloor, selectedDate])
+    const hour = Math.floor(timeOfDay)
+    const t = timeOfDay - hour // fractional part 0–1
+  
+    const overviewData = getMuseumBrightnessOverviewData(dayOfWeek)
+    const current = overviewData.find(d => d.hour === hour)?.value ?? 0
+    const next    = overviewData.find(d => d.hour === hour + 1)?.value ?? current
+  
+    return Math.round(current + (next - current) * t)
+  }, [timeOfDay, selectedDate])
 
-  // Scale to 0–100% for needle position.
-  // Realistic architectural range: 0 lux-equiv (0) → ~60 brightness units (100%)
-  const MAX_BRIGHTNESS = 60
-  const brightnessPercent = Math.max(0, Math.min(100, (avgBrightness / MAX_BRIGHTNESS) * 100))
-
+  // Scale brightness to 0–100% for needle position.
+  const MIN_BRIGHTNESS = 70 
+  const MAX_BRIGHTNESS = 140  
+  const brightnessPercent = Math.max(0, Math.min(100,
+    ((avgBrightness - MIN_BRIGHTNESS) / (MAX_BRIGHTNESS - MIN_BRIGHTNESS)) * 100
+  ))
   const dynamicColor = getBrightnessColor(brightnessPercent)
   // -----------------------------------------
 
