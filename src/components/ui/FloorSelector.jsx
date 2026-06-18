@@ -1,10 +1,12 @@
 import useAppStore from '../../store/useAppStore'
 import { ArrowUp, ArrowDown } from 'lucide-react'
 import styles from './styles/FloorSelector.module.css'
+import { useTranslation } from "react-i18next"
 
 export default function FloorSelector() {
   const activeFloor = useAppStore((state) => state.activeFloor)
   const setActiveFloor = useAppStore((state) => state.setActiveFloor)
+  const { t } = useTranslation()
 
   // Map the floor options with directional icons
   const floorOptions = [
@@ -14,7 +16,7 @@ export default function FloorSelector() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.heading}>Switch Floors</div>
+      <div className={styles.heading}>{t("floors.switchFloors")}</div>
       <div className={styles.list}>
         
         {floorOptions.map((option) => {

@@ -3,58 +3,413 @@
 /* ========================================= */
 :root {
 
-  --text-halo: 0 2px 12px rgba(255, 255, 255, 0.9); /* Ensures raw text is readable over 3D lines */
-  
-  --color-bg: radial-gradient(circle at top center, #ffffff 0%, #e4e4e7 100%);
-  
-  /* Brand & Semantic Accents */
-  --color-primary: #365cce;       /* Gallery Cobalt */
-  --color-primary-hover: #1e40af; 
-  --color-live: #0d9488;          /* Deep Teal */
-  --color-danger: #e11d48;        /* Architectural Rose */
-  --color-warning: #664d03;      
+  --text-halo: 0 2px 12px rgba(255, 255, 255, 0.9);
+  /* Ensures raw text is readable over 3D lines */
 
-  
+  --color-bg: radial-gradient(circle at top center, #ffffff 0%, #e4e4e7 100%);
+
+  /* Brand & Semantic Accents */
+  --color-primary: #365cce;
+  /* Gallery Cobalt */
+  --color-primary-hover: #1e40af;
+  --color-live: #0d9488;
+  /* Deep Teal */
+  --color-danger: #e11d48;
+  /* Architectural Rose */
+  --color-warning: #664d03;
+
+
   /* Spatial Typography (Zinc Scale) */
-  --text-dark: #09090b;           /* Active / Hover / Headers */
-  --text-main: #27272a;           /* Standard readable text */
-  --text-muted: #63636b;          /* Inactive / Resting state */
-  --text-faint: #a1a1aa;          /* Micro-labels and disclaimers */
+  --text-dark: #09090b;
+  /* Active / Hover / Headers */
+  --text-main: #27272a;
+  /* Standard readable text */
+  --text-muted: #63636b;
+  /* Inactive / Resting state */
+  --text-faint: #a1a1aa;
+  /* Micro-labels and disclaimers */
 
   /* The Ghost Shadows (Using box-shadow for glowing, drop-shadow for alpha-tracing) */
-  --shadow-glow: 0 0 10px var(--color-primary); 
-  --text-halo: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9)); /* Text readability over 3D lines */
+  --shadow-glow: 0 0 10px var(--color-primary);
+  --text-halo: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9));
+  /* Text readability over 3D lines */
 
   /* Structural Variables */
   --transition-fast: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);     
-  
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Individual Element Glass (Used on buttons/sliders, NOT containers) */
-  --element-bg: rgba(255, 255, 255, 0.85); 
+  --element-bg: rgba(255, 255, 255, 0.85);
   --element-blur: blur(12px);
 
   /* The magic: Heavy, diffused shadows to separate elements from the background */
   --shadow-float: 0 12px 40px rgba(9, 9, 11, 0.08), 0 4px 12px rgba(9, 9, 11, 0.04);
-  --shadow-pressed: 0 2px 8px rgba(9, 9, 11, 0.05); /* Shrinks when clicked */
+  --shadow-pressed: 0 2px 8px rgba(9, 9, 11, 0.05);
+  /* Shrinks when clicked */
 
   /* Shapes & Animations */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-pill: 9999px;
+
+  /* Opacity Tokens */
+  --opacity-full: 1;
+  --opacity-hidden: 0;
+  --opacity-strong: 0.85;
+  --opacity-light: 0.4;
+  --opacity-subtle: 0.08;
+  --opacity-secondary: 0.5;
+  --opacity-indicator-off: 0.3;
+  --opacity-indicator-hover: 0.6;
+  --color-warning-bg: rgba(254, 243, 199, 0.85);
+  --color-warning-bg-hover: rgba(254, 243, 199, 0.4);
+  --shadow-warning-glow: 0 8px 20px rgba(245, 158, 11, 0.2);
+  --shadow-warning-text: 0 2px 10px rgba(245, 158, 11, 0.4);
+  
+  /* Shadow & Drop-Shadow Tokens */
+  --shadow-drop-subtle: 0 4px 8px rgba(9, 9, 11, 0.08);
+  --shadow-drop-medium: 0 8px 16px rgba(9, 9, 11, 0.12);
+  --shadow-drop-micro: 0 2px 4px rgba(9, 9, 11, 0.05);
+  --shadow-subtle-box: 0 4px 12px rgba(9, 9, 11, 0.05);
+  --shadow-subtle-div: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-panel: 0 8px 24px rgba(9, 9, 11, 0.08);
+  
+  /* Glass & Overlay Tokens */
+  --glass-bg-light: rgba(255, 255, 255, 0.4);
+  --glass-bg-medium: rgba(255, 255, 255, 0.5);
+  --glass-bg-strong: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --overlay-dark: rgba(9, 9, 11, 0.4);
+  --divider-line: rgba(9, 9, 11, 0.1);
+  
+  /* Indicator Opacity Tokens */
+  --opacity-indicator-off: 0.3;
+  --opacity-indicator-hover: 0.6;
+  
+  /* Glow & Special Effects */
+  --shadow-glow-thumb: 0 0 8px rgba(113, 113, 122, 0.4);
+  --shadow-primary-drop: 0 4px 12px rgba(54, 92, 206, 0.35);
+  --text-halo-white: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.9));
+
+  /* Accessibility */
+  --text-size: 1;
+  /*--cursor-size: 1;*/
 }
 
-html, body, #root {
+html[data-contrast="high"] {
+  --text-dark: #000000;
+  --text-main: #000000;
+  --text-muted: #000000;
+  --text-faint: #000000;
+  --color-bg: #ffffff;
+  --color-primary: #0000ff;
+  --color-primary-hover: #0000cc;
+  --color-live: #008080;
+  --color-danger: #ff0000;
+  --color-warning: #000000;
+  --shadow-glow: 3px 0px 0px #0000ff;
+  --shadow-float: 2px 2px 0px #000000;
+  --element-bg: #ffffff;
+  --element-blur: none;
+  --color-warning-bg: #ffff00;
+  --color-warning-bg-hover: #ffff00;
+  --shadow-warning-glow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-warning-text: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-drop-subtle: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-drop-medium: 0 4px 8px rgba(0, 0, 0, 0.25);
+  --shadow-drop-micro: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-subtle-box: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --shadow-subtle-div: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-panel: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --glass-bg-light: #ffffff;
+  --glass-bg-medium: #ffffff;
+  --glass-bg-strong: #ffffff;
+  --glass-border: #000000;
+  --overlay-dark: #000000;
+  --divider-line: #000000;
+  --opacity-indicator-off: 1;
+  --opacity-indicator-hover: 1;
+  --opacity-secondary: 1;
+  --shadow-glow-thumb: 0 0 4px rgba(0, 0, 0, 0.6);
+  --shadow-primary-drop: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --text-halo-white: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+  /* High-contrast enhancements */
+  --hc-border-active: 3px solid #0000ff;
+  --hc-border-inactive: 2px solid #000000;
+  --hc-bg-active: #ccffcc;
+  --hc-bg-selected: #ffffcc;
+  --hc-focus-outline: 3px solid #0000ff;
+  color: #000000;
+  background-color: #ffffff;
+}
+
+html[data-contrast="high"] span,
+html[data-contrast="high"] label,
+html[data-contrast="high"] button,
+html[data-contrast="high"] p {
+  font-weight: 500 !important;
+}
+
+
+html[data-contrast="high"] .vignette-overlay {
+  display: none;
+}
+
+/* ========================================= */
+/* HIGH-CONTRAST: INTERACTIVE ELEMENTS      */
+/* ========================================= */
+
+/* Clear focus states for all interactive elements */
+html[data-contrast="high"] button,
+html[data-contrast="high"] [role="button"],
+html[data-contrast="high"] input,
+html[data-contrast="high"] select,
+html[data-contrast="high"] textarea {
+  border: 2px solid #000000;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+html[data-contrast="high"] button:focus,
+html[data-contrast="high"] [role="button"]:focus,
+html[data-contrast="high"] input:focus,
+html[data-contrast="high"] select:focus,
+html[data-contrast="high"] textarea:focus {
+  outline: 3px solid #0000ff;
+  outline-offset: 2px;
+}
+
+/* Active/Selected list items and controls */
+html[data-contrast="high"] .active,
+html[data-contrast="high"] [aria-selected="true"],
+html[data-contrast="high"] .selected {
+  background-color: #ffffcc !important;
+  border: 3px solid #0000ff !important;
+  font-weight: 700 !important;
+}
+
+/* Hover states - stronger visual feedback */
+html[data-contrast="high"] button:hover,
+html[data-contrast="high"] [role="button"]:hover,
+html[data-contrast="high"] .row:hover {
+  background-color: #e6e6e6 !important;
+  border: 2px solid #0000ff !important;
+}
+
+/* Indicator dots - always visible in high-contrast */
+html[data-contrast="high"] .indicator {
+  width: 10px !important;
+  height: 10px !important;
+  border: 2px solid #000000 !important;
+  background-color: #ffffff !important;
+}
+
+html[data-contrast="high"] .row.active .indicator {
+  background-color: #0000ff !important;
+  border: 2px solid #0000ff !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Selected day buttons - strong highlighting */
+html[data-contrast="high"] .dayButton.selected {
+  background-color: #ffffcc !important;
+  border: 3px solid #0000ff !important;
+  font-weight: 700 !important;
+}
+
+html[data-contrast="high"] .dayButton:hover {
+  background-color: #e6e6e6 !important;
+  border: 2px solid #0000ff !important;
+}
+
+/* Prevent animated transitions when toggling high-contrast mode so
+   borders/outline/box-shadow appear instantly (no flash from thick->thin) */
+html[data-contrast="high"] button,
+html[data-contrast="high"] [role="button"],
+html[data-contrast="high"] input,
+html[data-contrast="high"] input[type="range"],
+html[data-contrast="high"] .row,
+html[data-contrast="high"] .selected,
+html[data-contrast="high"] [aria-selected="true"],
+html[data-contrast="high"] .dayButton,
+html[data-contrast="high"] .indicator,
+html[data-contrast="high"] .nowMarker,
+html[data-contrast="high"] .playBtn,
+html[data-contrast="high"] .slider {
+  transition: none !important;
+  -webkit-transition: none !important;
+}
+
+html[data-contrast="high"] .slider::-webkit-slider-thumb,
+html[data-contrast="high"] .slider::-moz-range-thumb {
+  transition: none !important;
+}
+
+/* Checkbox and radio-like elements */
+html[data-contrast="high"] input[type="checkbox"],
+html[data-contrast="high"] input[type="radio"] {
+  width: 18px !important;
+  height: 18px !important;
+  border: 3px solid #000000 !important;
+  accent-color: #0000ff !important;
+}
+
+html[data-contrast="high"] input[type="checkbox"]:checked,
+html[data-contrast="high"] input[type="radio"]:checked {
+  background-color: #0000ff !important;
+  border: 3px solid #0000ff !important;
+}
+
+/* Slider/range inputs */
+html[data-contrast="high"] input[type="range"] {
+  border: 2px solid #000000;
+}
+
+html[data-contrast="high"] input[type="range"]::-webkit-slider-thumb,
+html[data-contrast="high"] input[type="range"]::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border: 3px solid #0000ff !important;
+  background-color: #0000ff !important;
+}
+
+/* Modal and panel backgrounds */
+html[data-contrast="high"] .modal,
+html[data-contrast="high"] [role="dialog"] {
+  background-color: #ffffff !important;
+  border: 3px solid #000000 !important;
+}
+
+/* Disabled states */
+html[data-contrast="high"] button:disabled,
+html[data-contrast="high"] input:disabled,
+html[data-contrast="high"] select:disabled,
+html[data-contrast="high"] textarea:disabled,
+html[data-contrast="high"] [aria-disabled="true"],
+html[data-contrast="high"] [disabled] {
+  opacity: 0.5 !important;
+  background-color: #e6e6e6 !important;
+  border: 2px solid #999999 !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through !important;
+}
+
+/* Links */
+html[data-contrast="high"] a {
+  color: #0000ff !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #0000ff !important;
+}
+
+html[data-contrast="high"] a:visited {
+  color: #6600cc !important;
+}
+
+html[data-contrast="high"] a:focus {
+  outline: 3px solid #0000ff !important;
+  outline-offset: 2px !important;
+}
+
+/* Text contrast boost */
+html[data-contrast="high"] {
+  --text-dark: #000000 !important;
+  --text-main: #000000 !important;
+  --text-muted: #000000 !important;
+  --text-faint: #000000 !important;
+}
+
+/* ========================================= */
+/* SYSTEM HIGH CONTRAST PREFERENCE          */
+/* ========================================= */
+@media (prefers-contrast: more) {
+  :root {
+    --text-dark: #000000;
+    --text-main: #000000;
+    --text-muted: #000000;
+    --text-faint: #000000;
+    --color-primary: #0000ff;
+    --color-primary-hover: #0000cc;
+    --shadow-glow: 0 0 4px #0000ff;
+    --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-drop-subtle: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-drop-medium: 0 4px 8px rgba(0, 0, 0, 0.25);
+    --divider-line: #000000;
+  }
+
+  button, [role="button"], a, input, select, textarea {
+    border: 2px solid #000000;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  button:focus, [role="button"]:focus, a:focus, input:focus, select:focus, textarea:focus {
+    outline: 3px solid #0000ff;
+    outline-offset: 2px;
+  }
+
+  a {
+    color: #0000ff;
+    text-decoration: underline;
+    font-weight: 600;
+    border-bottom: 2px solid #0000ff;
+  }
+
+  a:visited {
+    color: #6600cc;
+  }
+}
+
+html {
+  font-size: calc(16px * var(--text-size));
+}
+
+/* Persistent selection indicator: keeps a blue ring while an element is selected
+   (applies to common selection classes so it persists after blur/click-away) */
+.html-override-placeholder
+/* Scoped: persistent selection indicator only in high-contrast mode */
+html[data-contrast="high"] .row.active,
+html[data-contrast="high"] .selected,
+html[data-contrast="high"] [aria-selected="true"] {
+  outline: 2px solid var(--color-primary) !important;
+  outline-offset: 3px !important;
+  border-radius: 8px !important; /* soft corner for the outline */
+  box-shadow: 0 0 0 4px rgba(54, 92, 206, 0.12) !important;
+}
+
+/*body {
+  cursor: none;
+}*/
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; 
-  overflow: hidden; 
-  
-  background: var(--color-bg) !important; 
+  height: 100dvh;
+  overflow: hidden;
+
+  background: var(--color-bg) !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/*.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(12px * var(--cursor-size));
+  height: calc(12px * var(--cursor-size));
+  border-radius: 50%;
+  background: black;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease;
+  z-index: 9999;
+}*/
 
 /* The Vignette Overlay */
 /* .vignette-overlay {
@@ -77,22 +432,26 @@ html, body, #root {
 /* --- 2. BROWSER RESETS & BASE LAYOUT ---   */
 /* ========================================= */
 
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; 
-  overflow: hidden; 
+  height: 100dvh;
+  overflow: hidden;
 
   background-color: var(--color-bg) !important;
-  
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Ensure font inheritance for inputs and buttons globally */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  font-family: inherit; 
+  font-family: inherit;
 }

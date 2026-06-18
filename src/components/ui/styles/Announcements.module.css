@@ -26,7 +26,7 @@
   pointer-events: auto;
   
   /* Spatial Glass Plate Styling */
-  background: rgba(254, 243, 199, 0.85); 
+  background: var(--color-warning-bg); 
   backdrop-filter: var(--element-blur);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-float);
@@ -60,7 +60,7 @@
   backdrop-filter: none;
   
   color: var(--text-muted);
-  filter: drop-shadow(0 4px 8px rgba(9, 9, 11, 0.08));
+  filter: drop-shadow(var(--shadow-drop-subtle));
 }
 
 /* Hover Physics for Collapsed State */
@@ -70,10 +70,10 @@
   transform: translateY(calc(-50% - 2px)); 
   
   /* Microscopic amber frost */
-  background: rgba(254, 243, 199, 0.4); 
+  background: var(--color-warning-bg-hover); 
   backdrop-filter: blur(4px);
   /* Lifts with a warm orange shadow */
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2); 
+  box-shadow: var(--shadow-warning-glow); 
 }
 
 /* ========================================= */
@@ -97,7 +97,7 @@
 .content {
   display: flex;
   align-items: center;
-  opacity: 1;
+  opacity: var(--opacity-full);
   white-space: nowrap; 
   transition: opacity 0.3s ease 0.2s; 
 }
@@ -105,7 +105,7 @@
 /* THE FIX: Remove text from the document flow when collapsed. 
    This stops the text from pushing the icon out of the 44px box. */
 .container.collapsed .content {
-  opacity: 0;
+  opacity: var(--opacity-hidden);
   position: absolute; 
   pointer-events: none;
   visibility: hidden;
@@ -116,12 +116,10 @@
   font-size: 0.95rem; /* Slightly larger for the centered layout */
   font-weight: 300;   /* Bolder structural weight */
   letter-spacing: 0.5px;
-  /* Illuminates the text with a soft yellow/orange aura */
-  text-shadow: 0 2px 10px rgba(245, 158, 11, 0.4); 
+   /* Clean announcement text with no halo shadow */
+   text-shadow: none;
 }
 
-/* ========================================= */
-/* 5. MOBILE & SMALL SCREENS                 */
 /* ========================================= */
 @media (max-width: 850px), (max-height: 500px) {  
   .wrapper {

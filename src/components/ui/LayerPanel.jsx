@@ -1,17 +1,19 @@
 import useAppStore from '../../store/useAppStore'
 import { Users, AudioWaveform, Sun, Ruler } from 'lucide-react'
 import styles from './styles/LayerPanel.module.css'
+import { useTranslation } from "react-i18next"
 
 export default function LayerPanel() {
   const layers = useAppStore((state) => state.layers)
   const toggleLayer = useAppStore((state) => state.toggleLayer)
+  const { t } = useTranslation()
 
   // 1. Map the Lucide components directly to your layer options
   const layerOptions = [
-    { id: 'crowd', label: 'Crowd', icon: Users },
-    { id: 'noise', label: 'Noise', icon: AudioWaveform },
-    { id: 'brightness', label: 'Brightness', icon: Sun },
-    { id: 'dimensions', label: 'Dimensions', icon: Ruler },
+    { id: 'crowd', label: t("layers.crowd"), icon: Users },
+    { id: 'noise', label: t("layers.noise"), icon: AudioWaveform },
+    { id: 'brightness', label: t("layers.brightness"), icon: Sun },
+    { id: 'dimensions', label:t("layers.dimensions"), icon: Ruler },
   ]
 
   const handleKeyDown = (e, callback) => {
@@ -24,7 +26,7 @@ export default function LayerPanel() {
   return (
     <div className={styles.container}>
       <div className={styles.heading} id="layer-panel-heading">
-        Display Layers
+        {t("layers.displayLayers")}
       </div>
       
       <div 
