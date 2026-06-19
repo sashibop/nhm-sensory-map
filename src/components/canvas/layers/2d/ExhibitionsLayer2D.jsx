@@ -3,7 +3,7 @@ import useAppStore from '../../../../store/useAppStore'
 import { ROOMS } from '../../../../data/roomAnalytics'
 
 const EXHIBITION_ICONS = {
-  natureRoleModel: 'src/assets/natureRoleModel.svg',
+  natureRoleModel: '/icons/natureRoleModel.svg',
   vivarium: 'src/assets/vivarium.svg',
   fossils: 'src/assets/fossils.svg',
   prehistoricTimes: 'src/assets/prehistoricTimes.svg',
