@@ -238,13 +238,11 @@ export const N2 = {
 };
 
 
-// // =========================================
-// // 🚶 ROUTE DEFINITIONS (FIXED NODE REFERENCES)
-// // ==========================================;
+// =========================================
+// 🚶 ROUTE DEFINITIONS (FIXED NODE REFERENCES)
+// ==========================================;
 
 // ------ FLOOR 1 ROUTES ------------------------
-
-
 const ROUTE_FULL_MUSEUM = [
   N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1,
   N.Lobby_Mid, N.Lobby_Deep, N.Info_Right, N.Center_Right2,
@@ -341,6 +339,49 @@ const ROUTE_STAFF_RIGHT_DEEP = [
   N.Right_11, N.Right_9, N.Right_6, N.Lobby_Mid, N.Entrance_1
 ];
 
+const ROUTE_AQUARIUM_LONG = [N.Entrance_1, N.Entrance_2, N.Lobby_Front, 
+  N.Stairs_R_Mid, N.Right_2, N.Right_3, N.Right_4, N.Right_6, N.Right_7, N.Right_8,
+   N.Right_9, N.Right_10, N.Right_11, N.Right_13, N.Right_12, N.Right_14, N.Right_12,
+    N.Right_11, N.Right_13, N.Right_11, N.Right_12, N.Right_14, N.Right_15, N.Right_27, 
+    N.Right_16, N.Right_27, N.Right_26, N.Right_25, N.Right_24, N.Right_25, N.Right_26, 
+    N.Right_25, N.Right_24, N.Right_23, N.Right_21, N.Right_20, N.Right_19, N.Right_18, 
+    N.Right_17, N.Right_18, N.Right_19, N.Right_20, N.Right_21, N.Right_28, N.Right_29, 
+    N.Right_31, N.Right_32, N.Right_31, N.Right_30, N.Right_33, N.Right_34, N.Right_33, 
+    N.Right_22, N.Right_21, N.Right_23, N.Right_24, N.Right_25, N.Right_26, N.Right_27, 
+    N.Right_16, N.Right_17, N.Right_18, N.Right_19, N.Right_20, N.Right_21, N.Right_22, 
+    N.Right_33, N.Right_30, N.Right_29, N.Right_28, N.Right_23, N.Right_24, N.Right_25, 
+    N.Right_26, N.Right_27, N.Right_15, N.Right_14, N.Right_12, N.Right_11, N.Right_10, 
+    N.Right_9, N.Right_8, N.Right_7, N.Right_6, N.Right_4, N.Right_3, N.Right_2, 
+    N.Stairs_R_Mid, N.Lobby_Front, N.Entrance_2, N.Entrance_1
+]
+const AQUARIUM_FRONT_TO_BACK = [ N.Right_7, N.Right_8, N.Right_9, N.Right_10, N.Right_9, N.Right_8, 
+  N.Right_9, N.Right_10, N.Right_13, N.Right_11, N.Right_13, N.Right_11, N.Right_12, 
+  N.Right_14, N.Right_12, N.Right_11, N.Right_12, N.Right_14, N.Right_15, N.Right_27, 
+  N.Right_16, N.Right_27, N.Right_26, N.Right_25, 
+  N.Right_26, N.Right_25, N.Right_26, N.Right_27, N.Right_26, N.Right_26, N.Right_25, 
+  N.Right_24, N.Right_24, N.Right_23, N.Right_21, N.Right_28, N.Right_28, N.Right_29, 
+  N.Right_32, N.Right_29, N.Right_31, N.Right_30, N.Right_33, N.Right_33, N.Right_30, 
+  N.Right_30, N.Right_33, N.Right_34, N.Right_33, N.Right_22, N.Right_22, N.Right_21, 
+  N.Right_20, N.Right_20, N.Right_19, N.Right_19, N.Right_18, N.Right_17, N.Right_16, 
+  N.Right_16, N.Right_14, N.Right_14, N.Right_12,
+   N.Right_11, N.Right_13, N.Right_10, N.Right_9, N.Right_8, N.Right_8 ]
+
+const AQUARIUM_3= [N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Stairs_R_Mid, N.Right_3,
+   N.Right_4, N.Right_6, N.Right_7, N.Right_7, N.Right_7, N.Right_8, N.Right_9,
+   N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, 
+   N.Right_10, N.Right_11, N.Right_11, N.Right_11, N.Right_13, N.Right_13, N.Right_13, 
+   N.Right_12, N.Right_12, N.Right_12, N.Right_12, N.Right_14, N.Right_15, N.Right_15, 
+   N.Right_14, N.Right_14, N.Right_15, N.Right_15, N.Right_16, N.Right_16, N.Right_27, 
+   N.Right_27, N.Right_27, N.Right_26, N.Right_26, N.Right_26, N.Right_26, N.Right_25, 
+   N.Right_25, N.Right_25, N.Right_24, N.Right_24, N.Right_23, N.Right_23, N.Right_28, 
+   N.Right_28, N.Right_29, N.Right_29, N.Right_31, N.Right_31, N.Right_32, N.Right_32, 
+   N.Right_31, N.Right_31, N.Right_31, N.Right_30, N.Right_30, N.Right_33, N.Right_33, 
+   N.Right_34, N.Right_34, N.Right_34, N.Right_33, N.Right_33, N.Right_22, N.Right_22, 
+   N.Right_21, N.Right_21, N.Right_20, N.Right_20, N.Right_19, N.Right_19, N.Right_19, 
+   N.Right_19, N.Right_18, N.Right_18, N.Right_17, N.Right_17, N.Right_16, N.Right_16, 
+   N.Right_14, N.Right_14, N.Right_12, N.Right_12, N.Right_11, N.Right_11, N.Right_9, 
+   N.Right_9, N.Right_8, N.Right_8, N.Right_7, N.Right_6, N.Right_4, N.Right_3, 
+   N.Stairs_R_Mid, N.Lobby_Front, N.Entrance_2, N.Entrance_1]
 
 // ------ FLOOR 2 ROUTES ------------------------
 const F2_ROUTE_RIGHT_WING =  [ N2.Main_Stair_Entry, N2.F2_Center_Back1,
@@ -393,6 +434,11 @@ export const visitors = [
   ...generateGroup('tour_to_2f_morn2', 12, 'tour', 11.0, ROUTE_TO_2F), 
   ...generateGroup('tour_to_2f_mid', 12, 'tour', 15.0, ROUTE_TO_2F), 
   ...generateGroup('tour_to_2f_aft1', 15, 'tour', 14.50, ROUTE_TO_2F), 
+
+  ...generateGroup('tour_aqu_1', 4, 'tour', 9.3, AQUARIUM_3),
+  ...generateGroup('tour_aqu_2', 4, 'tour', 11.3, AQUARIUM_3),
+  ...generateGroup('tour_aqu_3', 4, 'tour', 13., AQUARIUM_3),
+  ...generateGroup('tour_aqu_4', 4, 'tour', 15, AQUARIUM_3),
 
   ...generateGroup('tour_morn_full', 20, 'tour', 9.0, ROUTE_FULL_MUSEUM),
   ...generateGroup('solo_morn_full', 10, 'solo', 9.1, ROUTE_FULL_MUSEUM),
