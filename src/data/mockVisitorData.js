@@ -182,6 +182,37 @@ export const N = {
   Staff_Right_Mid: { x: 31.8, y: 1.85, z: 3.34, dwell: 4.4 },
   Staff_Right_Deep: { x: 29.64, y: 1.85, z: -37.42, dwell: 4.4 },
 
+  Aqu_3: { x: 12.59, y: 1.85, z: 8.88, scatter: 0.5 , dwell:0.015},
+  Aqu_4: { x: 19.68, y: 1.85, z: 8.68, scatter: 3.0, dwell: 0.1 },
+  Aqu_6: { x: 26.26, y: 1.85, z: 9.12, scatter: 0.5 , dwell:0.015},
+  Aqu_7: { x: 28.86, y: 1.85, z: 8.66, scatter: 1.5, dwell: 0.15 },
+  Aqu_8: { x: 29.05, y: 1.85, z: 11.29, scatter: 0.5 , dwell:0.015},
+  Aqu_9: { x: 30.57, y: 1.85, z: 12.48, scatter: 1.5, dwell: 0.15 },
+  Aqu_10: { x: 32.65, y: 1.85, z: 14.09, scatter: 0.5, dwell:0.015 },
+  Aqu_11: { x: 34.84, y: 1.85, z: 12.14, scatter: 0.5 , dwell:0.015},
+  Aqu_12: { x: 36.38, y: 1.85, z: 9.16, scatter: 0.5 , dwell:0.015},
+  Aqu_13: { x: 36.81, y: 1.85, z: 12.87, scatter: 1.5, dwell: 0.15 },
+  Aqu_14: { x: 36.66, y: 1.85, z: 5.79, scatter: 0.5 , dwell:0.015},
+  Aqu_15: { x: 32.89, y: 1.85, z: 4.18, scatter: 1.5, dwell: 0.15 },
+  Aqu_16: { x: 32.47, y: 1.85, z: 0.16, scatter: 1.5, dwell: 0.35 },
+  Aqu_17: { x: 30.19, y: 1.85, z: -0.96, scatter: 0.5 , dwell:0.015},
+  Aqu_18: { x: 29.00, y: 1.85, z: -3.88, scatter: 0.5 , dwell:0.015},
+  Aqu_19: { x: 28.77, y: 1.85, z: -10.61, scatter: 1.0, dwell:0.015 },
+  Aqu_20: { x: 29.03, y: 1.85, z: -15.47, scatter: 0.5 , dwell:0.015},
+  Aqu_21: { x: 30.89, y: 1.85, z: -18.33, scatter: 1.5, dwell: 0.15 },
+  Aqu_22: { x: 28.65, y: 1.85, z: -21.70, scatter: 0.5 , dwell:0.015},
+  Aqu_23: { x: 33.99, y: 1.85, z: -18.40, scatter: 1.5, dwell: 0.15 },
+  Aqu_24: { x: 36.08, y: 1.85, z: -17.53, scatter: 1.5, dwell: 0.15 },
+  Aqu_25: { x: 36.73, y: 1.85, z: -13.03, scatter: 0.5 , dwell:0.015},
+  Aqu_26: { x: 36.80, y: 1.85, z: -7.78, scatter: 0.5 , dwell:0.015},
+  Aqu_27: { x: 35.94, y: 1.85, z: -1.16, scatter: 0.5 , dwell:0.015},
+  Aqu_28: { x: 33.95, y: 1.85, z: -22.50, scatter: 1.5, dwell: 0.15 },
+  Aqu_29: { x: 34.81, y: 1.85, z: -26.92, scatter: 0.5 , dwell:0.015},
+  Aqu_30: { x: 32.89, y: 1.85, z: -29.03, scatter: 1.5, dwell: 0.15 },
+  Aqu_31: { x: 35.06, y: 1.85, z: -30.06, scatter: 0.5 , dwell:0.015},
+  Aqu_32: { x: 36.67, y: 1.85, z: -31.52, scatter: 1.5, dwell: 0.15 },
+  Aqu_33: { x: 29.84, y: 1.85, z: -28.89, scatter: 1.5 , dwell:0.015},
+  Aqu_34: { x: 29.23, y: 1.85, z: -34.11, scatter: 1.5, dwell: 0.15 },
 };
 
 export const N2 = {
@@ -339,49 +370,19 @@ const ROUTE_STAFF_RIGHT_DEEP = [
   N.Right_11, N.Right_9, N.Right_6, N.Lobby_Mid, N.Entrance_1
 ];
 
-const ROUTE_AQUARIUM_LONG = [N.Entrance_1, N.Entrance_2, N.Lobby_Front, 
-  N.Stairs_R_Mid, N.Right_2, N.Right_3, N.Right_4, N.Right_6, N.Right_7, N.Right_8,
-   N.Right_9, N.Right_10, N.Right_11, N.Right_13, N.Right_12, N.Right_14, N.Right_12,
-    N.Right_11, N.Right_13, N.Right_11, N.Right_12, N.Right_14, N.Right_15, N.Right_27, 
-    N.Right_16, N.Right_27, N.Right_26, N.Right_25, N.Right_24, N.Right_25, N.Right_26, 
-    N.Right_25, N.Right_24, N.Right_23, N.Right_21, N.Right_20, N.Right_19, N.Right_18, 
-    N.Right_17, N.Right_18, N.Right_19, N.Right_20, N.Right_21, N.Right_28, N.Right_29, 
-    N.Right_31, N.Right_32, N.Right_31, N.Right_30, N.Right_33, N.Right_34, N.Right_33, 
-    N.Right_22, N.Right_21, N.Right_23, N.Right_24, N.Right_25, N.Right_26, N.Right_27, 
-    N.Right_16, N.Right_17, N.Right_18, N.Right_19, N.Right_20, N.Right_21, N.Right_22, 
-    N.Right_33, N.Right_30, N.Right_29, N.Right_28, N.Right_23, N.Right_24, N.Right_25, 
-    N.Right_26, N.Right_27, N.Right_15, N.Right_14, N.Right_12, N.Right_11, N.Right_10, 
-    N.Right_9, N.Right_8, N.Right_7, N.Right_6, N.Right_4, N.Right_3, N.Right_2, 
-    N.Stairs_R_Mid, N.Lobby_Front, N.Entrance_2, N.Entrance_1
-]
-const AQUARIUM_FRONT_TO_BACK = [ N.Right_7, N.Right_8, N.Right_9, N.Right_10, N.Right_9, N.Right_8, 
-  N.Right_9, N.Right_10, N.Right_13, N.Right_11, N.Right_13, N.Right_11, N.Right_12, 
-  N.Right_14, N.Right_12, N.Right_11, N.Right_12, N.Right_14, N.Right_15, N.Right_27, 
-  N.Right_16, N.Right_27, N.Right_26, N.Right_25, 
-  N.Right_26, N.Right_25, N.Right_26, N.Right_27, N.Right_26, N.Right_26, N.Right_25, 
-  N.Right_24, N.Right_24, N.Right_23, N.Right_21, N.Right_28, N.Right_28, N.Right_29, 
-  N.Right_32, N.Right_29, N.Right_31, N.Right_30, N.Right_33, N.Right_33, N.Right_30, 
-  N.Right_30, N.Right_33, N.Right_34, N.Right_33, N.Right_22, N.Right_22, N.Right_21, 
-  N.Right_20, N.Right_20, N.Right_19, N.Right_19, N.Right_18, N.Right_17, N.Right_16, 
-  N.Right_16, N.Right_14, N.Right_14, N.Right_12,
-   N.Right_11, N.Right_13, N.Right_10, N.Right_9, N.Right_8, N.Right_8 ]
 
-const AQUARIUM_3= [N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Stairs_R_Mid, N.Right_3,
-   N.Right_4, N.Right_6, N.Right_7, N.Right_7, N.Right_7, N.Right_8, N.Right_9,
-   N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, N.Right_9, 
-   N.Right_10, N.Right_11, N.Right_11, N.Right_11, N.Right_13, N.Right_13, N.Right_13, 
-   N.Right_12, N.Right_12, N.Right_12, N.Right_12, N.Right_14, N.Right_15, N.Right_15, 
-   N.Right_14, N.Right_14, N.Right_15, N.Right_15, N.Right_16, N.Right_16, N.Right_27, 
-   N.Right_27, N.Right_27, N.Right_26, N.Right_26, N.Right_26, N.Right_26, N.Right_25, 
-   N.Right_25, N.Right_25, N.Right_24, N.Right_24, N.Right_23, N.Right_23, N.Right_28, 
-   N.Right_28, N.Right_29, N.Right_29, N.Right_31, N.Right_31, N.Right_32, N.Right_32, 
-   N.Right_31, N.Right_31, N.Right_31, N.Right_30, N.Right_30, N.Right_33, N.Right_33, 
-   N.Right_34, N.Right_34, N.Right_34, N.Right_33, N.Right_33, N.Right_22, N.Right_22, 
-   N.Right_21, N.Right_21, N.Right_20, N.Right_20, N.Right_19, N.Right_19, N.Right_19, 
-   N.Right_19, N.Right_18, N.Right_18, N.Right_17, N.Right_17, N.Right_16, N.Right_16, 
-   N.Right_14, N.Right_14, N.Right_12, N.Right_12, N.Right_11, N.Right_11, N.Right_9, 
-   N.Right_9, N.Right_8, N.Right_8, N.Right_7, N.Right_6, N.Right_4, N.Right_3, 
-   N.Stairs_R_Mid, N.Lobby_Front, N.Entrance_2, N.Entrance_1]
+const AQUARIUM_3 = [
+  N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Stairs_R_Mid, N.Aqu_3,
+  N.Aqu_4, N.Aqu_6, N.Aqu_7, N.Aqu_8, N.Aqu_9, N.Aqu_10,
+  N.Aqu_11, N.Aqu_13, N.Aqu_12, N.Aqu_14, N.Aqu_15, N.Aqu_14,
+  N.Aqu_15, N.Aqu_16, N.Aqu_27, N.Aqu_26, N.Aqu_25, N.Aqu_24,
+  N.Aqu_23, N.Aqu_28, N.Aqu_29, N.Aqu_31, N.Aqu_32, N.Aqu_31,
+  N.Aqu_30, N.Aqu_33, N.Aqu_34, N.Aqu_33, N.Aqu_22, N.Aqu_21,
+  N.Aqu_20, N.Aqu_19, N.Aqu_18, N.Aqu_17, N.Aqu_16, N.Aqu_14,
+  N.Aqu_12, N.Aqu_11, N.Aqu_9, N.Aqu_8, N.Aqu_7, N.Aqu_6,
+  N.Aqu_4, N.Aqu_3, N.Stairs_R_Mid, N.Lobby_Front, N.Entrance_2,
+  N.Entrance_1
+];
 
 // ------ FLOOR 2 ROUTES ------------------------
 const F2_ROUTE_RIGHT_WING =  [ N2.Main_Stair_Entry, N2.F2_Center_Back1,
@@ -437,8 +438,8 @@ export const visitors = [
 
   ...generateGroup('tour_aqu_1', 4, 'tour', 9.3, AQUARIUM_3),
   ...generateGroup('tour_aqu_2', 4, 'tour', 11.3, AQUARIUM_3),
-  ...generateGroup('tour_aqu_3', 4, 'tour', 13., AQUARIUM_3),
-  ...generateGroup('tour_aqu_4', 4, 'tour', 15, AQUARIUM_3),
+  ...generateGroup('tour_aqu_3', 4, 'tour', 12.3, AQUARIUM_3),
+  ...generateGroup('tour_aqu_4', 4, 'tour', 13.1, AQUARIUM_3),
 
   ...generateGroup('tour_morn_full', 20, 'tour', 9.0, ROUTE_FULL_MUSEUM),
   ...generateGroup('solo_morn_full', 10, 'solo', 9.1, ROUTE_FULL_MUSEUM),
