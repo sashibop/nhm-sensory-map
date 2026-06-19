@@ -25,7 +25,6 @@ export default function GlobalSettings() {
   const setTextSize = useAppStore((state) => state.setTextSize)
 
   const textProgress = ((settings.textSize - 50) / 100) * 100
-  const cursorProgress = ((settings.cursorSize - 50) / 100) * 100
 
   const settingsOptions = [
     ...(activeView === '3D' ? [{ id: 'help', label: t("controls.controls"), icon: Mouse }] : []),
@@ -163,19 +162,6 @@ export default function GlobalSettings() {
                       <div className={styles.subIndicator} aria-hidden="true" />
                     </div>
 
-                    <div
-                      className={`${styles.subRow} ${plainLang ? styles.subActive : ''}`}
-                      role="switch"
-                      aria-checked={plainLang}
-                      tabIndex={0}
-                      onClick={() => setPlainLang(!plainLang)}
-                      onKeyDown={(e) => handleKeyDown(e, () => setPlainLang(!plainLang))}
-                    >
-                      <div className={styles.iconWrapper} aria-hidden="true"><BookOpen size={12} strokeWidth={1.5} /></div>
-                      <span className={styles.subLabel}>{t("accessibility.plainLanguage")}</span>
-                      <div className={styles.subIndicator} aria-hidden="true" />
-                    </div>
-
                     <div className={styles.sliderRow}>
                       <div className={styles.subHeaderFlex}>
                         <div className={styles.iconWrapper}><Type size={12} strokeWidth={1.5} /></div>
@@ -189,21 +175,6 @@ export default function GlobalSettings() {
                         min="50" max="150" step="1"
                         value={settings.textSize}
                         onChange={(e) => setTextSize(Number(e.target.value))}
-                      />
-                    </div>
-
-                    <div className={styles.sliderRow}>
-                      <div className={styles.subHeaderFlex}>
-                        <div className={styles.iconWrapper}><MousePointer2 size={12} strokeWidth={1.5} /></div>
-                        <span className={styles.subLabel}>{t("accessibility.cursorSize")}</span>
-                      </div>
-                      <input
-                        type="range"
-                        className={styles.ghostSlider}
-                        style={{ '--progress': `${cursorProgress}%` }}
-                        min="50" max="150" step="1"
-                        value={settings.cursorSize}
-                        onChange={(e) => setCursorSize(Number(e.target.value))}
                       />
                     </div>
 

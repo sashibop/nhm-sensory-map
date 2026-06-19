@@ -3,20 +3,20 @@ import useAppStore from '../../../../store/useAppStore'
 import { ROOMS } from '../../../../data/roomAnalytics'
 
 const EXHIBITION_ICONS = {
-  natureRoleModel: '/icons/natureRoleModel.svg',
-  vivarium: 'src/assets/vivarium.svg',
-  fossils: 'src/assets/fossils.svg',
-  prehistoricTimes: 'src/assets/prehistoricTimes.svg',
-  minerals: 'src/assets/minerals.svg',
-  geology: 'src/assets/geology.svg',
-  diorama: 'src/assets/diorama.svg',
-  specialExhibition: 'src/assets/specialExhibition.svg',
-  atrium: 'src/assets/atrium.svg',
-  nativeNature: 'src/assets/nativeNature.svg',
-  africanNature: 'src/assets/africanNature.svg',
-  insects: 'src/assets/insects.svg',
-  rotary: 'src/assets/rotary.svg',
-  specialExhibitionBig: 'src/assets/specialExhibition.svg',
+  natureRoleModel: 'icons/natureRoleModel.svg',
+  vivarium: 'icons/vivarium.svg',
+  fossils: 'icons/fossils.svg',
+  prehistoricTimes: 'icons/prehistoricTimes.svg',
+  minerals: 'icons/minerals.svg',
+  geology: 'icons/geology.svg',
+  diorama: 'icons/diorama.svg',
+  specialExhibition: 'icons/specialExhibition.svg',
+  atrium: 'icons/atrium.svg',
+  nativeNature: 'icons/nativeNature.svg',
+  africanNature: 'icons/africanNature.svg',
+  insects: 'icons/insects.svg',
+  rotary: 'icons/rotary.svg',
+  specialExhibitionBig: 'icons/specialExhibition.svg',
 }
 
 function worldToSVG(x, z, mapScale, offsetX, offsetZ) {
