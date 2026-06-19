@@ -184,9 +184,65 @@ export const N = {
 
 };
 
-// ==========================================
-// 🚶 ROUTE DEFINITIONS (FIXED NODE REFERENCES)
-// ==========================================
+export const N2 = {
+    // --- GENERAL AREAS (Floor 2) ---
+    Arrival: { x: 3, z: 0, scatter: 3.0 },
+    Balcony: { x: 0, z: 10, scatter: 10.0 },
+    GalleryA: { x: -23, z: 13, scatter: 3.5, dwell: 0.2 },
+    GalleryB: { x: 23, z: 13, scatter: 3.5, dwell: 0.1 },
+    GalleryA2: { x: -23, z: -18, scatter: 3.5, dwell: 0.4 },
+    GalleryB2: { x: 23, z: -23, scatter: 3.5, dwell: 0.1 },
+    // --- CENTER BACK CORRIDORS (Floor 2) ---
+    Main_Stair_Entry: { x: 0.69, y: 1.55, z: -3.62, scatter: 0.5, dwell:0.01 },
+    F2_Center_Back1: { x: 0.96, y: 1.55, z: -6.55, scatter: 0.5,  },
+    F2_Center_Back3: { x: -4.83, y: 1.55, z: -2.49, scatter: 0.5, dwell: 0.01 },
+    F2_Center_Back2: { x: -4.90, y: 1.55, z: -5.69, scatter: 0.5 },
+    // --- CENTER / LOBBY TRANSITION (Floor 2) ---
+    F2_Center_Back4: { x: -4.84, y: 1.55, z: 4.71, scatter: 0.5 },
+    F2_Center_Back5: { x: -3.57, y: 1.55, z: 6.65, scatter: 0.5 },
+    F2_Lobby_Left: { x: -5.29, y: 1.55, z: 13.06, scatter: 0.5 },
+    F2_Lobby_Mid: { x: 0.05, y: 1.55, z: 9.18, scatter: 2.5, dwell: 0.015},
+    F2_Lobby_Right: { x: 6.53, y: 1.55, z: 12.64, scatter: 0.5, dwell: 0.02 },
+    // --- LEFT WING (Floor 2) ---
+    F2_Left_1: { x: -12.30, y: 1.55, z: 12.73, scatter: 0.5 },
+    F2_Left_9: { x: -20.30, y: 1.55, z: 12.73, scatter: 4.5, dwell: 0.2 }, //butterlfy room
+
+    F2_Left_2: { x: -26.18, y: 1.55, z: 13.22, scatter: 0.5 },
+    F2_Left_3: { x: -32.95, y: 1.55, z: 13.13, scatter: 0.5 },
+    F2_Left_4: { x: -33.44, y: 1.55, z: 7.27, scatter: 0.5 },
+    F2_Left_5: { x: -37.13, y: 1.55, z: -2.72, scatter: 2.5 , dwell: 0.1},
+    F2_Left_6: { x: -30.32, y: 1.55, z: -19.54, scatter: 2.5, dwell: 0.15 },
+    F2_Left_7: { x: -33.27, y: 1.55, z: -34.88, scatter: 0.5, dwell: 0.01 },
+    F2_Left_10: { x: -30.27, y: 1.55, z: -37.88, scatter: 1.0, dwell: 0.1 }, // sun room 
+    F2_Left_8: { x: -31.25, y: 1.55, z: -44.90, scatter: 0.5, dwell:0.02 }, //stairs left wing
+
+    // --- RIGHT WING NEAR (Floor 2) ---
+    F2_Right_1: { x: 13.87, y: 1.55, z: 12.19, scatter: 0.5},
+    F2_Right_2: { x: 27.90, y: 1.55, z: 12.62, scatter: 0.5, dwell:0.01 },
+    F2_Right_3: { x: 34.00, y: 1.55, z: 16.41, scatter: 4.5, dwell: 0.1 },
+    F2_Right_4: { x: 35.12, y: 1.55, z: 7.21, scatter: 0.5 },
+    // --- RIGHT WING DEEP / EAST CORRIDOR (Floor 2) ---
+    F2_Right_5: { x: 38.62, y: 1.55, z: -6.58, scatter: 3.5, dwell: 0.2 },
+    F2_Right_6: { x: 30.32, y: 1.55, z: -17.37, scatter: 2.5, dwell:0.1 },
+    F2_Right_7: { x: 34.98, y: 1.55, z: -26.67, scatter: 0.5 },
+    F2_Right_8: { x: 30.27, y: 1.55, z: -27.00, scatter: 0.5 },
+    F2_Right_9: { x: 38.31, y: 1.55, z: -32.25, scatter: 1.5, dwell: 0.3}, //small room 
+    F2_Right_10: { x: 27.15, y: 1.55, z: -42.09, scatter: 0.5 , dwell:0.1}, //stairs back
+    F2_Right_14: { x: 38.12, y: 1.55, z: -40.24, scatter: 1.5, dwell: 0.15 },
+    F2_Right_11: { x: 29.40, y: 1.55, z: -43.33, scatter: 0.5, dwell: 0.01 },
+    F2_Right_12: { x: 29.66, y: 1.55, z: -47.49, scatter: 1.5, dwell:0.01 },
+    F2_Right_13: { x: 36.29, y: 1.55, z: -46.36, scatter: 1.5, dwell: 0.15 },
+    // STAFF
+    F2_Staff_1: { x: -25.48, y: 1.55, z: 10.71, dwell: 4 },
+    F2_Staff_2: { x: 37.1, y: 1.55, z: -29.02, dwell: 4 },
+};
+
+
+// // =========================================
+// // 🚶 ROUTE DEFINITIONS (FIXED NODE REFERENCES)
+// // ==========================================;
+
+// ------ FLOOR 1 ROUTES ------------------------
 
 
 const ROUTE_FULL_MUSEUM = [
@@ -209,6 +265,8 @@ const ROUTE_FULL_MUSEUM = [
   N.Left_8, N.Left_6, N.Left_3, N.Stairs_L_Mid, N.Lobby_Left2,
   N.Lobby_Front, N.Entrance_1
 ];
+const ROUTE_TO_2F = [N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1,N.Lobby_Mid, 
+  N.Lobby_Deep,  N.Stairs_R_Mid]
 
 const ROUTE_LEFT_WING = [
   N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1, N.Lobby_Mid,
@@ -220,7 +278,7 @@ const ROUTE_LEFT_WING = [
   N.Lobby_Front, N.Entrance_1
 ];
 
-const ROUTE_RIGHT_WING = [
+const ROUTE_RIGHT_WING = [ 
   N.Entrance_1, N.Entrance_2, N.Lobby_Front, N.Lobby_Left1, N.Lobby_Mid,
 
   N.Stairs_R_Mid, N.Right_3, N.Right_4,
@@ -284,30 +342,57 @@ const ROUTE_STAFF_RIGHT_DEEP = [
 ];
 
 
-// --- FLOOR 2 ARCHITECTURAL NODES ---
-const N2 = {
-  // Assuming they arrive via the central stairs or elevator
-  Arrival: { x: 3, z: 0, scatter: 3.0 },
-  Balcony: { x: 0, z: 10, scatter: 10.0 },
-  GalleryA: { x: -23, z: 13, scatter: 3.5, dwell: 0.2 },
-  GalleryB: { x: 23, z: 13, scatter: 3.5, dwell: 0.1 },
-  GalleryA2: { x: -23, z: -18, scatter: 3.5, dwell: 0.4 },
-  GalleryB2: { x: 23, z: -23, scatter: 3.5, dwell: 0.1 },
+// ------ FLOOR 2 ROUTES ------------------------
+const F2_ROUTE_RIGHT_WING =  [ N2.Main_Stair_Entry, N2.F2_Center_Back1,
+  N2.F2_Center_Back2, N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5,
+  N2.F2_Lobby_Mid, N2.F2_Lobby_Right, N2.F2_Right_1, N2.F2_Right_2, N2.F2_Right_3,
+  N2.F2_Right_4, N2.F2_Right_5, N2.F2_Right_6, N2.F2_Right_8, N2.F2_Right_10 ]
 
-};
+ const F2_ROUTE_LEFT_WING = [ N2.Main_Stair_Entry, N2.F2_Center_Back1, 
+ N2.F2_Center_Back2, N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5, 
+ N2.F2_Lobby_Mid, N2.F2_Lobby_Left, N2.F2_Left_1,N2.F2_Left_9, N2.F2_Left_2, N2.F2_Left_3, N2.F2_Left_4, 
+ N2.F2_Left_5, N2.F2_Left_6, N2.F2_Left_7, N2.F2_Left_8 ]
 
-// --- FLOOR 2 ROUTES ---
-const ROUTE_F2_WANDER = [
-  N2.Arrival, N2.Balcony, N2.GalleryA, N2.GalleryA2, N2.GalleryA, N2.Balcony, N2.GalleryB, N2.GalleryB2, N2.GalleryB, N2.Balcony, N2.Arrival
-];
+ const F2_ROUTE_FULL_MUSEUM = [ N2.Main_Stair_Entry, N2.F2_Center_Back1, 
+ N2.F2_Center_Back2, N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5, 
+ N2.F2_Lobby_Mid, N2.F2_Lobby_Right, N2.F2_Right_1, N2.F2_Right_2, N2.F2_Right_4, 
+ N2.F2_Right_5, N2.F2_Right_7, N2.F2_Right_9, N2.F2_Right_7, N2.F2_Right_6, N2.F2_Right_4, 
+ N2.F2_Right_2, N2.F2_Right_1, N2.F2_Lobby_Right, N2.F2_Lobby_Left, N2.F2_Left_1,
+ N2.F2_Left_9,  N2.F2_Left_2,
+ N2.F2_Left_3, N2.F2_Left_4, N2.F2_Left_5, N2.F2_Left_6, N2.F2_Left_7, 
+ N2.F2_Left_10, N2.F2_Left_4, 
+ N2.F2_Left_3, N2.F2_Left_2, N2.F2_Left_1, N2.F2_Lobby_Left, N2.F2_Lobby_Mid, 
+ N2.F2_Center_Back5, N2.F2_Center_Back4, N2.F2_Center_Back3, N2.F2_Center_Back2, 
+ N2.F2_Center_Back1, N2.Main_Stair_Entry]
 
-const ROUTE_F2_TOUR = [
-  N2.Arrival, N2.Balcony, N2.GalleryB, N2.GalleryB2, N2.GalleryB, N2.Balcony, N2.GalleryA, N2.GalleryA2, N2.GalleryA, N2.Balcony, N2.Arrival
-];
+ const F2_LEFT_WING_HALF = [ N2.Main_Stair_Entry, N2.F2_Center_Back1,
+ N2.F2_Center_Back2, N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5, 
+ N2.F2_Lobby_Mid, N2.F2_Lobby_Left, N2.F2_Left_1, N2.F2_Left_9, N2.F2_Left_2, N2.F2_Left_3, N2.F2_Left_4,
+ N2.F2_Left_5, N2.F2_Left_4, N2.F2_Left_3, N2.F2_Left_2, N2.F2_Left_1 ]
+
+ const F2_RIGHT_WING_END = [ N2.F2_Right_10, N2.F2_Right_11, N2.F2_Right_12, 
+ N2.F2_Right_13, N2.F2_Right_14, N2.F2_Right_13, N2.F2_Right_12, N2.F2_Right_11, 
+ N2.F2_Right_8, N2.F2_Right_7, N2.F2_Right_9, N2.F2_Right_7, N2.F2_Right_6, N2.F2_Right_8, 
+ N2.F2_Right_11, N2.F2_Right_10 ]
+
+ const F2_STAFF_1 = [N2.Main_Stair_Entry, N2.F2_Center_Back1, N2.F2_Center_Back2, 
+ N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5, N2.F2_Lobby_Mid,
+ N2.F2_Lobby_Left, 
+ N2.F2_Left_1, N2.F2_Staff_1, N2.F2_Left_1]
+
+ const F2_STAFF_2 = [ N2.Main_Stair_Entry, N2.F2_Center_Back1, N2.F2_Center_Back2,
+ N2.F2_Center_Back3, N2.F2_Center_Back4, N2.F2_Center_Back5, N2.F2_Lobby_Mid, 
+ N2.F2_Lobby_Right, N2.F2_Right_1, N2.F2_Right_2, N2.F2_Right_4, N2.F2_Right_7, 
+ N2.F2_Staff_2, N2.F2_Right_7, N2.F2_Right_8, N2.F2_Right_11, N2.F2_Right_10]
 
 
 // --- GENERATE THE CROWD VARIANCE ---
 export const visitors = [
+  // FLOOR 1
+  ...generateGroup('tour_to_2f_morn1', 20, 'tour', 9.0, ROUTE_TO_2F),
+  ...generateGroup('tour_to_2f_morn2', 12, 'tour', 11.0, ROUTE_TO_2F), 
+  ...generateGroup('tour_to_2f_mid', 12, 'tour', 15.0, ROUTE_TO_2F), 
+  ...generateGroup('tour_to_2f_aft1', 15, 'tour', 14.50, ROUTE_TO_2F), 
 
   ...generateGroup('tour_morn_full', 20, 'tour', 9.0, ROUTE_FULL_MUSEUM),
   ...generateGroup('solo_morn_full', 10, 'solo', 9.1, ROUTE_FULL_MUSEUM),
@@ -339,6 +424,26 @@ export const visitors = [
   ...generateGroup('staff_right_mid_aft', 1, 'staff', 13.0, ROUTE_STAFF_RIGHT_MID),
   ...generateGroup('staff_right_deep_aft', 1, 'staff', 13.0, ROUTE_STAFF_RIGHT_DEEP),
 
+  // FLOOR 2 
+  ...generateGroup('f2_tour_morn_full', 20, 'tour', 9.0, F2_ROUTE_RIGHT_WING, 2),
+  ...generateGroup('f2_solo_morn_full', 10, 'solo', 9.1, F2_ROUTE_FULL_MUSEUM,2),
+  ...generateGroup('f2_tour_morn_left', 12, 'tour', 9.0, F2_ROUTE_LEFT_WING,2),
+  ...generateGroup('f2_couple_morn_right_end', 6, 'couple', 9.0, F2_RIGHT_WING_END, 2),
+  ...generateGroup('f2_tour_morn_full_2', 8, 'tour', 10.5, F2_ROUTE_FULL_MUSEUM, 2),
+
+  ...generateGroup('f2_tour_aft_full', 10, 'tour', 12.0, F2_ROUTE_FULL_MUSEUM, 2),
+  ...generateGroup('f2_tour_aft_left_half', 8, 'tour', 14.0, F2_LEFT_WING_HALF, 2),
+  ...generateGroup('f2_solo_aft_right', 10, 'solo', 15.0, F2_ROUTE_RIGHT_WING, 2),
+  ...generateGroup('f2_solo_aft_left', 4, 'solo', 14.0, F2_ROUTE_LEFT_WING, 2),
+  ...generateGroup('f2_couple_aft_right_end', 2, 'couple', 16.0, F2_RIGHT_WING_END, 2),
+  ...generateGroup('f2_tour_aft_right_end', 9, 'tour', 14.0, F2_RIGHT_WING_END, 2),
+  ...generateGroup('f2_tour_aft_right_end', 9, 'tour', 16.0, F2_RIGHT_WING_END, 2),
+  ...generateGroup('f2_tour_aft_full', 7, 'tour', 15.0, F2_ROUTE_FULL_MUSEUM, 2),
+
+  ...generateGroup('f2_staff_info_1', 1, 'staff', 9.0, F2_STAFF_1, 2),
+  ...generateGroup('f2_staff_info_2', 1, 'staff', 9.0, F2_STAFF_2, 2),
+  ...generateGroup('f2_staff_info_1_aft', 1, 'staff', 13.0, F2_STAFF_1, 2),
+  ...generateGroup('f2_staff_info_2_aft', 1, 'staff', 13.0, F2_STAFF_2, 2),
 ];
 
 // ==========================================
