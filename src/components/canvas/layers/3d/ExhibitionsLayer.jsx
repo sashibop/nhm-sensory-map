@@ -9,14 +9,14 @@ const EXHIBITIONS = [
   {
     floor: 1,
     roomKey: 'natureRoleModel',
-    asset: 'src/assets/natureRoleModel.svg',
+    asset: 'icons/natureRoleModel.svg',
     //position: [32, 3.01, -8],
     //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
   {
     floor: 1,
     roomKey: 'vivarium',
-    asset: 'src/assets/vivarium.svg',
+    asset: 'vivarium.svg',
     //position: [20, 3.01, 10],
     //rotation: [-Math.PI / 2, 0, -Math.PI / 4],
   },
