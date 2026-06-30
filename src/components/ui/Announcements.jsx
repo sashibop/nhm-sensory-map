@@ -11,12 +11,12 @@ export default function Announcements() {
   const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false)
   const { t } = useTranslation()
 
-  // Initial 3-second auto-collapse
+  // Initial 5-second auto-collapse
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsCollapsed(true)
       setHasAutoCollapsed(true)
-    }, 3000)
+    }, 5000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -46,7 +46,6 @@ export default function Announcements() {
   return (
     <div className={styles.wrapper}>
       
-      {/* ⚠️ WCAG FIX: Converted interactive div to an accessible button role */}
       <div 
         className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
         role="button"

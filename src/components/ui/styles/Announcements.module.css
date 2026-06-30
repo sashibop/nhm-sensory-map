@@ -60,7 +60,6 @@
   backdrop-filter: none;
   
   color: var(--text-muted);
-  filter: drop-shadow(var(--shadow-drop-subtle));
 }
 
 /* Hover Physics for Collapsed State */
