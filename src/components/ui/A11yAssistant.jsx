@@ -114,17 +114,22 @@ export default function A11yAssistant() {
         }
     }
 
-    if (!hasKey) {
+   if (!hasKey) {
         return (
             <div className={styles.fabInputContainer}>
                 <input 
                     type="password" 
                     placeholder="Enter API Key" 
+                    aria-label="Enter API Key"
                     value={apiKey} 
                     onChange={(e) => setApiKey(e.target.value)}
                     className={styles.keyInput}
                 />
-                <button onClick={handleSaveKey} className={styles.keySaveBtn}>
+                <button 
+                    onClick={handleSaveKey} 
+                    className={styles.keySaveBtn}
+                    aria-label="Save API Key"
+                >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>

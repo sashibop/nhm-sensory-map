@@ -46,7 +46,7 @@ export default function App() {
   }}>
 
     {/* LEFT: APP AREA */}
-    <div style={{
+    <main style={{
       flex: 1,
       minWidth: 0,
       height: '100vh',
@@ -74,7 +74,7 @@ export default function App() {
       <GlobalSettings />
       <LayerLegend />
       <Disclaimer />
-    </div>
+    </main>
 
     {/* RIGHT: PANEL */}
     <div style={{

@@ -127,6 +127,7 @@ export default function Timeline() {
           min="9" max="18" step="0.01" 
           value={timeOfDay} 
           onChange={handleSliderChange}
+          aria-label={t('timeline.timeOfDay', 'Time of day')}
         />
         
         {/* Unified Ticks and Labels using the same alignment formula */}

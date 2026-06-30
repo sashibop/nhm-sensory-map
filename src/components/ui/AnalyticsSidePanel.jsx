@@ -256,6 +256,7 @@ export default function AnalyticsSidePanel() {
       <aside
         className={`${styles.panel} ${isOpen ? styles.panelOpen : ""}`}
         aria-hidden={!isOpen}
+        inert={!isOpen ? true : undefined}
       >
         <div className={styles.panelHeader}>
           <div>

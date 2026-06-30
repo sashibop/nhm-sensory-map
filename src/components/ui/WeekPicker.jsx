@@ -41,7 +41,7 @@ export default function WeekPicker() {
               key={index}
               onClick={() => setSelectedDate(date)}
               className={`${styles.dayButton} ${isSelected ? styles.selected : ''}`}
-              aria-selected={isSelected}
+              aria-pressed={isSelected}
             >
               <span className={styles.weekday}>
                 {date.toLocaleDateString(i18n.language, { weekday: 'short' })}
