@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import useAppStore from '../../store/useAppStore'
 import { visitors } from '../../data/mockVisitorData'
 import styles from './styles/LayerLegend.module.css'
-import { Users, AudioWaveform } from 'lucide-react'
+import { Users, Sun, AudioWaveform } from 'lucide-react'
 import {getMuseumBrightnessOverviewData } from '../../data/roomAnalytics' 
 
 const getNoiseColor = (percent) => {
@@ -234,6 +234,7 @@ export default function LayerLegend() {
       {layers.brightness && (
           <div className={styles.ghostBlock}>
           <div className={`${styles.heading} ${styles.desktopOnly}`}>
+            <Sun size={12} strokeWidth={1.5} />
             {t('layers.brightness')}
           </div>
 

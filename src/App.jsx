@@ -57,6 +57,7 @@ export default function App() {
       position: 'relative',
     }}>
       {/* Scene - loads immediately behind loader */}
+      {/* Scene and UI - loads behind loader, shrinks when panel opens */}
       <main style={{
         flex: 1,
         minWidth: 0,
@@ -80,20 +81,20 @@ export default function App() {
         )}
 
         <div className="vignette-overlay" />
+
+        {/* MOVE UI BACK IN HERE */}
+        <WeekPicker />
+        <Timeline />
+        <LayerPanel />
+        <FloorSelector />
+        <ViewToggle />
+        <GlobalSettings />
+        <LayerLegend />
+        <Disclaimer />
       </main>
 
-      {/* Loading screen - covers scene, behind UI */}
+      {/* Loading screen - covers main area */}
       {showLoader && <CanvasLoader />}
-
-      {/* UI - always on top */}
-      <WeekPicker />
-      <Timeline />
-      <LayerPanel />
-      <FloorSelector />
-      <ViewToggle />
-      <GlobalSettings />
-      <LayerLegend />
-      <Disclaimer />
 
       {/* Right panel */}
       <div style={{
